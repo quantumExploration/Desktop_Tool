@@ -1,0 +1,169 @@
+g++ -Wall -g -std=c++0x -Wall -g -std=c++0x -c Arrangement.cpp -I/usr/include/boost/ -I/home/henan/Documents/Topology/CycleGrouping_v1.0.0/src/ExternalLibs/Tetgen/tetgen1.4.3/project_exe  
+In file included from Utility.h:74:0,
+                 from Arrangement.h:16,
+                 from Arrangement.cpp:1:
+BigInt.h: In member function ‘std::size_t myHash::operator()(const BigInt&) const’:
+BigInt.h:94:25: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+   for (INT i = 0; i < x.nInt; i++) {
+                         ^
+In file included from Utility.h:75:0,
+                 from Arrangement.h:16,
+                 from Arrangement.cpp:1:
+Graph.h: In member function ‘void Graph::removeDuplicates()’:
+Graph.h:45:32: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+   for (int i = 0; i < adj.size(); ++i){
+                                ^
+In file included from Arrangement.h:16:0,
+                 from Arrangement.cpp:1:
+Utility.h: In static member function ‘static void Utility::flipSufOrientation(std::vector<std::vector<int> >&)’:
+Utility.h:169:30: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+   for(int fi=0; fi<sufF.size(); ++fi){
+                              ^
+Utility.h: In static member function ‘static void Utility::forceSufOriented(std::vector<std::vector<int> >&)’:
+Utility.h:182:30: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+   for(int fi=0; fi<sufF.size(); ++fi){
+                              ^
+Utility.h:203:29: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+   for(int ei=0; ei<E2V.size(); ++ei){
+                             ^
+In file included from Arrangement.h:16:0,
+                 from Arrangement.cpp:1:
+Utility.h: In static member function ‘static void Utility::findOrderedPairs(std::vector<std::vector<int> >&, std::vector<int>&, int, int, std::vector<int>&, std::vector<int>&)’:
+Utility.h:283:46: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+    for(curPairID=0; curPairID<leftPairs.size(); curPairID++){
+                                              ^
+Utility.h: In static member function ‘static void Utility::saveTilingObj(const char*, std::vector<std::vector<float> >&, std::vector<std::vector<int> >&)’:
+Utility.h:403:28: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+   for(int i=0; i<sufV.size(); i++){
+                            ^
+Utility.h:407:29: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+   for (int i=0; i<sufF.size(); i++){
+                             ^
+Utility.h: In static member function ‘static void Utility::saveLuSuf(const char*, std::vector<std::vector<float> >&, std::vector<std::vector<int> >&, std::vector<std::vector<int> >&)’:
+Utility.h:422:28: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+   for(int i=0; i<sufV.size(); i++){
+                            ^
+Utility.h:426:29: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+   for (int i=0; i<sufF.size(); i++){
+                             ^
+Utility.h:431:31: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+   for (int i=0; i<sufSeg.size(); i++){
+                               ^
+Utility.h: In static member function ‘static void Utility::saveTilingObj(const char*, std::vector<float>&, std::vector<int>&)’:
+Utility.h:447:30: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+   for(int i=0; i<sufV.size()/3; i++){
+                              ^
+Utility.h:451:31: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+   for (int i=0; i<sufF.size()/3; i++){
+                               ^
+Utility.h: In static member function ‘static void Utility::scaleUpVers(std::vector<std::vector<float> >&, float, const std::vector<float>&)’:
+Utility.h:476:31: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+   for(int i=0; i<ctrvers.size(); ++i){
+                               ^
+Utility.h:477:37: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+    for(int j=0; j<ctrvers[i].size()/3; ++j){
+                                     ^
+Utility.h: In static member function ‘static void Utility::scaleDnVers(std::vector<std::vector<float> >&, float, const std::vector<float>&)’:
+Utility.h:485:31: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+   for(int i=0; i<ctrvers.size(); ++i){
+                               ^
+Utility.h:486:37: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+    for(int j=0; j<ctrvers[i].size()/3; ++j){
+                                     ^
+Utility.h: In static member function ‘static void Utility::scaleDnVers(std::vector<float>&, float, const std::vector<float>&)’:
+Utility.h:494:33: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+   for(int j=0; j<ctrvers.size()/3; ++j){
+                                 ^
+Utility.h: In static member function ‘static void Utility::scaleUpParas(std::vector<float>&, float, const std::vector<float>&)’:
+Utility.h:508:31: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+   for(int i=0; i<paras.size()/4; ++i){
+                               ^
+In file included from Arrangement.h:20:0,
+                 from Arrangement.cpp:1:
+VolReader.h: In member function ‘void VolReader::getVolume(Volume&)’:
+VolReader.h:374:9: warning: unused variable ‘curValue’ [-Wunused-variable]
+   float curValue;
+         ^
+In file included from Arrangement.h:24:0,
+                 from Arrangement.cpp:1:
+CellTet.h: In member function ‘void CellEdge::write(std::ofstream&)’:
+CellTet.h:64:42: error: ‘writeVector’ was not declared in this scope
+   ofs << "{"; writeVector(locOnesInd, ofs); ofs << "}";
+                                          ^
+CellTet.h: In member function ‘void OneCellTet::writeTetInfo(const char*)’:
+CellTet.h:152:37: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+   for (int i=0; i<cellVertices.size(); ++i){
+                                     ^
+CellTet.h:162:34: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+   for (int i=0; i<cellEdges.size(); ++i){
+                                  ^
+CellTet.h:172:34: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+   for (int i=0; i<cellFaces.size(); ++i){
+                                  ^
+CellTet.h:182:33: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+   for (int i=0; i<cellTets.size(); ++i){
+                                 ^
+In file included from Arrangement.h:25:0,
+                 from Arrangement.cpp:1:
+CellSuf.h: In member function ‘void OneCellSuf::saveSuf(const char*)’:
+CellSuf.h:62:30: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+   for(int i=0; i<sufSeg.size(); ++i){
+                              ^
+CellSuf.h:63:36: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+    for(int j=0; j<sufSeg[i].size()-1; ++j){
+                                    ^
+In file included from Arrangement.h:30:0,
+                 from Arrangement.cpp:1:
+MVC.h: In member function ‘float MVC::getValue(const float*)’:
+MVC.h:61:39: warning: unused variable ‘totalWF’ [-Wunused-variable]
+   float a [ 3 ], w [ 3 ], totalW = 0, totalWF = 0, totalA, vol;
+                                       ^
+MVC.h:63:8: warning: unused variable ‘f’ [-Wunused-variable]
+   int *f;
+        ^
+MVC.h: In member function ‘float MVC_TAO::getValue(float*)’:
+MVC.h:278:39: warning: unused variable ‘totalWF’ [-Wunused-variable]
+   float a [ 3 ], w [ 3 ], totalW = 0, totalWF = 0, totalA, vol;
+                                       ^
+MVC.h:280:8: warning: unused variable ‘f’ [-Wunused-variable]
+   int *f;
+        ^
+In file included from Arrangement.cpp:1:0:
+Arrangement.h: In member function ‘void Arrangement::setFilename(const char*)’:
+Arrangement.h:365:21: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+  if (pos != string::npos){
+                     ^
+Arrangement.h:369:21: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+  if (pos != string::npos){
+                     ^
+Arrangement.cpp: In member function ‘void Arrangement::reOrderCellEinCellF()’:
+Arrangement.cpp:100:37: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+    for (int ei = 1; ei < faceE.size(); ++ei){
+                                     ^
+Arrangement.cpp: In member function ‘void Arrangement::preCalcFront_L_B()’:
+Arrangement.cpp:135:35: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+   for (int i = 0; i < f0cycs.size(); ++i){
+                                   ^
+Arrangement.cpp:137:36: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+    for (int j = 0; j < f1cycs.size(); ++j){
+                                    ^
+Arrangement.cpp:147:37: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+   for (int i = 0; i < cellcycs.size(); ++i){
+                                     ^
+Arrangement.cpp:149:36: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+    for (int j = 0; j < f1cycs.size(); ++j){
+                                    ^
+Arrangement.cpp:155:36: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+    for (int j = 0; j < f0cycs.size(); ++j){
+                                    ^
+Arrangement.cpp:165:37: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+   for (int i = 0; i < cellcycs.size(); ++i){
+                                     ^
+Arrangement.cpp:167:36: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+    for (int j = 0; j < f0cycs.size(); ++j){
+                                    ^
+Arrangement.cpp: In member function ‘int Arrangement::countContinousOpenSeg(BigInt&)’:
+Arrangement.cpp:182:35: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+  for (int i = 0; i < cmnSegs.size(); ++i){
+                                   ^
+make: *** [Arrangement.o] Error 1

@@ -1,0 +1,44 @@
+g++ -g -Wall -DSELF_CHECK tetgen.cxx predicates.o -o tetgen -lm
+tetgen.cxx: In member function ‘void tetgenmesh::btree_sort(double**, int, int, double, double, double, double, double, double, int)’:
+tetgen.cxx:15053:28: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
+     leftarray[0] = (point) i; // The array lenth.
+                            ^
+tetgen.cxx:15073:29: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
+     rightarray[0] = (point) j; // The array lenth.
+                             ^
+tetgen.cxx: In member function ‘bool tetgenmesh::incrflipdelaunay(tetgenmesh::triface*, double**, long int, bool, bool, double, tetgenmesh::queue*)’:
+tetgen.cxx:16036:21: warning: variable ‘loc’ set but not used [-Wunused-but-set-variable]
+   enum locateresult loc;
+                     ^
+tetgen.cxx: In member function ‘bool tetgenmesh::incrflipdelaunaysub(int, double, tetgenmesh::list*, int, double*, tetgenmesh::queue*)’:
+tetgen.cxx:17044:21: warning: variable ‘loc’ set but not used [-Wunused-but-set-variable]
+   enum locateresult loc;
+                     ^
+tetgen.cxx: In member function ‘tetgenmesh::interresult tetgenmesh::finddirection2(tetgenmesh::triface*, tetgenmesh::point)’:
+tetgen.cxx:18936:49: warning: variable ‘cop’ set but not used [-Wunused-but-set-variable]
+   enum {HCOPLANE, RCOPLANE, LCOPLANE, NCOPLANE} cop;
+                                                 ^
+tetgen.cxx: In member function ‘void tetgenmesh::constrainedfacets2()’:
+tetgen.cxx:21904:17: warning: variable ‘delaunayflag’ set but not used [-Wunused-but-set-variable]
+   bool success, delaunayflag;
+                 ^
+tetgen.cxx: In member function ‘void tetgenmesh::removesteiners2()’:
+tetgen.cxx:26155:17: warning: variable ‘success’ set but not used [-Wunused-but-set-variable]
+   bool remflag, success; //, optflag;
+                 ^
+tetgen.cxx: In member function ‘void tetgenmesh::repairencsubs(bool)’:
+tetgen.cxx:29354:8: warning: variable ‘oldptnum’ set but not used [-Wunused-but-set-variable]
+   long oldptnum, oldencsegnum;
+        ^
+tetgen.cxx: In member function ‘void tetgenmesh::optimizemesh2(bool)’:
+tetgen.cxx:30628:8: warning: variable ‘maxdihed’ set but not used [-Wunused-but-set-variable]
+   REAL maxdihed, objdihed, cosobjdihed;
+        ^
+tetgen.cxx: In member function ‘void tetgenmesh::outedges(tetgenio*)’:
+tetgen.cxx:32049:19: warning: variable ‘faceid’ set but not used [-Wunused-but-set-variable]
+   int edgenumber, faceid, marker;
+                   ^
+/usr/lib/gcc/x86_64-redhat-linux/4.8.5/../../../../lib64/crt1.o: In function `_start':
+(.text+0x20): undefined reference to `main'
+collect2: error: ld returned 1 exit status
+make: *** [tetgen] Error 1

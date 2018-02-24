@@ -1,0 +1,24 @@
+COMPILER_FLAGS= -g
+
+CXX = g++
+
+TARGETS=tetgen
+
+SRCS = tetgen.cxx predicates.cxx 
+OBJECTS = tetgen.o predicates.o
+
+default: $(TARGETS)
+
+OBJS = $(SRCS:.cpp=.o)
+.SUFFIXES: .o .cpp
+
+.cpp.o:
+	${CXX} -Wall -DSELF_CHECK ${COMPILER_FLAGS} -o $@ $< 
+
+tetgen: tetgen.o predicates.o
+	${CXX} ${COMPILER_FLAGS} tetgen.o predicates.o -o tetgen -lm
+
+clean:
+	rm -f ${OBJS} ${TARGETS} *~
+
+
