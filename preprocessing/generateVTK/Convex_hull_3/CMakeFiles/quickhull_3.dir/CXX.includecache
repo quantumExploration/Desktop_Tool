@@ -1,0 +1,26 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/quickhull_3.cpp
+CGAL/Exact_predicates_inexact_constructions_kernel.h
+-
+CGAL/point_generators_3.h
+-
+CGAL/algorithm.h
+-
+CGAL/Polyhedron_3.h
+-
+CGAL/convex_hull_3.h
+-
+vector
+-
+fstream
+-
+string.h
+-
+

@@ -1,0 +1,78 @@
+#ifndef __SV_COLORS_H
+#define __SV_COLORS_H
+
+#ifdef __APPLE__
+#include <GLUT/glut.h>
+#else
+#include <GL/glut.h>
+#endif
+#include "svQDOTData.h"
+#include "CIEColor.h"
+#include <string.h>
+
+namespace __svl_lib {
+
+//#define CONTINUECOLOR 0
+//#define DISCRETECOLOR 1
+
+#define DISCRECT_SIZE 80
+#define DIVERGING_SIZE 30
+
+class svColors{
+public:
+	svColors();
+	~svColors();
+
+        void Init(char *infName);
+        void New(int seed, svVector3Array *pos);
+        void SetAlpha(float alpha);
+        void SetColors(int seed, svIntArray *label, svScalarArray *value);
+        void SetColorBlind(bool blind);
+
+        void GetColors(bool blindsafe, int color_type,
+                       svQDOTData * data, svVector4Array *color);
+       
+        svVector4Array *GetColors(){return storeColors;}
+        svVector4 GetColor(int s, int i){return storeColors[s][i];}     
+
+        void clean();
+
+//=============the following not used now===================
+        svVector4 Get8Colors(int value);
+        svVector4 GetDiscreteColors(int value);
+	svVector4 GetDiscreteColors(int color_model, int value);
+	svVector4Array GetContinuousColors(svScalarArray & value);//not implemented
+        svVector4Array GetDivergingColors(svScalarArray &value);
+        void RGB2LAB(double R, double G, double B, double &l, double &a, double &b);
+        void ColorBlindSafe(double r, double g, double b, double &r2, double &g2, double &b2);
+        void HSVtoRGB( double &r, double &g, double &b, double h, double s, double v );
+        void LAB2RGB(double l, double a, double b, double &R, double &G, double &B);
+        void RenderDivergingLegend(double power);
+
+protected:
+        void GetMagnitudeColors(svQDOTData *data, svVector4rray *color);
+
+private:
+        svVector4Array * divergingColor;
+        svVector4Array * discreteColor;      
+
+        int model;
+        int colorSize;
+        float alpha;
+        int seed;
+
+        svVector4Array initColors;
+        svVector4Array blindColors;
+        svVector4Array *storeColors;
+        svIntArray *storeIndex;
+
+	svVector4Array *colorModel;
+        svVector4Array spiralColor;
+        svVector4Array divergingColor;
+        svVector4Array *divergingScheme;
+};
+}
+
+
+#endif // __SV_COLORS_H
+

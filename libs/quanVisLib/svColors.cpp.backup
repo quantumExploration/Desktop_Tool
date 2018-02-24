@@ -1,0 +1,1086 @@
+#include "svColors.h"
+#include <algorithm>
+#include <fstream>
+namespace __svl_lib {
+
+double redtoBlue3[3][3]=
+{
+{252,141,89},
+{255,255,191},
+{145,191,219}
+};
+double redtoBlue4[4][3]=
+{
+{215,25,28},
+{253,174,97},
+{171,217,233},
+{44,123,182}
+};
+double redtoBlue5[5][3]=
+{
+{215,25,28},
+{253,174,97},
+{255,255,191},
+{171,217,233},
+{44,123,182}
+};
+double redtoBlue6[6][3]=
+{
+{215,48,39},
+{252,141,89},
+{254,224,144},
+{224,243,248},
+{145,191,219},
+{69,117,180}
+};
+double redtoBlue7[7][3]={
+{215,48,39},
+{252,141,89},
+{254,224,144},
+{255,255,191},
+{224,243,248},
+{145,191,219},
+{69,117,180}
+};
+double redtoBlue8[8][3]={
+{215,48,39},
+{244,109,67},
+{253,174,97},
+{254,224,144},
+{224,243,248},
+{171,217,233},
+{116,173,209},
+{69,117,180}
+};
+double redtoBlue9[9][3]={
+{215,48,39},
+{244,109,67},
+{253,174,97},
+{254,224,144},
+{255,255,191},
+{224,243,248},
+{171,217,233},
+{116,173,209},
+{69,117,180}
+};
+double redtoBlue10[10][3]={
+{165,0,38},
+{215,48,39},
+{244,109,67},
+{253,174,97},
+{254,224,144},
+{224,243,248},
+{171,217,233},
+{116,173,209},
+{69,117,180},
+{49,54,149}
+};
+double redtoBlue11[11][3]={
+{165,0,38},
+{215,48,39},
+{244,109,67},
+{253,174,97},
+{254,224,144},
+{255,255,191},
+{224,243,248},
+{171,217,233},
+{116,173,209},
+{69,117,180},
+{49,54,149}
+};
+double redtoBlue12[12][3]={
+{165,0,38},
+{215,48,39},
+{244,109,67},
+{253,174,97},
+{254,224,144},
+{255,255,191},
+{224,243,248},
+{171,217,233},
+{116,173,209},
+{69,117,180},
+{49,54,149},
+{49,54,89}
+};
+
+double redtoBlue13[13][3]={
+{89,0,38},
+{165,0,38},
+{215,48,39},
+{244,109,67},
+{253,174,97},
+{254,224,144},
+{255,255,191},
+{224,243,248},
+{171,217,233},
+{116,173,209},
+{69,117,180},
+{49,54,149},
+{49,54,89}
+};
+
+void svColors::RGB2LAB(double R, double G, double B, double &l, double &a, double &b)
+{
+
+        if(fabs(R)<0.00001
+                && fabs(G)<0.00001
+                && fabs(B) <0.00001)
+        {
+                l = 0;
+                a = 0;
+                b = 0;
+        }
+        else
+        {
+                double var_R = R;
+                double var_G = G;
+                double var_B = B;
+
+                if ( var_R > 0.04045 ) var_R = pow( ( ( var_R + 0.055 ) / 1.055 ) , 2.4);
+                else                   var_R = var_R / 12.92;
+                if ( var_G > 0.04045 ) var_G = pow(( ( var_G + 0.055 ) / 1.055 ) , 2.4);
+                else                   var_G = var_G / 12.92;
+                if ( var_B > 0.04045 ) var_B = pow(( ( var_B + 0.055 ) / 1.055 ) , 2.4);
+                else                   var_B = var_B / 12.92;
+
+                var_R = var_R * 100;
+                var_G = var_G * 100;
+                var_B = var_B * 100;
+                double X = var_R * 0.4124 + var_G * 0.3576 + var_B * 0.1805;
+                double Y = var_R * 0.2126 + var_G * 0.7152 + var_B * 0.0722;
+                double Z = var_R * 0.0193 + var_G * 0.1192 + var_B * 0.9505;     
+
+                double ref_X =  95.047  ;
+                double ref_Y = 100.000;
+                double ref_Z = 108.883;
+
+                double var_X = X / ref_X;          //ref_X =  95.047   Observer= 2°, Illuminant= D65
+                double var_Y = Y / ref_Y;         //ref_Y = 100.000
+                double var_Z = Z / ref_Z;          //ref_Z = 108.883
+
+                if ( var_X > 0.008856 ) var_X = pow(var_X , ( 1./3. ));
+                else                    var_X = ( 7.787 * var_X ) + ( 16. / 116. );
+                if ( var_Y > 0.008856 ) var_Y = pow(var_Y , ( 1./3. ));
+                else                    var_Y = ( 7.787 * var_Y ) + ( 16. / 116. );
+                if ( var_Z > 0.008856 ) var_Z = pow(var_Z , ( 1./3. ));
+                else                    var_Z = ( 7.787 * var_Z ) + ( 16. / 116. );
+
+                l = ( 116 * var_Y ) - 16;
+                a = 500 * ( var_X - var_Y );
+                b = 200 * ( var_Y - var_Z );
+
+        }
+
+}
+void svColors::LAB2RGB(double l, double a, double b, double &R, double &G, double &B)
+{
+        double var_Y = ( l + 16 ) / 116;
+        double var_X = a / 500 + var_Y;
+        double var_Z = var_Y - b / 200;
+
+        if ( pow(var_Y,3.) > 0.008856 ) var_Y = pow(var_Y,3.);
+        else                      var_Y = ( var_Y - 16. / 116. ) / 7.787;
+        if ( pow(var_X,3.) > 0.008856 ) var_X = pow(var_X, 3.);
+        else                      var_X = ( var_X - 16. / 116. ) / 7.787;
+        if ( pow(var_Z,3.) > 0.008856 ) var_Z = pow(var_Z,3.);
+        else                      var_Z = ( var_Z - 16. / 116. ) / 7.787;
+
+        double ref_X =  95.047;
+        double ref_Y = 100.000;
+        double ref_Z = 108.883;
+        double X = ref_X * var_X;     //ref_X =  95.047     Observer= 2°, Illuminant= D65
+        double Y = ref_Y * var_Y;     //ref_Y = 100.000
+        double Z = ref_Z * var_Z;     //ref_Z = 108.883
+
+
+
+        var_X = X / 100;        //X from 0 to  95.047      (Observer = 2°, Illuminant = D65)
+        var_Y = Y / 100;        //Y from 0 to 100.000
+        var_Z = Z / 100;       //Z from 0 to 108.883
+
+        double var_R = var_X *  3.2406 + var_Y * (-1.5372) + var_Z * (-0.4986);
+        double var_G = var_X * (-0.9689) + var_Y *  1.8758 + var_Z *  0.0415;
+        double var_B = var_X *  0.0557 + var_Y * (-0.2040) + var_Z *  1.0570;
+        if ( var_R > 0.0031308 ) var_R = 1.055 * pow( var_R , ( 1. / 2.4 ) ) - 0.055;
+        else                     var_R = 12.92 * var_R;
+        if ( var_G > 0.0031308 ) var_G = 1.055 * pow( var_G , ( 1. / 2.4 ) ) - 0.055;
+        else                     var_G = 12.92 * var_G;
+        if ( var_B > 0.0031308 ) var_B = 1.055 * pow( var_B , ( 1. / 2.4 ) ) - 0.055;
+        else                     var_B = 12.92 * var_B;
+
+        R = var_R;
+        G = var_G;
+        B = var_B;
+}
+
+
+void svColors::ColorBlindSafe(double r, double g, double b, double &r2, double &g2, double &b2)
+{
+        double colorl, colora, colorb;
+
+        RGB2LAB(r,g,b,colorl,colora,colorb);
+
+
+        double phimaxl = 3.1415926/4.;
+        double phimaxr = 3.1415926/4.;
+
+        double phi = 0;
+        double phi_max;
+        double gama;
+        double tmpa = 0;
+        double tmpb = 0;
+        double theta;
+
+        tmpa = colora;
+        tmpb = colorb;
+
+        if(tmpa >=0 && tmpb >=0)
+        {
+                gama = 0.5;
+                phi_max = 3.1415926/4.;
+
+                double c = tmpa * tmpa + tmpb * tmpb;
+                c = sqrt(c);
+
+                theta = cos(tmpa/c);
+        }
+        else if(tmpa >0 && tmpb <0)
+        {
+                gama = 2.;
+                phi_max = 3.1415926/4.;
+
+                double c = tmpa * tmpa + tmpb * tmpb;
+                c = sqrt(c);
+
+                theta =  -cos(tmpa/c);
+        }
+        else if(tmpa <0 && tmpb >0)
+        {
+                gama = 0.5;
+                phi_max = (3.1415926*3.)/4.;
+
+                double c = tmpa * tmpa + tmpb * tmpb;
+                c = sqrt(c);
+
+                theta =  (3.1415926/2. - cos(fabs(tmpa)/c)) + 3.1415926/2.;
+        }
+        else if(tmpa <0 && tmpb <0)
+        {
+                gama = 2.;
+                phi_max = (3.1415926*3.)/4.;
+
+                double c = tmpa * tmpa + tmpb * tmpb;
+                c = sqrt(c);
+
+                theta =  cos(fabs(tmpa)/c) + 3.1415926;
+        }
+        phi = phi_max * (1 - pow(fabs(theta)/(3.1415926/2),gama));
+        colora = tmpa * cos(phi) - tmpb * sin(phi);
+        colorb = tmpa * sin(phi) + tmpb * cos(phi);
+
+
+        LAB2RGB(colorl, colora, colorb, r2,g2,b2);
+
+        if(r2<0) r2=0;
+        if(g2<0) g2=0;
+        if(b2<0) b2=0;
+        if(r2>1) r2=1;
+        if(g2>1) g2=1;
+        if(b2>1) b2=1;
+
+}
+
+/*
+svColors::svColors()
+{
+        double SPIRALCOLORS[60][3]=
+{
+{0.36846,0.316005,0.00451253},
+{0.373397,0.332967,0.00484021},
+{0.377324,0.34994,0.00509973},
+{0.380115,0.36694,0.00538434},
+{0.381625,0.383986,0.00562467},
+{0.381669,0.401097,0.006112},
+{0.38002,0.418299,0.00655623},
+{0.376378,0.435619,0.00706493},
+{0.370351,0.45309,0.00762841},
+{0.361395,0.470753,0.00815003},
+{0.348746,0.488655,0.00866171},
+{0.331269,0.50685,0.00933107},
+{0.307107,0.525415,0.009838},
+{0.272985,0.544431,0.0104863},
+{0.221717,0.564012,0.0111416},
+{0.128634,0.584297,0.0117929},
+{0.00553399,0.600134,0.122408},
+{0.00564613,0.610625,0.23058},
+{0.00572829,0.621163,0.297438},
+{0.00576353,0.631702,0.348974},
+{0.00581427,0.642204,0.392175},
+{0.00577209,0.652645,0.430111},
+{0.00578988,0.662999,0.464453},
+{0.00581281,0.673252,0.496212},
+{0.00592395,0.683387,0.52606},
+{0.0059052,0.693397,0.554462},
+{0.00586102,0.703269,0.581767},
+{0.00583275,0.712992,0.608239},
+{0.00576822,0.72256,0.634091},
+{0.00590317,0.731959,0.659498},
+{0.00553141,0.741192,0.684613},
+{0.00582762,0.750233,0.709566},
+{0.00572919,0.759087,0.734491},
+{0.00555819,0.767738,0.759508},
+{0.00523947,0.776176,0.784741},
+{0.00501687,0.784383,0.810318},
+{0.00414087,0.792351,0.836389},
+{0.00372027,0.800046,0.863091},
+{0.00304048,0.807451,0.890615},
+{0.0024615,0.81453,0.91916},
+{0.00168178,0.821247,0.948982},
+{0.00045956,0.827551,0.980395},
+{0.207832,0.82921,0.999999},
+{0.376605,0.825669,0.999999},
+{0.473762,0.823447,0.999998},
+{0.544384,0.822324,0.999997},
+{0.600201,0.822124,0.999998},
+{0.646382,0.822704,0.999998},
+{0.685731,0.823948,0.999999},
+{0.719968,0.825759,1},
+{0.750226,0.828056,1},
+{0.777459,0.830778,0.999598},
+{0.802006,0.834182,0.996809},
+{0.825607,0.838455,0.986675},
+{0.84509,0.843106,0.980732},
+{0.862054,0.847425,0.981713},
+{0.878132,0.851504,0.985237},
+{0.893858,0.855364,0.989893},
+{0.909006,0.859374,0.993318},
+{0.92349,0.863528,0.995855}
+};    
+
+
+for(int i=0;i<59;i++)
+{
+       svVector4 color;
+       color[0] =  SPIRALCOLORS[i][0];
+       color[1] =  SPIRALCOLORS[i][1];
+       color[2] =  SPIRALCOLORS[i][2];
+       color[3] = 1;
+
+  double R,G,B, r,g,b;
+                R = color[0];
+                G = color[1];
+                B = color[2];
+                ColorBlindSafe(R,G,B,r,g,b);
+
+                color[0] = r;
+                color[1] = g;
+                color[2] = b;
+
+       spiralColor.add(color);
+}
+	colorModel = new svVector4Array[2];
+	
+	double D3COLORS1[25][3]={
+	  {0.121569,0.466667,0.705882},
+	  {0.682353,0.780392,0.909804},
+	  {1,0.498039,0.054902},
+	  {1,0.733333,0.470588},
+	  {0.172549,0.627451,0.172549},
+	  {0.596078,0.87451,0.541176},
+	  {0.839216,0.152941,0.156863},
+	  {1,0.596078,0.588235},
+	  {0.580392,0.403922,0.741176},
+	  {0.772549,0.690196,0.835294},
+	  {0.54902,0.337255,0.294118},
+	  {0.768627,0.611765,0.580392},
+	  {0.890196,0.466667,0.760784},
+	  {0.968627,0.713725,0.823529},
+	  {0.737255,0.741176,0.133333},
+	  {0.858824,0.858824,0.552941},
+	  {0.0901961,0.745098,0.811765},
+	  {0.619608,0.854902,0.898039},
+	  {0.223529,0.231373,0.47451},
+	  {0.321569,0.329412,0.639216},
+	  {0.419608,0.431373,0.811765},
+	  {0.611765,0.619608,0.870588},
+	  {0.388235,0.47451,0.223529},
+	  {0.54902,0.635294,0.321569},
+	  {0.709804,0.811765,0.419608}
+	};
+	
+	for(int i=0;i<25;i++)
+	{
+			svVector4 color;
+			color[0] = D3COLORS1[i][0];
+			color[1] = D3COLORS1[i][1];
+			color[2] = D3COLORS1[i][2];
+			color[3] = 1;
+   double R,G,B, r,g,b;
+                R = color[0];
+                G = color[1];
+                B = color[2];
+                ColorBlindSafe(R,G,B,r,g,b);
+
+                color[0] = r;
+                color[1] = g;
+                color[2] = b;
+//if(i<10)cerr<<r*255<<" "<<g*255<<" "<<b*255<<endl;
+			colorModel[0].add(color);
+	}
+	
+	double D3COLORS2[25][3]={
+	  {0.807843,0.858824,0.611765},
+	  {0.54902,0.427451,0.192157},
+	  {0.741176,0.619608,0.223529},
+	  {0.905882,0.729412,0.321569},
+	  {0.905882,0.796078,0.580392},
+	  {0.517647,0.235294,0.223529},
+	  {0.678431,0.286275,0.290196},
+	  {0.839216,0.380392,0.419608},
+	  {0.905882,0.588235,0.611765},
+	  {0.482353,0.254902,0.45098},
+	  {0.647059,0.317647,0.580392},
+	  {0.807843,0.427451,0.741176},
+	  {0.870588,0.619608,0.839216},
+	  {0.192157,0.509804,0.741176},
+	  {0.419608,0.682353,0.839216},
+	  {0.619608,0.792157,0.882353},
+	  {0.776471,0.858824,0.937255},
+	  {0.901961,0.333333,0.0509804},
+	  {0.992157,0.552941,0.235294},
+	  {0.992157,0.682353,0.419608},
+	  {0.992157,0.815686,0.635294},
+	  {0.192157,0.639216,0.329412},
+	  {0.454902,0.768627,0.462745},
+	  {0.631373,0.85098,0.607843},
+	  {0.780392,0.913725,0.752941}
+	};
+	
+	for(int i=0;i<25;i++)
+	{
+			svVector4 color;
+			color[0] = D3COLORS2[i][0];
+			color[1] = D3COLORS2[i][1];
+			color[2] = D3COLORS2[i][2];
+			color[3] = 1;
+//			colorModel[1].add(color);
+
+   double R,G,B, r,g,b;
+		R = color[0];
+		G = color[1];
+		B = color[2];
+		ColorBlindSafe(R,G,B,r,g,b);
+
+		color[0] = r;
+		color[1] = g;
+		color[2] = b;
+                        colorModel[1].add(color);
+
+	}
+//===============================================
+    divergingScheme = new svVector4Array[12];
+    svVector4 dc;
+    dc[0]=1;dc[1]=0;dc[2]=0;
+    divergingScheme[0].add(dc);
+    divergingScheme[1].add(dc);
+    divergingScheme[2].add(dc);
+    dc[0]=0;dc[1]=0;dc[2]=1;
+    divergingScheme[2].add(dc);
+
+    for(int i=0;i<3;i++)
+    {
+        dc[0]=redtoBlue3[i][0]/255.;
+        dc[1]=redtoBlue3[i][1]/255.;
+        dc[2]=redtoBlue3[i][2]/255.;
+        divergingScheme[3].add(dc);
+    }
+    for(int i=0;i<4;i++)
+    {
+        dc[0]=redtoBlue4[i][0]/255.;
+        dc[1]=redtoBlue4[i][1]/255.;
+        dc[2]=redtoBlue4[i][2]/255.;
+        divergingScheme[4].add(dc);
+    }
+    for(int i=0;i<5;i++)
+    {
+        dc[0]=redtoBlue5[i][0]/255.;
+        dc[1]=redtoBlue5[i][1]/255.;
+        dc[2]=redtoBlue5[i][2]/255.;
+        divergingScheme[5].add(dc);
+    }
+    for(int i=0;i<6;i++)
+    {
+        dc[0]=redtoBlue6[i][0]/255.;
+        dc[1]=redtoBlue6[i][1]/255.;
+        dc[2]=redtoBlue6[i][2]/255.;
+        divergingScheme[6].add(dc);
+    }
+    for(int i=0;i<7;i++)
+    {
+        dc[0]=redtoBlue7[i][0]/255.;
+        dc[1]=redtoBlue7[i][1]/255.;
+        dc[2]=redtoBlue7[i][2]/255.;
+        divergingScheme[7].add(dc);
+    }
+    for(int i=0;i<8;i++)
+    {
+        dc[0]=redtoBlue8[i][0]/255.;
+        dc[1]=redtoBlue8[i][1]/255.;
+        dc[2]=redtoBlue8[i][2]/255.;
+        divergingScheme[8].add(dc);
+    }
+    for(int i=0;i<9;i++)
+    {
+        dc[0]=redtoBlue9[i][0]/255.;
+        dc[1]=redtoBlue9[i][1]/255.;
+        dc[2]=redtoBlue9[i][2]/255.;
+        divergingScheme[9].add(dc);
+    }
+    for(int i=0;i<10;i++)
+    {
+        dc[0]=redtoBlue10[i][0]/255.;
+        dc[1]=redtoBlue10[i][1]/255.;
+        dc[2]=redtoBlue10[i][2]/255.;
+        divergingScheme[10].add(dc);
+    }
+    for(int i=0;i<11;i++)
+    {
+        dc[0]=redtoBlue11[i][0]/255.;
+        dc[1]=redtoBlue11[i][1]/255.;
+        dc[2]=redtoBlue11[i][2]/255.;
+        divergingScheme[11].add(dc);
+    }
+
+}
+*/
+
+svColors::svColors(){
+  colorSize = 100;
+  svVector4 white(1,1,1,1);
+  for(int i=0;i<colorSize;i++){
+     initColors.add(white);
+     blindColors.add(white);
+  }
+  seed = 0;
+}
+
+void svColors::Init(char *infName){
+  ifstream infile(infName);
+  initColors.free();
+  blindColors.free();
+  infile>>colorSize;
+  for(int i=0;i<colorSize;i++){
+    double r,g,b;
+    infile>>r>>g>>b;
+    svVector4 c;
+    c[0]=r;c[1]=g;c[2]=b;
+    c[3]=1;
+    initColors.add(c);
+    double R, G,B;
+    ColorBlindSafe(r,g,b, R,G,B);
+    c[0] = R;
+    c[1] = G;
+    c[2] = B;
+    blindColors.add(c);
+  }
+  infile.close();
+}
+
+void svColors::SetAlpha(float alpha){
+  this->alpha = alpha;
+}
+
+void svColors::New(int seed, svVector3Array *pos){
+  if(this->seed>0){
+    clean();
+  } 
+  svVector4 white(1,1,1,1);
+  this->seed = seed;
+  storeColors = new svVector4Array[seed];
+  storeIndex = new svIntArray[seed];
+  for(int i=0;i<seed;i++){
+     for(int j=0;j<pos[i].size();j++){
+        storeColors[i].add(white);
+        storeIndex[i].add(0);
+     }
+  }
+}
+//can be replaced by a hashtable
+void svColors::SetColors(int seed, svIntArray *label, svScalarArray *value){
+  if(this->seed>0){
+    clean();
+  }
+  svVector4 white(1,1,1,1);
+  storeColors = new svVector4Array[seed];
+  storeIndex = new svIntArray[seed];
+  vector<int> uLabel; //unique label
+  vector<svScalar> sum;//sum values
+  vector<int> count;
+  for(int i=0;i<seed;i++){
+    for(int j=0;j<label[i].size();j++){
+       bool flag = false;
+       for(int t=0;t<uLabel.size();t++){
+          if(label[i][j] == uLabel[t]){
+             flag = true; break;
+          }
+       }
+       if(!flag && label[i][j]>=0){
+         uLabel.push_back(label[i][j]);
+         sum.push_back(0);
+         count.push_back(0);
+       }
+    } 
+  }
+  for(int i=0;i<seed;i++){
+    for(int j=0;j<label[i].size();j++){
+      int index;
+      for(int t=0;t<uLabel.size();t++){
+         if(label[i][j] == uLabel[t]){
+            index = t;break;
+         }
+      }
+      count[index]++;
+      sum[index] += value[i][j];
+    }
+  }
+  vector<svScalar> tmpsum;
+  for(int i=0;i<sum.size();i++){
+      sum[i] = sum[i]/(svScalar)count[i];
+      tmpsum.push_back(sum[i]);
+  } 
+  int shift = colorSize - sum.size();
+  sort(tmpsum.begin(), tmpsum.end());
+  vector<int> clabel(sum.size());
+  for(int i=0;i<sum.size();i++){
+    for(int j=0;j<tmpsum.size();j++){
+      if(fabs(sum[i] - tmpsum[j])<1e-20){
+        clabel[i] = (j+shift)%colorSize;break;
+      }
+    }
+  }
+  for(int i=0;i<seed;i++){
+    for(int j=0;j<label[i].size();j++){
+       for(int t=0;t<sum.size();t++){
+          if(uLabel[t] == label[i][j]){
+             storeIndex[i].add(clabel[t]);
+             storeColors[i].add(initColors[clabel[t]]);break;
+          }
+          else if(label[i][j]<0){
+             storeIndex[i].add(-1);
+             storeColors[i].add(white);break;
+          }
+       }
+    }
+  }
+  uLabel.clear();
+  count.clear();
+  sum.clear();
+  tmpsum.clear();
+}
+
+void svColors::SetColorBlind(bool blind){
+  svVector4 white(1,1,1,1);
+  if(blind){
+    for(int i=0;i<seed;i++){
+      for(int j=0;j<storeColors[i].size();j++){
+         if(storeIndex[i][j]>=0)
+         storeColors[i][j] = blindColors[storeIndex[i][j]];
+         else
+         storeColors[i][j] = white;
+      }
+    }
+  }
+  else{
+    for(int i=0;i<seed;i++){
+      for(int j=0;j<storeColors[i].size();j++){
+         if(storeIndex[i][j]>=0)
+         storeColors[i][j] = initColors[storeIndex[i][j]];
+         else
+         storeColors[i][j] = white;
+      }
+    }
+  }
+}
+
+svVector4 svColors::Get8Colors(int value)
+{
+ double colors[8][3]=
+ {
+  {141,211,199},
+  {255,255,179},
+  {190,186,218},
+  {251,128,114},
+  {128,177,211},
+  {253,180,98},
+  {179,222,105},
+  {252,205,229}
+ };
+
+ for(int i=0;i<8;i++)
+ {
+   colors[i][0] = colors[i][0]/255.;
+   colors[i][1] = colors[i][1]/255.;
+   colors[i][2] = colors[i][2]/255.;
+   
+   //double R,G,B, r,g,b;
+   //R = colors[i][0];
+   //G = colors[i][1];
+   //B = colors[i][2];
+   //ColorBlindSafe(R,G,B,r,g,b);
+
+   //colors[i][0] = r;
+   //colors[i][1] = g;
+   //colors[i][2] = b;
+ }
+
+ svVector4 color;
+ color[0]=1;color[1]=1;color[2]=1;color[3]=1;
+ if(value<0)return color;
+
+ color[0] = colors[value%8][0];
+ color[1] = colors[value%8][1];
+ color[2] = colors[value%8][2];
+ return color; 
+}
+
+void svColors::GetColors(int color_type, bool blindsafe, 
+                         svQDOTData * data, svVector4Array *color){
+ switch (color_type) {
+   case COLOR_TYPE::c_cluster:{
+    string infName(BIN_DIR);
+    infName = infName + "colorfiles/discretecolors";
+    ifstream infile(infName.c_str());
+    infile>>colorSize;
+    svVector4 *c = new svVector4[colorSize];
+    for(int i=0;i<colorSize;i++){
+      double r,g,b;
+      infile>>r>>g>>b;
+      c[i][0]=r;c[i][1]=g;c[i][2]=b;
+      c[3]=1;
+      if(blindsafe){
+        double R, G,B;
+        ColorBlindSafe(r,g,b, R,G,B);
+        c[i][0] = R;
+        c[i][1] = G;
+        c[i][2] = B;
+        c[i][3] = 1;
+      }
+    }
+    infile.close();
+
+    break;
+   }
+   case COLOR_TYPE::c_magnitude:{
+    GetMagnitudeColors(data, color);
+    break;
+   }
+ }
+}
+
+void svColors::GetMagnitudeColors(svQDOTData* data, svVector4Array *color){
+  svScalar maxExp = -9e+9;
+  svScalar minExp = 9e+9;
+  for(int i=0;i<(data->splitData).size();i++){
+      for(int j=0;j<data->splitData[i].size();j++){
+         if((*(data->splitData[i][j])).exp > maxExp)
+                maxExp = (*(data->splitData[i][j])).exp ;
+         if((*(data->splitData[i][j])).exp < minExp)
+                minExp = (*(data->splitData[i][j])).exp ;
+      }
+  }
+  if(maxExp - minExp + 1> 13 || maxExp - minExp + 1<5) return;
+  else{
+    double colorarray[13][3];
+    int size = maxExp - minExp + 1;
+    cerr<<size<<endl;
+    switch (size) {
+      case 13: {for(int i=0;i<size;i++){
+                 colorarray[i][0] = redtoBlue13[i][0]; 
+                 colorarray[i][1] = redtoBlue13[i][1]; 
+                 colorarray[i][2] = redtoBlue13[i][2];} 
+                 break;}
+      case 12: {for(int i=0;i<size;i++){
+                 colorarray[i][0] = redtoBlue12[i][0]; 
+                 colorarray[i][1] = redtoBlue12[i][1];
+                 colorarray[i][2] = redtoBlue12[i][2];}
+                 break;}
+      case 11: {for(int i=0;i<size;i++){
+                 colorarray[i][0] = redtoBlue11[i][0];
+                 colorarray[i][1] = redtoBlue11[i][1];
+                 colorarray[i][2] = redtoBlue11[i][2];}
+                 break;}
+      case 10: {for(int i=0;i<size;i++){
+                 colorarray[i][0] = redtoBlue10[i][0];
+                 colorarray[i][1] = redtoBlue10[i][1];
+                 colorarray[i][2] = redtoBlue10[i][2];}
+                 break;}
+      case 9: {for(int i=0;i<size;i++){
+                 colorarray[i][0] = redtoBlue9[i][0];
+                 colorarray[i][1] = redtoBlue9[i][1];
+                 colorarray[i][2] = redtoBlue9[i][2];}
+                 break;}
+      case 8: {for(int i=0;i<size;i++){
+                 colorarray[i][0] = redtoBlue8[i][0];
+                 colorarray[i][1] = redtoBlue8[i][1];
+                 colorarray[i][2] = redtoBlue8[i][2];}
+                 break;}
+      case 7: {for(int i=0;i<size;i++){
+                 colorarray[i][0] = redtoBlue7[i][0];
+                 colorarray[i][1] = redtoBlue7[i][1];
+                 colorarray[i][2] = redtoBlue7[i][2];}
+                 break;}
+      case 6: {for(int i=0;i<size;i++){
+                 colorarray[i][0] = redtoBlue6[i][0];
+                 colorarray[i][1] = redtoBlue6[i][1];
+                 colorarray[i][2] = redtoBlue6[i][2];}
+                 break;}
+      case 5: {for(int i=0;i<size;i++){
+                 colorarray[i][0] = redtoBlue5[i][0];
+                 colorarray[i][1] = redtoBlue5[i][1];
+                 colorarray[i][2] = redtoBlue5[i][2];}
+                 break;}
+    }    
+    int step = 13 - (maxExp - minExp + 1);
+    for(int i=0;i<(data->splitData).size();i++){
+      for(int j=0;j<data->splitData[i].size();j++){
+          Spin d = *(((data->splitData)[i])[j]);
+          int den = d.exp - minExp;//cerr<<12-den+step<<endl;
+          if(d.coe<1e-8) continue;
+          color[i][j][0] = colorarray[size-1-den][0]/255.;
+          color[i][j][1] = colorarray[size-1-den][1]/255.;
+          color[i][j][2] = colorarray[size-1-den][2]/255.;
+          color[i][j][3] = 1;//0.85;
+      }
+    }
+  }
+}
+
+svVector4 svColors::GetDiscreteColors(int value)
+{
+        svVector4 color;
+        color[0]=1;color[1]=1;color[2]=1;color[3]=1;
+        if(value<0)return color;
+return colorModel[0][value%25];//hard code
+}
+
+svVector4 svColors::GetDiscreteColors(int color_model, int value)
+{
+        svVector4 color;
+        color[0]=1;color[1]=1;color[2]=1;color[3]=1;
+        if(value<0)return color;
+	return colorModel[color_model][value];
+}
+svVector4Array svColors::GetContinuousColors(svScalarArray &value)
+{
+       int s = value.size();
+       
+       svVector4Array color;
+
+       if(value.size() == 1)
+       {
+           svVector4 tmpColor;
+           tmpColor[0]=1;
+           tmpColor[1]=0;
+           tmpColor[2]=0;
+           tmpColor[3]=1;
+           color.add(tmpColor);
+           return color;
+       } 
+
+       vector<svScalar> tmp_value;
+       tmp_value.resize(s);
+       for(int i=0;i<s;i++)
+       {
+            tmp_value[i] = value[i];
+            color.add(spiralColor[i]);
+       }
+       sort(tmp_value.begin(), tmp_value.end());
+
+       int count = 0;
+       int step = 59/s;
+       for(int i=0;i<s;i++)
+       {
+           int index;
+           for(int j=0;j<s;j++)
+           {
+               if(tmp_value[i] == value[j])
+               {
+                    index = j;break;
+               }
+           }   
+           color[index] = spiralColor[count];
+           count = count+step;
+       }
+
+       tmp_value.clear();       
+
+       return color;
+}
+svVector4Array svColors::GetDivergingColors(svScalarArray &value)
+{
+       int s = value.size();
+
+       divergingColor.free();
+/*
+       if(value.size() == 1)
+       {
+           svVector4 tmpColor;
+           tmpColor[0]=1;
+           tmpColor[1]=0;
+           tmpColor[2]=0;
+           tmpColor[3]=1;
+           divergingColor.add(tmpColor);
+           return divergingColor;
+       }
+*/
+       vector<svScalar> tmp_value;
+       tmp_value.resize(s);
+       for(int i=0;i<s;i++)
+       {
+            tmp_value[i] = value[i];
+       }
+       sort(tmp_value.begin(), tmp_value.end());
+ 
+       std::vector<svScalar>::iterator it;
+       it = std::unique (tmp_value.begin(), tmp_value.end());
+       tmp_value.resize( std::distance(tmp_value.begin(),it));
+
+       int n = tmp_value.size();
+
+       if(tmp_value.size()<=11)
+       {
+          for(int i=0;i<tmp_value.size();i++)
+          {
+            divergingColor.add(divergingScheme[n][i]);
+          }
+
+          svVector4Array color;
+
+         for(int i=0;i<s;i++)
+         {
+           for(int j=0;j<n;j++)
+           {
+              if(fabs(value[i] - tmp_value[j])<1e-17)
+              {
+                  color.add(divergingColor[n-j-1]);
+                  break;
+              }
+           }
+         }
+         return color;
+       }
+//cerr<<"color "<<n<<endl;
+       CIEColor *cie = new CIEColor();
+       for(int i=n-1;i>=0;i--)
+       {
+           double t = (double)i/(double)(n-1);
+           double s= 1;//0.6;
+           double b=0.25;
+           double nprime = 1. - 0.06 * (11.-(double)n/2.-1);
+           double c =0.5;//0.88;
+           double w = 0.5;//;
+           double m =0.5;
+           double h1=10;
+           double h2=250;
+           if(nprime < 0.88) c = nprime; 
+           vector<double> cc = cie ->DiverginghueSequential(t, s, b, c, h1, h2, w, m);
+           svVector4 dc;
+           dc[0] = cc[0];
+           dc[1] = cc[1];
+           dc[2] = cc[2];
+           divergingColor.add(dc);
+  //         cerr<<"colors "<<cc[0]*255<<" "<<cc[1]*255<<" "<<cc[2]*255<<endl;
+       }
+
+       svVector4Array color;
+
+       for(int i=0;i<s;i++)
+       {
+           for(int j=0;j<n;j++)
+           {
+              if(fabs(value[i] - tmp_value[j])<1e-17)
+              {
+                  color.add(divergingColor[j]);
+                  break;
+              }
+           }
+       }
+       return color;
+}
+
+void svColors::RenderDivergingLegend(double power)
+{
+        glPushMatrix();
+        glScalef(10,20,1);
+
+        char str[50];
+        float x = 1;
+        float y = 1;
+        float size = 1;
+        float m_length_in = 1;
+
+        glColor3f(0,0,0);
+
+        double index;
+        int numPower = divergingColor.size();
+
+
+        sprintf(str, "Magnitude");
+         glRasterPos2f(x ,(numPower+2)*y*(size) );
+                        for(int j=0;j<strlen(str);j++)
+                             glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, str[j]);
+     for(int i=numPower-1;i>=0;i--)
+
+        {
+            glColor3f(divergingColor [i][0],
+                                    divergingColor[i][1],
+                                    divergingColor[i][2]);
+
+                        glBegin(GL_QUADS);
+                        glVertex2f(x,y);
+                        glVertex2f(x+size,y);
+                        glVertex2f(x+size,y+size);
+                        glVertex2f(x,y+size);
+                        glEnd();
+
+        glColor3f(0,0,0);
+
+                        sprintf(str,"1e%0.0f",power+i);
+                        glRasterPos2f(x + size*1.1, y );
+                        for(int j=0;j<strlen(str);j++)
+                             glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, str[j]);
+
+                        y = y + size;
+
+        }
+  glPopMatrix();
+
+}
+void svColors::clean(){
+   for(int i=0;i<seed;i++){
+      storeColors[i].free();
+      storeIndex[i].free();
+   }
+   delete [] storeColors;
+   delete [] storeIndex;
+}
+svColors::~svColors()
+{
+   clean();
+   initColors.free();
+   blindColors.free();
+/*        divergingColor.free();
+        for(int i=0;i<12;i++)
+             divergingScheme[i].free();
+        delete [] divergingScheme;
+        spiralColor.free();
+	for(int i=0;i<2;i++)
+	{
+		colorModel[i].free();
+	}
+	delete [] colorModel;
+	colorModel = NULL;
+*/
+}
+
+}

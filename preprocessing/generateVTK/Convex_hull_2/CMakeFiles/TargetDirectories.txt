@@ -1,0 +1,3 @@
+/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_2/CMakeFiles/array_convex_hull_2.dir
+/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_2/CMakeFiles/ch_timing.dir
+/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_2/CMakeFiles/vector_convex_hull_2.dir

@@ -1,0 +1,40 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_2/ch_timing.cpp
+CGAL/Exact_predicates_inexact_constructions_kernel.h
+-
+CGAL/convex_hull_traits_2.h
+-
+CGAL/ch_akl_toussaint.h
+-
+CGAL/ch_graham_andrew.h
+-
+CGAL/ch_eddy.h
+-
+CGAL/ch_bykat.h
+-
+CGAL/ch_jarvis.h
+-
+CGAL/ch_timing_2.h
+-
+fstream
+-
+vector
+-
+
+include/CGAL/ch_timing_2.h
+CGAL/Timer.h
+-
+CGAL/ch_timing_2_impl.h
+-
+
+include/CGAL/ch_timing_2_impl.h
+CGAL/ch_timing_2.h
+-
+

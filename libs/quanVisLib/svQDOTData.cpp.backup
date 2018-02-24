@@ -1,0 +1,816 @@
+/*  svQDOTData
+ */
+#include "svQDOTData.h"
+#include <algorithm>
+#include <iostream>
+#include <fstream>
+#include <string.h>
+
+using namespace std;
+
+namespace __svl_lib {
+
+svQDOTData::svQDOTData()
+{
+  seed_num=0;
+  dataSize = 0;
+
+  glyph=NULL;
+  dir = NULL;
+  mag = NULL;
+  exp = NULL;
+  coe = NULL;
+  atom = NULL;
+  region = NULL; 
+  color = NULL;
+  clusterLabel = NULL;
+  roiLabel = NULL;
+  visibleLabel = NULL;
+}
+
+void svQDOTData::Reset(){
+  clean();
+}
+
+void svQDOTData::New()//svVectorField* f, int numPlane)
+{
+     //if(seed_num > 0){ 
+     //  clean();
+     // }
+     // dataSize =0 ;
+
+     // seed_num = numPlane;
+
+    //  field = f;
+
+     glyph = new svVector3Array[seed_num];
+     dir = new svVector3Array[seed_num];
+     mag = new svScalarArray[seed_num];
+     exp = new svScalarArray[seed_num]; 
+     coe = new svScalarArray[seed_num];
+     atom = new svIntArray[seed_num];
+     region = new svIntArray[seed_num];
+     color = new svVector4Array[seed_num]; 
+     clusterLabel = new svIntArray[seed_num];
+     roiLabel = new svIntArray[seed_num];
+     visibleLabel = new svIntArray[seed_num];
+
+     maxClusterLabel = -1;
+}
+
+void svQDOTData::SaveToFile(char *fname)
+{
+  ofstream outf(fname);
+  outf << seed_num << endl;
+  for(int i=0; i<seed_num; i++)
+  {
+    int s = glyph[i].size();
+    outf << s << endl;
+    for(int j=0; j<s; j++)
+    {
+      outf << glyph[i][j][0] << "  "
+           << glyph[i][j][1] << "  "
+	   << glyph[i][j][2] << "  "
+           << dir[i][j][0]   << "  "
+           << dir[i][j][1]   << "  "
+           << dir[i][j][2]   << "  "
+           << mag[i][j] <<" "
+           << atom[i][j] <<" "
+           << region[i][j]<<endl;
+    };
+  }
+  outf.close();
+}
+
+void svQDOTData::ResetData(int layer){
+  clean(layer);
+}
+
+void svQDOTData::ResetCluster(){
+        maxClusterLabel = -1;
+	for(int i=0;i<seed_num;i++)
+	{
+		for(int j=0;j<glyph[i].size();j++)
+		{
+			clusterLabel[i][j] = -1;
+                        roiLabel[i][j] = true;
+		}
+	}
+}
+
+void svQDOTData::SetSampleData(int size)
+{
+   int count[maxClusterLabel+1];
+   for(int i=0;i<maxClusterLabel+1;i++){
+      count[i] = 0;
+   }
+   sampleLabel.free();
+   for(int i=0;i<seed_num;i++){
+         for(int j=0;j<glyph[i].size();j++){
+             if(visibleLabel[i][j]){
+              int c = clusterLabel[i][j];
+              if(c>-1){
+                if(count[c] < size){
+                    sampleLabel.add(i);
+                    sampleLabel.add(j);
+                    count[c]++;
+                 }
+              }
+           }         
+       }
+   }
+}
+
+void svQDOTData::GenerateClusters(svChar *inf)
+{
+     ifstream infile(inf);
+     maxClusterLabel = -1;
+     for(int i=0;i<seed_num;i++)
+     {
+         for(int j=0;j<glyph[i].size();j++)
+         { 
+             int cluster;
+             infile>>cluster;
+             clusterLabel[i][j] = cluster;
+             if(maxClusterLabel < cluster)
+             {
+                maxClusterLabel = cluster;
+             }
+         }
+     }
+    infile.close();
+    ProcessClusterLabel();
+}
+
+void svQDOTData::GenerateClusters(svIntArray *cluster) 
+{
+     maxClusterLabel = -1;
+     for(int i=0;i<seed_num;i++)
+     {
+         for(int j=0;j<glyph[i].size();j++)
+         {
+             clusterLabel[i][j] = cluster[i][j];
+             if(maxClusterLabel < cluster[i][j])
+             {
+                maxClusterLabel = cluster[i][j]; 
+             }             
+         }
+     }
+     ProcessClusterLabel();
+}
+
+void svQDOTData::GenerateClusters(KmeansProperty & property)// const
+{
+      int max = -1;
+      for(int i=0;i<property.clusterLayer.size();i++)
+      {
+         if(property.clusterLayer[i] > max) 
+                     max = property.clusterLayer[i];
+      }
+      
+      for(int i=0;i<=max;i++)
+      {
+       //  maxClusterLabel = maxClusterLabel + property.numCluster;
+         SaveToFile(property.file1, property.clusterLayer,
+		            property.dimension, i);
+         GenerateCluster(property.file1, property.file2,
+		                 property.isNormalize, 
+						 property.dimension,
+						 property.clusterWeight,
+						 property.numCluster);
+         SetClusterLabel(property.file1, property.clusterLayer,i);
+      }
+      ProcessClusterLabel();
+      /*for(int i=0;i<seed_num;i++)
+      {
+         if(property.clusterLayer[i] < 0 )
+         {
+              int s = glyph[i].size();
+              for(int j=0;j<s;j++)
+              {
+                  clusterLabel[i][j] = -1;
+              }
+         }
+      }*/
+//cerr<<maxClusterLabel<<endl;
+}
+
+void svQDOTData::ResetVisible()
+{
+    visibleCluster.clear();
+    for(int i=0;i<seed_num;i++)
+    {
+          for(int j=0;j<glyph[i].size();j++)
+          {
+              if(mag[i][j]>0)
+                 visibleLabel[i][j] = true;
+              else
+                 visibleLabel[i][j] = false;
+          }
+    }
+}
+/*
+void svGlyph::SetSymmetryVisible(vector<int> type)
+{
+//    cerr<<"type "<<type.size()<<endl;
+
+if(type.size()>0)
+{
+    int count = 0;
+    for(int i=0;i<seed_num;i++)
+    {
+          for(int j=0;j<glyph[i].size();j++)
+          {
+             bool flag = false;
+             for(int t=0;t<type.size();t++)
+             {
+               int size = symmetrylist[type[t]]->getSize(count);
+               if(size>1 && visibleLabel[i][j])
+               {
+                     visibleLabel[i][j] = true;
+                     flag = true; break;
+               }
+             }
+              if(!flag) visibleLabel[i][j] = false;
+         //     if(visibleLabel[i][j])cerr<<i<<" "<<j<<endl;
+               count++;         
+          }
+    }
+}
+}*/
+
+void svQDOTData::SetVisible(svIntArray layer)
+{//cerr<<layer.size()<<" "<<seed_num<<endl;
+        for(int i =0;i<seed_num;i++)
+        {//cerr<<i<<" "<<" "<<glyph[i].size()<<" "<<visibleLabel[i].size()<<endl;
+                for(int j=0;j<glyph[i].size();j++)
+                {
+                        if(visibleLabel[i][j] && layer[i]) 
+                        {
+                                visibleLabel[i][j] = true;
+                        }
+                        else
+                        {
+                                visibleLabel[i][j] = false;
+                        }
+                }
+
+        }
+}
+void svQDOTData::SetLayerVisible(svIntArray &layer)
+{//cerr<<layer.size()<<" "<<seed_num<<endl;
+        for(int i =0;i<seed_num;i++)
+        {//cerr<<i<<" "<<" "<<glyph[i].size()<<" "<<visibleLabel[i].size()<<endl;
+                for(int j=0;j<glyph[i].size();j++)
+                {
+                        if(visibleLabel[i][j] && layer[i])
+                        {
+                                visibleLabel[i][j] = true;
+                        }
+                        else
+                        {
+                                visibleLabel[i][j] = false;
+                        }
+                }
+
+        }
+}
+void svQDOTData::SetClusterVisible(int layer, int data)
+{
+   cout<<"cluster visible "<<layer<<" "<<data<<" "<<clusterLabel[layer][data]<<endl;
+   int count = 0;
+   visibleCluster.push_back(clusterLabel[layer][data]);
+     if(layer>=0 && data>=0)
+     {
+      for(int i=0;i<seed_num;i++)
+      {
+           for(int j=0;j<glyph[i].size();j++)
+           {
+             bool flag = false;
+             for(int t=0;t<visibleCluster.size();t++){
+                if(clusterLabel[i][j] == visibleCluster[t])//clusterLabel[layer][data])
+                {
+                    flag = true;break;
+                //     visibleLabel[i][j] = true;//count++;
+                }
+                else
+                {
+                  //  visibleLabel[i][j] = false;
+                }
+              
+             }
+             if(flag){
+                      visibleLabel[i][j] = true;
+             }
+             else{
+                      visibleLabel[i][j] = false;
+             }
+           }
+      }
+    }    
+}
+void svQDOTData::SetVisible(svScalar z1, svScalar z2)
+{
+        for(int i =0;i<seed_num;i++)
+        {
+                for(int j=0;j<glyph[i].size();j++)
+                {
+                        if(visibleLabel[i][j] && mag[i][j]>=z1 && mag[i][j]<=z2)
+                        {
+                                visibleLabel[i][j] = true;
+                        }
+                        else
+                        {
+                                visibleLabel[i][j] = false;
+                        }
+                }
+        }
+}
+void svQDOTData::SetVisible(svVector3 l, svVector3 r)
+{
+        for(int i =0;i<seed_num;i++)
+        {
+                for(int j=0;j<glyph[i].size();j++)
+                {
+                        if(visibleLabel[i][j] &&
+                           glyph[i][j][0]>l[0] &&
+                           glyph[i][j][1]>l[1] &&
+                           glyph[i][j][2]>l[2] &&
+                           glyph[i][j][0]<r[0] &&
+                           glyph[i][j][1]<r[1] &&
+                           glyph[i][j][2]<r[2]) 
+                        {
+                                visibleLabel[i][j] = true;
+                        }
+                        else
+                        {
+                                visibleLabel[i][j] = false;
+                        }
+                }
+        }
+
+}
+void svQDOTData::SetAngleVisible(svScalar min_xangle,svScalar max_xangle,
+                         svScalar min_yangle, svScalar max_yangle,
+                         svScalar min_zangle, svScalar max_zangle){
+        for(int i =0;i<seed_num;i++)
+        {
+                for(int j=0;j<glyph[i].size();j++)
+                {
+                        if(visibleLabel[i][j] &&
+                           dir[i][j][0]>min_xangle &&
+                           dir[i][j][1]>min_yangle &&
+                           dir[i][j][2]>min_zangle &&
+                           dir[i][j][0]<max_xangle &&
+                           dir[i][j][1]<max_yangle &&
+                           dir[i][j][2]<max_zangle)
+                        {
+                                visibleLabel[i][j] = true;
+                        }
+                        else
+                        {
+                                visibleLabel[i][j] = false;
+                        }
+                }
+        }   
+}
+void svQDOTData::SetVisible(svScalar z1, svScalar z2, int frequency)
+{
+        for(int i =0;i<seed_num;i++)
+        {
+             if(i>=z1 && i<=z2)
+             {
+                for(int j=0;j<glyph[i].size();j++)
+                {
+                        if( j%frequency==0)// && contour == contourLabel[i][j])
+                        {
+                                visibleLabel[i][j] = true;
+                        }
+                        else
+                        {
+                                visibleLabel[i][j] = false;
+                        }
+                }
+            }
+            else
+             {
+                for(int j=0;j<glyph[i].size();j++)
+                {
+                       visibleLabel[i][j] = false;
+                }
+            }
+
+        }
+}
+
+
+void svQDOTData::SetROI()
+{
+	for(int i=0;i<seed_num;i++)
+	{
+		for(int j=0;j<glyph[i].size();j++)
+		{
+			roiLabel[i][j] = true;
+		}
+	}	
+}
+
+void svQDOTData::SetROI(svScalar mag1, svScalar mag2)
+{
+    for(int i=0;i<seed_num;i++)
+    {
+         for(int j=0;j<glyph[i].size();j++)
+         {
+               if(mag[i][j] >= mag1 && mag[i][j] <= mag2)
+               {
+                  roiLabel[i][j] = true;
+               }
+               else {
+                  roiLabel[i][j] = false;
+               }
+         }
+     }
+}
+
+/*
+void svGlyph::SetKmeansProperty()
+{
+      kmeansproperty.isNormalize = true;
+      kmeansproperty.dimension = 7;
+      kmeansproperty.numCluster = 1;
+      for(int i=0;i<seed_num;i++)
+      {
+            kmeansproperty.clusterLayer.add(0);
+      }
+      for(int i = 0;i<kmeansproperty.dimension;i++)
+      {
+             kmeansproperty.clusterWeight.add(1);
+      }
+}
+
+void svGlyph::SetContourProperty()
+{
+       contourproperty.seed_num = seed_num;
+       contourproperty.contourValues = NULL;
+//       contourproperty.isUpdate = NULL;
+}
+*/
+
+void svQDOTData::SaveToFile(char *outputfile, svIntArray clusterLayer, 
+                     int dimension, int clusterIndex)
+{
+  glyphSize = 0;
+
+  ofstream outf(outputfile);
+  
+  for(int i=0;i<seed_num;i++)
+  {
+      if(clusterLayer[i] == clusterIndex)
+      {
+          //cerr<<clusterIndex<<" "<<i<<endl;
+          int layer = i;
+          int s = glyph[layer].size();
+          for(int j=0; j<s; j++)
+          {
+                if(roiLabel[layer][j])
+                {
+                    if(dimension == 7)
+                    {
+                        outf << glyph[layer][j][0] << " "
+                             << glyph[layer][j][1] << " "
+                             << glyph[layer][j][2] << " ";
+                        outf <<dir[layer][j][0]<<" "
+                             <<dir[layer][j][1]<<" "
+                             <<dir[layer][j][2]<<" ";
+                        outf<<mag[layer][j]<<endl;
+		//	cerr<<glyph[layer][j][0]<<endl;
+                     }
+                     else if(dimension == 6)
+                     {
+                         outf << glyph[layer][j][0] << " "
+                              << glyph[layer][j][1] << " "
+                              << glyph[layer][j][2] << " ";
+                         outf <<dir[layer][j][0]<<" "
+                              <<dir[layer][j][1]<<" "
+                              <<dir[layer][j][2]<<endl;
+                     }
+                     else if(dimension == 3)
+                     {
+                         outf << glyph[layer][j][0] << " "
+                              << glyph[layer][j][1] << " "
+                              << glyph[layer][j][2] << endl;
+                     }
+                     
+                    glyphSize++;
+                }
+          }
+    }
+  }
+
+  outf.close();
+}
+
+
+void svQDOTData::GenerateCluster(char *clusterfile, char *immefile, bool isNormalize,
+                                 int dimension, svScalarArray clusterWeight,
+								  int numCluster)
+{
+     ifstream pFile(clusterfile);
+     if(pFile.peek() == std::ifstream::traits_type::eof())
+     {
+       pFile.close();
+     }
+     else
+     {
+        pFile.close();
+
+        svKmeans *clusterField = new svKmeans();
+
+        if(isNormalize)
+        {
+            clusterField->Normalization(clusterfile, immefile,dimension,
+                                          glyphSize, clusterWeight);
+            clusterField->ComputeClusters(immefile, clusterfile,dimension,
+                                          glyphSize, numCluster);
+        }
+       else
+        {
+            std::ifstream src(clusterfile, std::ios::binary);
+            std::ofstream dst(immefile, std::ios::binary);
+            dst << src.rdbuf();
+            clusterField->ComputeClusters(immefile, clusterfile,dimension,
+                                          glyphSize, numCluster);
+        }
+
+        delete clusterField;
+     }
+}
+
+void svQDOTData::SetClusterLabel(char *clusterfile, svIntArray clusterLayer, int clusterIndex)
+{
+        int max = maxClusterLabel;
+        ifstream infile(clusterfile);
+        for(int i=0;i<seed_num;i++)
+        {
+             if(clusterLayer[i] == clusterIndex)
+             {
+                int s = glyph[i].size();
+                for(int j=0;j<s;j++)
+                {
+                    if(roiLabel[i][j])
+                    {
+                         int cluster;
+                         infile>>cluster;
+                         clusterLabel[i][j] = cluster+maxClusterLabel+1;
+                         //ccluster[i][j] = -1;
+                         if(clusterLabel[i][j] > max) max = clusterLabel[i][j];
+                    }
+                   /* else
+                    {
+                         clusterLabel[i][j] = -1;
+                    }*/
+                }
+             }
+        }
+        infile.close();
+        maxClusterLabel = max;
+}
+
+void svQDOTData::ProcessClusterLabel(){
+    vector<int> ulabel;//unique cluster label
+    for(int i=0;i<seed_num;i++){
+         for(int j=0;j<glyph[i].size();j++){
+             bool flag = false;
+             for(int t=0;t<ulabel.size();t++){
+                   if(clusterLabel[i][j] == ulabel[t]){break;}
+             }
+             if(!flag&&clusterLabel[i][j]>=0)
+                  ulabel.push_back(clusterLabel[i][j]);
+         }
+    }
+    sort(ulabel.begin(), ulabel.end());
+    maxClusterLabel = ulabel.size()-1;
+    for(int i=0;i<seed_num;i++){
+         for(int j=0;j<glyph[i].size();j++){
+             int index;
+             for(int t=0;t<ulabel.size();t++){
+                   if(clusterLabel[i][j] == ulabel[t]){index=t;break;}
+             }
+             clusterLabel[i][j] = index;
+         }
+    }
+    ulabel.clear();
+}
+
+svVector3 svQDOTData::GetCenter(int index)
+{
+   svVector3 c;
+   c[0] = 0;
+   c[1] = 0;
+   c[2] = 0;
+
+   for(int i=0;i<glyph[index].size();i++)
+   {
+      c[0] = glyph[index][i][0]+c[0];
+      c[1] = glyph[index][i][1]+c[1];
+      c[2] = glyph[index][i][2]+c[2];
+   }
+
+   c[0] = c[0]/glyph[index].size();
+   c[1] = c[1]/glyph[index].size();
+   c[2] = c[2]/glyph[index].size();
+
+   return c;
+}
+svScalarArray *svQDOTData::GetMagProb(svScalar &level)
+{
+   svScalar max= -9e+9;
+   for(int i=0;i<seed_num;i++)
+   {
+     for(int j=0;j<glyph[i].size();j++)
+     {
+        if(exp[i][j] > max && coe[i][j]>0)
+           max = exp[i][j];
+     }
+   } 
+   level = max - 4;
+   int count[seed_num];
+   for(int i=0;i<seed_num;i++)
+   {
+     count[i] = 0;
+     for(int j=0;j<glyph[i].size();j++)
+     {
+           count[i]++;
+     }
+   }   
+   svScalarArray *prob = new svScalarArray[4];
+   for(int i=0;i<seed_num;i++)
+   {
+      prob[0].add(0);
+      prob[1].add(0);
+      prob[2].add(0);
+      prob[3].add(0);
+      for(int j=0;j<glyph[i].size();j++)
+      {
+         if(exp[i][j] > level&&coe[i][j]>0)
+         {
+            if(fabs(exp[i][j]-level-1)<1e-3)
+                 prob[3][i] = prob[3][i]+1;
+            if(fabs(exp[i][j]-level-2)<1e-3)
+                 prob[2][i] = prob[2][i]+1;
+            if(fabs(exp[i][j]-level-3)<1e-3)
+                 prob[1][i] = prob[1][i]+1;
+            if(fabs(exp[i][j]-level-4)<1e-3)
+                 prob[0][i] = prob[0][i]+1;
+         }
+      }
+      //prob[i] = prob[i]/ (svScalar)count[i];//cerr<<prob[i]<<endl;
+   }//cerr<<c<<endl;
+
+   level = level+1;
+   return prob;
+}
+
+void svQDOTData::GetBoundary(int index, svVector3 &l, svVector3 &r)
+{
+   l[0] = 9e+9;
+   l[1] = 9e+9;
+   l[2] = 9e+9;
+   r[0] = -9e+9;
+   r[1] = -9e+9;
+   r[2] = -9e+9;
+
+   for(int i=0;i<glyph[index].size();i++)
+   {
+       if(glyph[index][i][0] < l[0])l[0] = glyph[index][i][0];
+       if(glyph[index][i][1] < l[1])l[1] = glyph[index][i][1];
+       if(glyph[index][i][2] < l[2])l[2] = glyph[index][i][2];
+       if(glyph[index][i][0] > r[0])r[0] = glyph[index][i][0];
+       if(glyph[index][i][1] > r[1])r[1] = glyph[index][i][1];
+       if(glyph[index][i][2] > r[2])r[2] = glyph[index][i][2];
+   }
+}
+svQDOTData::~svQDOTData()
+{
+  clean();
+}
+
+void svQDOTData::clean(int j)
+{
+    glyph[j].free();
+    dir[j].free();
+    mag[j].free();
+    exp[j].free();
+    coe[j].free();
+    atom[j].free();
+    region[j].free();
+    clusterLabel[j].free();
+    roiLabel[j].free();
+    visibleLabel[j].free();
+}
+
+void svQDOTData::clean()
+{
+  visibleCluster.clear();
+  glyphSize = 0;
+
+  //entropy.free();
+
+  if (glyph != NULL) {
+    for (int i=0; i<seed_num; i++)  
+	glyph[i].free();
+    delete [] glyph;
+    glyph=NULL;
+  };
+
+  if (dir!=NULL) {
+    for(int i=0; i<seed_num; i++)
+      dir[i].free();
+    delete [] dir;
+    dir=NULL;
+  };
+  if (mag!=NULL) {
+    for(int i=0; i<seed_num; i++)
+      mag[i].free();
+    delete [] mag;
+    mag=NULL;
+  };
+  if (coe!=NULL) {
+    for(int i=0; i<seed_num; i++)
+     coe[i].free();
+    delete [] coe;
+    coe=NULL;
+  };
+  if (exp!=NULL) {
+    for(int i=0; i<seed_num; i++)
+     exp[i].free();
+    delete [] exp;
+    exp=NULL;
+  };
+  if (atom!=NULL) {
+    for(int i=0; i<seed_num; i++)
+     atom[i].free();
+    delete [] atom;
+    atom=NULL;
+  };
+  if (region!=NULL) {
+    for(int i=0; i<seed_num; i++)
+     region[i].free();
+    delete [] region;
+    region=NULL;
+  };
+  if (clusterLabel!=NULL) {
+    for(int i=0; i<seed_num; i++)
+      clusterLabel[i].free();
+    delete [] clusterLabel;
+    clusterLabel=NULL;
+  };
+  clusterLabelbymag.free();
+
+  if (roiLabel!=NULL) {
+    for(int i=0; i<seed_num; i++)
+      roiLabel[i].free();
+    delete [] roiLabel;
+    roiLabel=NULL;
+  };
+
+  if (visibleLabel!=NULL) {
+    for(int i=0; i<seed_num; i++)
+      visibleLabel[i].free();
+    delete [] visibleLabel;
+    visibleLabel=NULL;
+  };
+
+
+   sampleLabel.free();
+  
+
+
+ //delete [] fileDir;
+ //delete [] fileName1;
+ //delete [] fileName2;
+/*
+  if (glyphWidth != NULL) {
+    for (int i=0; i<seed_num; i++)  
+	glyphWidth [i].free();
+    delete [] glyphWidth;
+    glyphWidth=NULL;
+  }*/
+
+  }
+/*
+  if(contourproperty.contourValues!=NULL)
+  {
+       for(int i=0;i<contourproperty.seed_num;i++)
+      { 
+          contourproperty.contourValues[i].free();
+      }
+      delete [] contourproperty.contourValues;
+      contourproperty.contourValues = NULL;
+  }
+
+          contourproperty.isUpdate;
+
+  kmeansproperty.clusterLayer.free();
+  kmeansproperty.clusterWeight.free();*/
+}

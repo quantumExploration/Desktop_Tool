@@ -1,0 +1,819 @@
+#include "svImage.h"
+#include <fstream>
+#include <string.h>
+
+using namespace std;
+
+namespace __svl_lib {
+
+svImage::svImage(svQDOTData *d){
+  this->myData = d;
+  seed_num = 0;
+//  seed_num =  myData->GetSeed();
+
+  // pixelColors = new svVector3Array[seed_num];
+  // pixel = new svVector3Array[seed_num];
+  // mag = new svScalarArray[1];
+  // vel = new svVector3Array[1];
+  // roiLabel = new svIntArray[1];
+  // data = new svVector3Array[1];
+  // select_layer = -1;
+  // select_pixel = -1;
+  // decide_layer = -1;
+  // decide_pixel = -1;
+  // dataSize = 0;
+   segment = 10;
+
+  // lbbox = myData->GetLb();
+  // rbbox = myData->GetRb();
+
+  New();
+}
+
+svImage::svImage()
+{
+   seed_num = 1;
+
+   pixelColors = new svVector3Array[1];
+   pixel = new svVector3Array[1];
+   mag = new svScalarArray[1];
+   vel = new svVector3Array[1];
+   roiLabel = new svIntArray[1];
+   data = new svVector3Array[1];  
+   select_layer = -1;
+   select_pixel = -1;
+   decide_layer = -1;
+   decide_pixel = -1;
+   dataSize = 0;
+   segment = 10;
+}
+
+svImage::~svImage()
+{
+   cleanup();
+}
+void svImage::SetROI(svIntArray *label)
+{
+   for(int i=0;i<seed_num;i++)
+   {
+         for(int j=0;j<mag[i].size();j++)
+         {
+            roiLabel[i][j] = label[i][j];
+         }
+   }
+}
+void svImage::SetSideX(float x){sidex = x;sidey=(rbbox[1]-lbbox[1])/(rbbox[0]-lbbox[0])*x;}
+
+
+void svImage::New(){
+   cleanup();
+
+   seed_num = myData->GetSeed();//numPlane;
+
+   pixel = new svVector3Array[seed_num];
+   pixelColors = new svVector3Array[seed_num];
+
+   for(int i=0;i<seed_num;i++)
+   {
+      svVector3 pos;
+      pos[0]=0;pos[1]=0;pos[2]=0;
+      image_pos.add(pos);
+   }
+
+   select_layer = -1;
+   decide_layer = -1;
+   select_pixel = -1;
+   decide_pixel = -1;
+//   lbbox[0]=9e+9;lbbox[1]=9e+9;lbbox[2]=9e+9;
+//   rbbox[0]=-9e+9;rbbox[1]=-9e+9;rbbox[2]=-9e+9;
+   minD[0] = 9e+9;
+   minD[1] = 9e+9;
+
+//need to recover
+   //lbbox = myData->GetPLb();
+   //rbbox = myData->GetPRb();
+}
+void svImage::New(int numPlane)
+{
+   cleanup();
+
+   seed_num = numPlane;
+
+   data = new svVector3Array[seed_num];
+   roiLabel = new svIntArray[seed_num];
+   pixel = new svVector3Array[seed_num];
+   pixelColors = new svVector3Array[seed_num];
+   mag = new svScalarArray[seed_num];
+   
+   for(int i=0;i<seed_num;i++)
+   {
+      svVector3 pos;
+      pos[0]=0;pos[1]=0;pos[2]=0;
+      image_pos.add(pos);
+   }
+   dataSize = 0;
+   segment = 10;
+   select_layer = -1;
+   decide_layer = -1;
+   select_pixel = -1;
+   decide_pixel = -1;
+   lbbox[0]=9e+9;lbbox[1]=9e+9;lbbox[2]=9e+9;
+   rbbox[0]=-9e+9;rbbox[1]=-9e+9;rbbox[2]=-9e+9;
+   minD[0] = 9e+9;
+   minD[1] = 9e+9;
+}
+
+void svImage::SetData(char *infName, int seed)
+{
+   ifstream infile(infName);
+   int n;
+   infile>>n;
+   svVector3 prep;
+   for(int i=0;i<n;i++)
+   {
+       svVector3 p, v;
+       svScalar m;
+       infile>>p[0]>>p[1]>>p[2];
+       infile>>v[0]>>v[1]>>v[2];
+       infile>>m;
+       v.normalize();
+
+       if(i>0)
+       {
+          if(fabs(prep[0] - p[0])>0 && fabs(prep[0] - p[0])<minD[0] && fabs(prep[1]-p[1])<1e-3)
+          {
+             minD[0] = fabs(prep[0] - p[0]);
+          }
+          if(fabs(prep[1] - p[1])>0 && fabs(prep[1] - p[1])<minD[1])
+          {
+             minD[1] = fabs(prep[1] - p[1]);
+          }
+       }
+       prep = p;
+
+       data[seed].add(p);
+       mag[seed].add(m);
+       vel[seed].add(v);
+
+       if(p[0]>rbbox[0])rbbox[0] = p[0];
+       if(p[1]>rbbox[1])rbbox[1] = p[1];
+       if(p[2]>rbbox[2])rbbox[2] = p[2];
+       if(p[0]<lbbox[0])lbbox[0] = p[0];
+       if(p[1]<lbbox[1])lbbox[1] = p[1];
+       if(p[2]<lbbox[2])lbbox[2] = p[2];
+   }
+   infile.close();
+}
+
+struct Spin
+{
+        double px;
+        double py;
+        double pz;
+};
+
+bool Sort_Spin_X(const Spin &a, const Spin &b)
+{
+ if (fabs(a.py - b.py)>0.0001)
+ {
+   return (a.py<b.py);
+ }
+ else if (fabs(a.px - b.px)>0.0001)
+ {
+   return (a.px<b.px);
+ }
+
+ return 0;
+}
+
+
+void svImage::GeneratePixels()
+{
+   minD[0] = -1;
+   minD[1] = -1;
+   for(int i=0;i<seed_num;i++)
+   {
+       vector<Spin> spin;
+         for(int j=0;j<myData->GetSeed(i);j++)
+         {//recover
+              svVector3 p;// = myData->GetPixel(i,j);
+              Spin s; 
+              s.px=p[0];s.py=p[1];
+              spin.push_back(s);
+//cerr<<s.px<<" "<<s.py<<endl;
+         }
+       sort(spin.begin(),spin.end(),Sort_Spin_X);
+       for(int j=0;j<spin.size()-1;j++){
+//cerr<<spin[j].px<<" "<<spin[j].py<<endl;
+         if(spin[j+1].px > spin[j].px){
+          minD[0] = spin[j+1].px - spin[j].px;
+         }
+         if(spin[j+1].py > spin[j].py){
+          minD[1] = spin[j+1].py - spin[j].py;
+         }
+         if(minD[0]>0 && minD[1]>0) break;
+       }
+       spin.clear();
+       if(minD[0]>0 && minD[1]>0) break;
+   }
+
+  // cerr<<"min D"<<minD[0]<<" "<<minD[1]<<endl;
+
+   svVector3 white;
+   white[0] = 255;
+   white[1] = 255;
+   white[2] = 255;
+   int n = (rbbox[0] - lbbox[0])/minD[0]+1;
+   int m = (rbbox[1] - lbbox[1])/minD[1]+1;
+
+   for(int i=0;i<seed_num;i++)
+   {
+         for(int j=0;j<myData->GetSeed(i);j++)
+         {
+              svVector3 p;//recover
+              svVector3 data;// = myData->GetPixel(i,j);
+              p[0] = data[0] - lbbox[0];
+              p[1] = data[1] - lbbox[1];
+              p[2] = data[2] - lbbox[2];
+
+              //roiLabel[i].add(1);
+              pixel[i].add(p);
+              //pixelColors[i].add(white);
+         }
+
+         for(int j=0;j<n;j++)
+            for(int t=0;t<m;t++)
+              pixelColors[i].add(white);
+   }
+}
+
+void svImage::Reshape(float x, int rw, int rh, int rx, int ry)
+{
+//   this->segment = segment;
+   tranx = rx;
+   sidex = x;//110;//(rbbox[0]-lbbox[0]);
+   largeratio = 2.;
+   segment = rw/sidex;
+//(svScalar)w/(svScalar)segment;
+   svScalar ratio = (rbbox[1]-lbbox[1])/(rbbox[0]-lbbox[0]);
+   sidey = sidex * ratio;
+   trany = rh-ry-sidey;
+
+   segment = segment;// - 1;
+   SetPosition();
+}
+
+void svImage::SetPosition()
+{
+   int select_segment;// = select_layer/segment;
+
+   if(select_layer <0)
+       select_segment = -1;
+   else
+       select_segment = select_layer/segment;
+
+   int seg = 0;
+   float x = 0;
+   float y = 0;
+   float startx = 0;
+   float starty = 0;
+   if(select_layer >=0)// && select_layer < segment)
+   {
+     startx = startx - sidex;
+     if(select_layer<segment) starty = starty - sidey;
+     //starty = starty - sidey;
+     //x = x - sidex;
+     //y = y - sidey;
+   }
+   x = startx;
+   y = starty;
+   for(int i=0;i<seed_num;i++)
+   {
+      svVector3 p;
+      p[0] = x;
+      p[1] = y;
+      p[2] = 0;
+      image_pos[i] = p;//cerr<<segment<<endl;
+      if((i+1)%segment == 0)
+      {
+         if((seg+1) == select_segment)
+         {
+            y = y - sidey * largeratio;
+         }
+         else
+         {
+            y = y - sidey;
+         }
+         x = startx;
+         seg++; 
+      }
+      else
+      {
+         if(i == select_layer)
+         {
+            x = x + sidex * largeratio;
+         }
+         else
+         {
+            x = x + sidex;
+         }
+      }
+   
+//   if(select_layer >= 0 )
+//  {
+       svScalar ratio;
+      if(i==select_layer)
+            ratio = (rbbox[1]-lbbox[1])/(sidey * largeratio);  
+      else 
+            ratio = (rbbox[1]-lbbox[1])/sidey;      
+      for(int j=0;j<myData->GetSeed(i);j++)
+      {//cerr<<j<<endl;//recover
+         svVector3 data;// = myData->GetPixel(i,j);
+      //int i = select_layer;
+         pixel[i][j][0] = data[0] - lbbox[0];
+         pixel[i][j][1] = data[1] - lbbox[1];
+         pixel[i][j][2] = data[2] - lbbox[2];
+
+         pixel[i][j][0] = pixel[i][j][0]/ratio;
+         pixel[i][j][1] = pixel[i][j][1]/ratio;
+
+         pixel[i][j][0] = pixel[i][j][0] + image_pos[i][0] + tranx;
+         pixel[i][j][1] = pixel[i][j][1] + image_pos[i][1] + trany;
+      }
+   }
+
+//  }
+}
+
+void svImage::SetMinD()
+{
+  pixelMinD[0] = sidex/(rbbox[0]-lbbox[0]) * minD[0];
+  pixelMinD[1] = sidey/(rbbox[1]-lbbox[1]) * minD[1];
+}
+
+void svImage::GenerateColors(char *inputfile1, char *inputfile2, float cutoff, char *output)
+{
+//   char path[]="LD_LIBRARY_PATH=/home/davinci/Documents/MATLAB/runtime/glnxa64/:/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/libs/hybridImage/:/home/davinci/Documents/MATLAB/sys/os/glnxa64/:/home/davinci/Documents/MATLAB/bin/glnxa64/";
+
+   char *exe = new char[2048];
+   sprintf(exe,"%s/hybridImage %s %s %f %s",  BIN_DIR, inputfile1, inputfile2, cutoff, output);
+
+ system(exe);
+
+ delete [] exe;
+}
+
+void svImage::SetColors(char *file)
+{
+   ifstream infile(file);
+
+   int n;
+   infile>>n;
+   int dataCount = 0;
+   for(int i=0;i<n;i++)
+   {
+      int s1, s2;
+      infile>>s1>>s2;
+      dataCount = 0;
+      for(int j=0;j<s1;j++)
+      {
+             for(int t=0;t<s2;t++)
+             {//cerr<<i<<" "<<dataCount<<" "<<pixelColors[i].size()<<endl;
+                infile>>pixelColors[i][dataCount][0]
+                      >>pixelColors[i][dataCount][1]
+                      >>pixelColors[i][dataCount][2];
+//if(i==0)cerr<<pixelColors[i][dataCount][0]<<" "<<pixelColors[i][dataCount][1]<<" "<<pixelColors[i][dataCount][2]<<endl;
+                 dataCount++;
+             }
+      }
+   }
+
+   infile.close();
+}
+
+void svImage::RenderBoundary()
+{
+   glEnable(GL_BLEND);
+   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+   glPushMatrix();
+   svScalar x, y;
+   x = 0;y=0;
+   glTranslatef(tranx, trany,0);
+/*   for(int i=0;i<seed_num;i++)
+   {
+      glColor4f(0,0,0,0.5);
+      glBegin(GL_LINE_LOOP);
+      glVertex2f(x,y);
+      glVertex2f(x+sidex,y);
+      glVertex2f(x+sidex,y+sidey);
+      glVertex2f(x,y+sidey);
+      glEnd(); 
+
+      glColor4f(1,1,1,0.5);
+      glBegin(GL_QUADS);
+      glVertex2f(x,y);
+      glVertex2f(x+sidex,y);
+      glVertex2f(x+sidex,y+sidey);
+      glVertex2f(x,y+sidey);
+      glEnd();
+
+      if((i+1)%segment == 0)
+      {
+          x = 0;
+          y = y - sidey;
+      }
+      else
+      {
+          x = x + sidex;
+      }
+   }
+*/
+   for(int i=0;i<seed_num;i++)
+   {
+      if(select_layer == i)
+      {
+           x = sidex * largeratio;
+           y = sidey * largeratio;
+      }
+      else
+      {
+           x = sidex;
+           y = sidey;
+      }
+      if((i+1)%10 == 0)
+      {
+         glLineWidth(4.);
+         glColor3f(37./255., 52./255., 148./255.);
+      }
+      else
+      {
+         glLineWidth(1.);
+         glColor4f(0,0,0,0.5);
+      }
+
+      glColor4f(1,1,1,0.5);
+      glBegin(GL_QUADS);
+      glVertex2f(image_pos[i][0],image_pos[i][1]);
+      glVertex2f(image_pos[i][0]+x, image_pos[i][1]);
+      glVertex2f(image_pos[i][0]+x, image_pos[i][1]+y);
+      glVertex2f(image_pos[i][0], image_pos[i][1]+y);
+      glEnd();
+
+
+      glBegin(GL_LINE_LOOP);
+      glVertex2f(image_pos[i][0],image_pos[i][1]);
+      glVertex2f(image_pos[i][0]+x, image_pos[i][1]);
+      glVertex2f(image_pos[i][0]+x, image_pos[i][1]+y);
+      glVertex2f(image_pos[i][0], image_pos[i][1]+y);
+      glEnd(); 
+
+
+  }
+   glLineWidth(1.);
+   glPopMatrix();
+}
+
+
+void svImage::RenderColors(svVector4Array *color)
+{
+   glEnable(GL_BLEND);
+   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+   glPushMatrix();
+   svScalar x, y;
+   x = 0;y=0;
+   glTranslatef(tranx, trany,0);
+   for(int i=0;i<seed_num;i++)
+   {
+     for(int j=0;j<pixel[i].size()-1;j++)
+     {//recover
+        svVector3 data1;//=myData->GetPixel(i,j);
+        svVector3 data2;//=myData->GetPixel(i,j+1);
+        if(fabs(pixel[i][j][1]-pixel[i][j+1][1])<1e-3)
+        {
+           glColor3f(color[i][j][0]/255.,color[i][j][1]/255.,color[i][j][2]/255.);
+           glBegin(GL_QUADS);
+           svVector3 p1, p2;
+           svScalar ratio = sidex/(rbbox[0]-lbbox[0]);
+           p1 = (data1 - lbbox)*ratio+ image_pos[i];
+           p2 = (data2 - lbbox)*ratio+ image_pos[i];
+           glVertex2f(p1[0], p1[1]);
+           glVertex2f(p2[0], p1[1]);
+           glVertex2f(p2[0], p1[1]+(p2[0]-p1[0])/2.);//hard code!!!
+           glVertex2f(p1[0], p1[1]+(p2[0]-p1[0])/2.); 
+           glEnd(); 
+        }
+     }
+  }
+   glLineWidth(1.);
+   glPopMatrix();   
+}
+
+void svImage::RenderColors()
+{
+  int n = (rbbox[0] - lbbox[0])/minD[0]+1;
+  int m = (rbbox[1] - lbbox[1])/minD[1]+1;
+
+  double x = 0;
+  double y = 0;
+  glPushMatrix();
+  //glTranslatef(tranx, trany,0);
+  svScalar ratio = sidex/(rbbox[0] - lbbox[0]);
+  for(int i=0;i<seed_num;i++)
+  {
+     if(select_layer == i)
+     {
+         ratio =  sidex/(rbbox[0] - lbbox[0]) * largeratio;
+     }
+     else
+     {
+         ratio = sidex/(rbbox[0] - lbbox[0]) ;
+     }
+
+     x = 0.;
+     y = 0.;
+     glPushMatrix();
+     int count = 0;
+//     glTranslatef(image_pos[i][0], image_pos[i][1], 0);
+//     glScalef(ratio, ratio, 1);
+
+     svScalar xD, yD;
+
+     if(i==select_layer)
+     {
+           xD = pixelMinD[0] * largeratio;
+           yD = pixelMinD[1] * largeratio;
+     }
+     else
+     {
+           xD = pixelMinD[0];
+           yD = pixelMinD[1];
+     }
+
+     for(int j=0;j<myData->GetSeed(i);j++)
+     {
+         svVector3 p;//recover
+         svVector3 data;// = myData->GetPixel(i,j);
+         p = data;// - lbbox;
+         int xindex = (p[0] - lbbox[0])/minD[0];
+         int yindex = (p[1] - lbbox[1])/minD[1];
+
+          int index = xindex + yindex * n;
+          if(myData->GetVisibleLabel(i,j))//roiLabel[i][j])
+          {
+             glColor4f(pixelColors[i][index][0]/255.,
+                       pixelColors[i][index][1]/255.,
+                       pixelColors[i][index][2]/255.,1.);
+          }
+          else
+         {
+             glColor4f(pixelColors[i][index][0]/255.,
+                       pixelColors[i][index][1]/255.,
+                       pixelColors[i][index][2]/255.,0.3);
+          }
+
+//cerr<<pixel[i][j][0]<<" "<<pixelColors[i][index][0]/255.<<endl;
+         glBegin(GL_QUADS);
+         glVertex2f(pixel[i][j][0], pixel[i][j][1]);
+         glVertex2f(pixel[i][j][0]+xD, pixel[i][j][1]);
+         glVertex2f(pixel[i][j][0]+xD, pixel[i][j][1]+yD);
+         glVertex2f(pixel[i][j][0], pixel[i][j][1]+yD);
+         glEnd();          
+     }
+     
+  /*   for(int j=0;j<m;j++)
+     {
+         for(int t=0;t<n;t++)
+         {
+            glColor3f(pixelColors[i][count][0]/255.,pixelColors[i][count][1]/255.,pixelColors[i][count][2]/255.);
+            glBegin(GL_QUADS);
+            glVertex2f(x,y);
+            glVertex2f(x+minD[0], y);
+            glVertex2f(x+minD[0], y+minD[1]);
+            glVertex2f(x,y+minD[1]);
+            glEnd();
+            count++;
+            x = x + minD[0];
+          //  cerr<<x<<" "<<y<<endl;
+         }
+         x = 0;
+         y = y + minD[1];
+     }
+*/
+     glPopMatrix();
+  }
+  glPopMatrix();
+}
+
+void svImage::RenderPixel()
+{
+      if(select_layer >= 0 && select_pixel >=0 )
+      {
+        svScalar x=60;
+        svScalar y=15;
+        svScalar y1=5;
+
+        glColor4f(1,1,1,1);
+        glBegin(GL_QUADS);
+        glVertex2f(pixel[select_layer][select_pixel][0],
+                   pixel[select_layer][select_pixel][1]-y1);
+        glVertex2f(pixel[select_layer][select_pixel][0]+x,
+                   pixel[select_layer][select_pixel][1]-y1);
+        glVertex2f(pixel[select_layer][select_pixel][0]+x,
+                   pixel[select_layer][select_pixel][1]+y);
+        glVertex2f(pixel[select_layer][select_pixel][0],
+                   pixel[select_layer][select_pixel][1]+y);
+        glEnd();
+
+        glColor4f(0,0,0,1);
+        glPointSize(2.);
+        glBegin(GL_POINTS);
+        glEnd();
+        glPointSize(1.);
+
+        svScalar mag=myData->GetMag(select_layer, select_pixel);
+        char str[20];
+        sprintf(str, "%6.2e", mag);
+        glRasterPos2f(pixel[select_layer][select_pixel][0],
+                  pixel[select_layer][select_pixel][1]);
+        for(int j=0;j<strlen(str);j++)
+            glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, str[j]);
+      }
+}
+
+
+void svImage::SaveColortoFile(char *file, svVector4Array *color)
+{
+  ofstream outfile(file);
+
+  int n = (rbbox[0] - lbbox[0])/minD[0]+1;
+  int m = (rbbox[1] - lbbox[1])/minD[1]+1;
+
+  outfile<<seed_num<<endl;
+
+  svVector4 white;
+  white[0]=255;white[1]=255;white[2]=255;white[3]=255;
+  svVector4Array *tmpColor = new svVector4Array[seed_num];
+
+  for(int i=0;i<seed_num;i++)
+  {//cerr<<i<<endl;
+     outfile<<m<<" "<<n<<endl;
+     for(int j=0;j<m;j++)
+     {
+         for(int t=0;t<n;t++)
+         {
+            tmpColor[i].add(white);
+         }
+     }
+     for(int j=0;j<myData->GetSeed(i);j++)
+     {//recover
+         svVector3 p; svVector3 data;//= myData->GetPixel(i,j);
+         p = data - lbbox;
+         int x = (p[0] - lbbox[0])/minD[0];
+         int y = (p[1] - lbbox[1])/minD[1];
+         tmpColor[i][x + y * n ]=color[i][j]*255.;
+     }
+
+     for(int j=0;j<tmpColor[i].size();j++)
+    {
+        outfile<<(int)tmpColor[i][j][0]<<" "<<(int)tmpColor[i][j][1]<<" "<<(int)tmpColor[i][j][2]<<endl;
+    }
+  }
+  outfile.close(); 
+
+  for(int i=0;i<seed_num;i++)
+      tmpColor[i].free();
+  delete [] tmpColor;
+}
+/*
+void svImage::Move(int mousex, int mousey)
+{
+  mousex = mousex - tranx;
+  mousey = mousey - trany;
+
+  svScalar x,y;
+
+  int previous_layer = select_layer;
+  bool flag = false;
+
+  for(int i=0;i<seed_num;i++)
+  {
+     if(select_layer == i)
+       {
+          x = sidex * largeratio;
+          y = sidey * largeratio;
+       }
+       else
+       {
+          x = sidex ;
+          y = sidey ;
+       }
+
+       if(mousex >= image_pos[i][0] && mousex <= image_pos[i][0]+x
+       && mousey >= image_pos[i][1] && mousey <= image_pos[i][1]+y)
+       {
+           flag = true;
+           select_layer = i;
+           break;
+       }
+  }
+
+  if(!flag)
+  {
+     select_layer = -1;
+  }
+  else
+  {
+     select_pixel = -1;
+  }
+}
+*/
+void svImage::getImageSize(int &lbwidth, int &lbheight, 
+                           int &rbwidth, int &rbheight)
+{
+   lbwidth = image_pos[0][0];
+   rbwidth = image_pos[0][0];
+   lbheight = image_pos[0][1];
+   rbheight = image_pos[0][1];
+
+   //if(select_layer>=0 && select_layer<segment)
+   //{
+    //  rbheight = rbheight + sidey;
+   //}
+
+   for(int i=0;i<seed_num;i++){
+     if(image_pos[i][0] > rbwidth){
+      rbwidth = image_pos[i][0];
+     }
+     if(image_pos[i][1] < lbheight){
+        lbheight = image_pos[i][1];
+     }
+   }
+
+   // if(select_layer>=0){// && select_layer<segment){
+     lbwidth = lbwidth - sidex * largeratio + sidex;
+     rbwidth = rbwidth + sidex;
+     rbheight = rbheight + sidey;// + sidey * largeratio - sidey;
+     lbheight = lbheight -( sidey * largeratio - sidey);
+   // }
+   // else{
+     //lbwidth = lbwidth - sidex * largeratio + sidex;
+     //rbwidth = rbwidth + sidex;
+     //rbheight = rbheight + sidey;
+     //lbheight = lbheight + sidey * largeratio - sidey;
+    //}
+/*
+   bool select;
+   for(int i=1;i<seed_num;i++)
+   {
+       if(image_pos[i-1][1] > image_pos[i][1])
+       {
+           if(rbwidth < image_pos[i-1][0])
+           {
+               rbwidth = image_pos[i-1][0]+sidex;
+           }
+           else if(select_layer == i)
+           {
+               select = true;
+           }
+           lbheight = image_pos[i][1];
+       }
+   }
+   if(select)
+   {
+       rbwidth = rbwidth + sidex * largeratio;
+       lbheight = lbheight - (sidex * largeratio ); 
+   }
+*/
+   lbwidth = lbwidth + tranx;
+   rbwidth = rbwidth + tranx;
+   lbheight = lbheight + trany;
+   rbheight = rbheight + trany;
+}
+void svImage::cleanup()
+{
+ if(seed_num >0){
+   for(int i=0;i<seed_num;i++)
+   {
+  //      roiLabel[i].free();
+        pixelColors[i].free();
+ //       data[i].free();
+        pixel[i].free();
+  //      mag[i].free();
+  //      vel[i].free();
+   }
+   delete [] roiLabel;
+   delete [] data;
+   delete [] pixelColors;
+   delete [] pixel;
+   delete [] mag;
+   delete [] vel;
+   image_pos.free();
+
+   dataSize = 0;
+ }
+}
+
+}
+

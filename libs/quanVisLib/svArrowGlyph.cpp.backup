@@ -1,0 +1,510 @@
+#include <GL/glew.h>
+
+#include "svArrowGlyph.h"
+
+#ifdef __APPLE__
+#include <GLUT/glut.h>
+#else
+#include <GL/glut.h>
+#endif
+
+#include <iostream>
+#include <fstream>
+#include "svException.h"
+#include "svUtil.h"
+
+using namespace std;
+
+namespace __svl_lib{
+
+svArrowGlyph::svArrowGlyph(svQDOTData *d):svGlyph(d) //svVectorField *f):svGlyph()
+{
+  arrow_vertices = new VBOVertex[1];
+  arrow_indices = new GLuint[1];
+  arrow_base_vertices = new VBOVertex[1];
+  arrow_base_indices = new GLuint[1];
+  tube_vertices = new VBOVertex[1];
+  legend_vertices = new VBOVertex[1];
+  tube_indices = new GLuint[1];
+  tube_base_vertices = new VBOVertex[1];
+  tube_base_indices = new GLuint[1];
+  //arrow_indices_size = 0;
+}
+void svArrowGlyph::Clean()
+{
+     cleanup();
+}
+void svArrowGlyph::CleanData()
+{
+      delete [] arrow_vertices;
+      delete [] arrow_base_vertices;
+      delete [] legend_vertices;
+      delete [] tube_vertices;
+      delete [] tube_base_vertices;
+}
+void svArrowGlyph::CleanIndex()
+{
+     delete [] arrow_indices;
+     delete [] tube_indices;
+     delete [] arrow_base_indices;
+     delete [] tube_base_indices;
+}
+void svArrowGlyph::Update()
+{
+     UpdateData();
+     UpdateIndex();
+}
+void svArrowGlyph::UpdateData()
+{
+     //arrow_indices_size = dataSize*3*ARROWSLICE;
+     //tube_indices_size = dataSize * 4 * CYLINDERSLICE; 
+
+     CleanData();
+
+    int dataSize = 0;
+    for(int i=0;i<seed_num;i++)
+        for(int j=0;j<myData->GetSeed(i);j++)
+              dataSize++;
+
+     cerr<<"dataSize "<<dataSize<<endl;
+     arrow_vertices_size = dataSize*(ARROWSLICE+1);
+     tube_vertices_size = dataSize*(CYLINDERSLICE+1)*2;
+     arrow_base_vertices_size = dataSize*(ARROWSLICE+1);
+     tube_base_vertices_size = dataSize*(CYLINDERSLICE+1+1);
+
+     arrow_vertices = new VBOVertex[arrow_vertices_size];//svVector3Array[seed_num];
+     tube_vertices = new VBOVertex[tube_vertices_size];//svVector3Array[seed_num];
+     arrow_base_vertices = new VBOVertex[arrow_base_vertices_size];//svVector3Array[seed_num];
+     tube_base_vertices = new VBOVertex[tube_base_vertices_size];//svVector3Array[seed_num];
+     legend_vertices = new VBOVertex[dataSize*2];//svVector3Array[seed_num];
+     //arrow_indices = new GLuint[dataSize*3*ARROWSLICE];//svIntArray[seed_num];
+     //tube_indices = new GLuint[dataSize*4*CYLINDERSLICE];//svIntArray[seed_num];
+}
+
+void svArrowGlyph::UpdateIndex()
+{
+     CleanIndex();
+
+     int count = 0;
+     for(int i=0;i<seed_num;i++)
+     {
+          for(int j=0;j<myData->GetSeed(i);j++)
+          {
+                   if(myData->GetVisibleLabel(i,j))
+                          count++;
+          } 
+     }
+     //cerr<<count<<endl;
+     arrow_indices_size = count*3*ARROWSLICE;
+     tube_indices_size = count*4*CYLINDERSLICE;
+     arrow_base_indices_size = count*3*ARROWSLICE;
+     tube_base_indices_size = count*3*CYLINDERSLICE;
+     arrow_indices = new GLuint[arrow_indices_size];
+     tube_indices = new GLuint[tube_indices_size];
+     arrow_base_indices = new GLuint[arrow_base_indices_size];
+     tube_base_indices = new GLuint[tube_base_indices_size];
+}
+
+void svArrowGlyph::UpdateIndex(int region)
+{
+     CleanIndex();
+
+     int count = 0;
+     for(int i=0;i<seed_num;i++)
+     {
+          for(int j=0;j<myData->GetSeed(i);j++)
+          {
+                   if(myData->GetVisibleLabel(i,j) && myData->GetRegion(i,j)==region)
+                          count++;
+          } 
+     }
+     cerr<<"updateindex "<<count<<endl;
+     arrow_indices_size = count*3*ARROWSLICE;
+cerr<<arrow_indices_size<<endl;
+     tube_indices_size = count*4*CYLINDERSLICE;
+     arrow_base_indices_size = count*3*ARROWSLICE;
+     tube_base_indices_size = count*3*CYLINDERSLICE;
+     arrow_indices = new GLuint[arrow_indices_size];
+     tube_indices = new GLuint[tube_indices_size];
+     arrow_base_indices = new GLuint[arrow_base_indices_size];
+     tube_base_indices = new GLuint[tube_base_indices_size];
+}
+
+void svArrowGlyph::UpdateIndexVBO()
+{
+   if(glIsBuffer(ARROW_IVBO))
+           glDeleteBuffers(1, &ARROW_IVBO);
+   glGenBuffers(1, &ARROW_IVBO);
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ARROW_IVBO);
+   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint)*arrow_indices_size,
+                arrow_indices,GL_DYNAMIC_DRAW);
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
+
+   if(glIsBuffer(ARROW_BASE_IVBO))
+           glDeleteBuffers(1, &ARROW_BASE_IVBO);
+   glGenBuffers(1, &ARROW_BASE_IVBO);
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ARROW_BASE_IVBO);
+   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint)*arrow_base_indices_size,
+                arrow_base_indices,GL_DYNAMIC_DRAW);
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
+
+
+   if(glIsBuffer(TUBE_IVBO))
+           glDeleteBuffers(1, &TUBE_IVBO); 
+   glGenBuffers(1, &TUBE_IVBO);
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, TUBE_IVBO);
+   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint)*tube_indices_size,
+                tube_indices,GL_DYNAMIC_DRAW);
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
+
+   if(glIsBuffer(TUBE_BASE_IVBO))
+           glDeleteBuffers(1, &TUBE_BASE_IVBO);
+   glGenBuffers(1, &TUBE_BASE_IVBO);
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, TUBE_BASE_IVBO);
+   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint)*tube_base_indices_size,
+                tube_base_indices,GL_DYNAMIC_DRAW);
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
+
+}
+
+void svArrowGlyph::UpdateArrowVBO()
+{
+cerr<<"update arrow vbo"<<endl;
+   if(glIsBuffer(ARROW_VBO))
+           glDeleteBuffers(1, &ARROW_VBO);
+   glGenBuffers(1, &ARROW_VBO);
+   glBindBuffer(GL_ARRAY_BUFFER, ARROW_VBO);
+   glBufferData(GL_ARRAY_BUFFER, sizeof(VBOVertex)*arrow_vertices_size,
+                arrow_vertices,GL_DYNAMIC_DRAW);
+   glBindBuffer(GL_ARRAY_BUFFER,0);
+cerr<<"arrow vbo"<<endl;
+   if(glIsBuffer(ARROW_BASE_VBO))
+           glDeleteBuffers(1, &ARROW_BASE_VBO);
+   glGenBuffers(1, &ARROW_BASE_VBO);
+   glBindBuffer(GL_ARRAY_BUFFER, ARROW_BASE_VBO);
+   glBufferData(GL_ARRAY_BUFFER, sizeof(VBOVertex)*arrow_base_vertices_size,
+                arrow_base_vertices,GL_DYNAMIC_DRAW);
+   glBindBuffer(GL_ARRAY_BUFFER,0);
+
+}
+
+void svArrowGlyph::UpdateTubeVBO()
+{
+    if(glIsBuffer(TUBE_VBO)){
+          glDeleteBuffers(1,&TUBE_VBO);
+   }
+   glGenBuffers(1, &TUBE_VBO);
+   glBindBuffer(GL_ARRAY_BUFFER, TUBE_VBO);
+   glBufferData(GL_ARRAY_BUFFER, sizeof(VBOVertex)*tube_vertices_size,
+                tube_vertices,GL_DYNAMIC_DRAW);
+   glBindBuffer(GL_ARRAY_BUFFER,0);
+
+    if(glIsBuffer(TUBE_BASE_VBO))
+          glDeleteBuffers(1,&TUBE_BASE_VBO);
+   glGenBuffers(1, &TUBE_BASE_VBO);
+   glBindBuffer(GL_ARRAY_BUFFER, TUBE_BASE_VBO);
+   glBufferData(GL_ARRAY_BUFFER, sizeof(VBOVertex)*tube_base_vertices_size,
+                tube_base_vertices,GL_DYNAMIC_DRAW);
+   glBindBuffer(GL_ARRAY_BUFFER,0);
+}
+
+void svArrowGlyph::GenerateVBO()
+{
+//   arrow_indices_size = dataSize*3*ARROWSLICE;
+//   int num =dataSize*(ARROWSLICE+1);
+
+   glGenBuffers(1, &ARROW_VBO);
+   glBindBuffer(GL_ARRAY_BUFFER, ARROW_VBO);
+   glBufferData(GL_ARRAY_BUFFER, sizeof(VBOVertex)*arrow_vertices_size,
+                arrow_vertices,GL_DYNAMIC_DRAW);
+   glBindBuffer(GL_ARRAY_BUFFER,0);
+
+   glGenBuffers(1, &ARROW_IVBO);
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ARROW_IVBO);
+   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint)*arrow_indices_size,
+                arrow_indices,GL_DYNAMIC_DRAW);
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
+
+   glGenBuffers(1, &ARROW_BASE_VBO);
+   glBindBuffer(GL_ARRAY_BUFFER, ARROW_BASE_VBO);
+   glBufferData(GL_ARRAY_BUFFER, sizeof(VBOVertex)*arrow_base_vertices_size,
+                arrow_base_vertices,GL_DYNAMIC_DRAW);
+   glBindBuffer(GL_ARRAY_BUFFER,0);
+
+   glGenBuffers(1, &ARROW_BASE_IVBO);
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ARROW_BASE_IVBO);
+   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint)*arrow_base_indices_size,
+                arrow_base_indices,GL_DYNAMIC_DRAW);
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
+
+   glGenBuffers(1, &TUBE_VBO);
+   glBindBuffer(GL_ARRAY_BUFFER, TUBE_VBO);
+   glBufferData(GL_ARRAY_BUFFER, sizeof(VBOVertex)*tube_vertices_size,
+                tube_vertices,GL_DYNAMIC_DRAW);
+   glBindBuffer(GL_ARRAY_BUFFER,0);
+
+   glGenBuffers(1, &TUBE_IVBO);
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, TUBE_IVBO);
+   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint)*tube_indices_size,
+                tube_indices,GL_DYNAMIC_DRAW);
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
+
+   glGenBuffers(1, &TUBE_BASE_VBO);
+   glBindBuffer(GL_ARRAY_BUFFER, TUBE_BASE_VBO);
+   glBufferData(GL_ARRAY_BUFFER, sizeof(VBOVertex)*tube_base_vertices_size,
+                tube_base_vertices,GL_DYNAMIC_DRAW);
+   glBindBuffer(GL_ARRAY_BUFFER,0);
+
+   glGenBuffers(1, &TUBE_BASE_IVBO);
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, TUBE_BASE_IVBO);
+   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint)*tube_base_indices_size,
+                tube_base_indices,GL_DYNAMIC_DRAW);
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
+}
+void svArrowGlyph::RenderVBO()
+{
+   glBindBuffer(GL_ARRAY_BUFFER, ARROW_VBO);
+   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ARROW_IVBO);
+
+   glEnableClientState(GL_VERTEX_ARRAY);
+   glEnableClientState(GL_NORMAL_ARRAY);
+   glEnableClientState(GL_COLOR_ARRAY);
+
+   glVertexPointer(3, GL_FLOAT, sizeof(VBOVertex), (char*)NULL+0);
+   glNormalPointer(GL_FLOAT, sizeof(VBOVertex), (char*)NULL+sizeof(float)*3);
+   glColorPointer(4, GL_FLOAT, sizeof(VBOVertex),(char*)NULL+sizeof(float)*6);
+
+   glDrawElements(GL_TRIANGLES, arrow_indices_size, GL_UNSIGNED_INT,NULL);
+
+//   glBindBuffer(GL_ARRAY_BUFFER, 0);
+//   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+//   glDisableClientState(GL_VERTEX_ARRAY);
+//   glDisableClientState(GL_NORMAL_ARRAY);
+//   glDisableClientState(GL_COLOR_ARRAY);
+
+   glBindBuffer(GL_ARRAY_BUFFER, ARROW_BASE_VBO);
+   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ARROW_BASE_IVBO);
+
+   glVertexPointer(3, GL_FLOAT, sizeof(VBOVertex), (char*)NULL+0);
+   glNormalPointer(GL_FLOAT, sizeof(VBOVertex), (char*)NULL+sizeof(float)*3);
+   glColorPointer(4, GL_FLOAT, sizeof(VBOVertex),(char*)NULL+sizeof(float)*6);
+
+   glDrawElements(GL_TRIANGLES, arrow_base_indices_size, GL_UNSIGNED_INT,NULL);
+
+//========================================
+
+   glBindBuffer(GL_ARRAY_BUFFER, TUBE_VBO);
+   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, TUBE_IVBO);
+
+   glVertexPointer(3, GL_FLOAT, sizeof(VBOVertex), (char*)NULL+0);
+   glNormalPointer(GL_FLOAT, sizeof(VBOVertex), (char*)NULL+sizeof(float)*3);
+   glColorPointer(4, GL_FLOAT, sizeof(VBOVertex),(char*)NULL+sizeof(float)*6);
+
+   glDrawElements(GL_QUADS, tube_indices_size, GL_UNSIGNED_INT,NULL);
+
+   glBindBuffer(GL_ARRAY_BUFFER, TUBE_BASE_VBO);
+   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, TUBE_BASE_IVBO);
+
+   glVertexPointer(3, GL_FLOAT, sizeof(VBOVertex), (char*)NULL+0);
+   glNormalPointer(GL_FLOAT, sizeof(VBOVertex), (char*)NULL+sizeof(float)*3);
+   glColorPointer(4, GL_FLOAT, sizeof(VBOVertex),(char*)NULL+sizeof(float)*6);
+
+   glDrawElements(GL_TRIANGLES, tube_base_indices_size, GL_UNSIGNED_INT,NULL);
+
+//===============================
+
+   glBindBuffer(GL_ARRAY_BUFFER, 0);
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+   glDisableClientState(GL_VERTEX_ARRAY);
+   glDisableClientState(GL_NORMAL_ARRAY);
+   glDisableClientState(GL_COLOR_ARRAY);
+
+}
+
+void svArrowGlyph::Generate()
+{
+
+}
+
+void svArrowGlyph::Render()
+{
+    
+}
+
+svScalar svArrowGlyph::Mouse(int x, int y, GLfloat *tm, svScalar currentDistance)
+{
+cerr<<"start selection"<<endl;
+   int count = 0;
+   svScalar minDistance = 9e+9;
+   for(int i=0;i<seed_num;i++)
+   {
+       for(int j=0;j<myData->GetSeed(i);j++)
+       {
+            if(myData->GetVisibleLabel(i,j))//visibleLabel[i][j])
+            {
+                  svVector3 newGlyph = getTransform(myData->GetGlyph(i,j), tm);
+                  svVector3 arrow;
+                  arrow[0] = arrow_vertices[count*(ARROWSLICE+1)].pos[0];
+                  arrow[1] = arrow_vertices[count*(ARROWSLICE+1)].pos[1];
+                  arrow[2] = arrow_vertices[count*(ARROWSLICE+1)].pos[2];
+                  svVector3 newArrow = getTransform(arrow, tm);
+                  svVector3 projectGlyph = getProject(newGlyph);
+                  svVector3 projectArrow = getProject(newArrow);
+                  svVector3 projectV = svGetPerpendicularVector2D(projectArrow-projectGlyph); 
+                  svVector3 newV = getUnProject(projectV);
+                  svVector3 newP1 = newGlyph + newV * glyphRadius;
+                  
+                  count++;
+            }  
+       }
+   } 
+cerr<<"end"<<endl;
+   return minDistance;
+}
+
+void svArrowGlyph::Mouse(int x, int y, svVector3 eye, float near, GLfloat *tm, svScalar scale, int &layer, int &data)
+{
+cerr<<"========selection==========="<<endl;
+    svVector3 rayPos;
+    svVector3 rayDir;
+
+    getRay(x, y, eye, rayDir);
+    rayPos = eye;
+    svVector3 newRayPos;
+    svVector3 newRayDir;
+
+    getNewRay(rayPos, rayDir, tm, newRayPos, newRayDir);
+
+    vector<svVector3> Arrow;
+    svVector3 newLb = lbbox;// * scale;
+    svVector3 newRb = rbbox;// * scale;
+    svVector3 *intersectionP = new svVector3[2];
+//    getLineBox(newRayPos, newRayDir, newLb, newRb, intersectionP);
+//  cerr<<intersectionP[0][0]<<" "<<intersectionP[0][1]<<" "<<intersectionP[0][2]<<endl;
+//  cerr<<intersectionP[1][0]<<" "<<intersectionP[1][1]<<" "<<intersectionP[1][2]<<endl; 
+    vector<int> layerIndex;
+    vector<int> dataIndex;
+    vector<svScalar> distance;
+    int count =0;
+    for(int i=0;i<seed_num;i++)
+    {
+        for(int j=0;j<myData->GetSeed(i);j++)
+        {//cerr<<i<<" "<<j<<endl;
+           bool inside = false;
+           if(myData->GetVisibleLabel(i,j))
+           {
+               svVector3 arrow;
+               arrow[0] = arrow_vertices[count*(ARROWSLICE+1)].pos[0];
+               arrow[1] = arrow_vertices[count*(ARROWSLICE+1)].pos[1];
+               arrow[2] = arrow_vertices[count*(ARROWSLICE+1)].pos[2];
+              //if(getInsideBox(glyph[i][j]*scale, intersectionP[0], intersectionP[1]))
+              if(getInsideCylinder(newRayPos, newRayDir,
+                  myData->GetGlyph(i,j), arrow, glyphRadius))
+              {
+                  svVector3 p = myData->GetGlyph(i,j);// * scale;
+                  svVector3 e = arrow;// * scale;
+                  svVector3 v = svGetPerpendicularVector(myData->GetDir(i,j));
+                  
+//                  svVector3 newP = getProject(p);
+//                  svVector3 tmpDir = svGetPerpendicularVector2D(newP); 
+//                  svVector3 v = getUnProject(tmpDir);
+
+                  inside = rayBoxIntersect(newRayPos, newRayDir, p, e, myData->GetDir(i,j), v, glyphRadius); 
+
+//                  svVector3 *pp = new svVector3[4];
+//                  pp[0] = p - v * glyphRadius;
+//                  pp[1] = p + v * glyphRadius;
+//                  pp[2] = e + v * glyphRadius;
+//                  pp[3] = e - v * glyphRadius;
+
+//                  svScalar tmpD;
+//                  svVector3 tmpP;
+//                  inside = rayPlaneIntersect(newRayPos, newRayDir, eye, near, dir[i][j], pp, tmpD, tmpP);
+                  if(inside)
+                  {
+                     Arrow.push_back(arrow);
+                     layerIndex.push_back(i);
+                     dataIndex.push_back(j);
+//                     distance.push_back(tmpD);
+                  }
+
+//                  delete [] pp;
+              }
+              
+           }
+           count++;
+        }
+    } 
+    int minIndex = -1;
+    svScalar minD = 9e+9;
+   
+    for(int i=0;i<layerIndex.size();i++)
+    {
+         int ii = layerIndex[i];
+         int jj = dataIndex[i];
+         svVector3 p = myData->GetGlyph(ii,jj);// * scale;
+         svVector3 e = Arrow[i];// * scale;
+         svVector3 v = svGetPerpendicularVector(myData->GetDir(ii,jj));
+
+         svScalar d;
+         rayBoxIntersectD(newRayPos, newRayDir, p, e, myData->GetDir(ii,jj), 
+                                  v, glyphRadius, d);
+
+       if(d < minD)
+       {
+          minD = d;
+          minIndex = i;
+       }
+    }
+
+    if(minIndex>=0)
+    {
+         layer = layerIndex[minIndex];
+         data = dataIndex[minIndex];
+    }  
+    else
+    {
+         layer = -1;
+         data = -1;
+    }
+//cerr<<minD<<endl;
+//if(minIndex>=0)cerr<<layerIndex[minIndex]<<" "<<dataIndex[minIndex]<<endl;
+//=========clean up=============
+    layerIndex.clear();
+    dataIndex.clear();
+    distance.clear();
+    delete [] intersectionP; 
+}
+
+void svArrowGlyph::cleanup()
+{
+   if(glIsBuffer(ARROW_VBO))
+   {
+     glDeleteBuffers(1, &ARROW_VBO);
+    glDeleteBuffers(1, &ARROW_IVBO);
+    glDeleteBuffers(1, &TUBE_VBO);
+    glDeleteBuffers(1, &TUBE_IVBO);
+    glDeleteBuffers(1, &ARROW_BASE_VBO);
+    glDeleteBuffers(1, &ARROW_BASE_IVBO);
+    glDeleteBuffers(1, &TUBE_BASE_VBO);
+    glDeleteBuffers(1, &TUBE_BASE_IVBO);
+   }
+    delete [] arrow_vertices;
+      delete [] arrow_base_vertices;
+      delete [] arrow_indices;
+      delete [] arrow_base_indices;
+      delete [] legend_vertices;
+    delete [] tube_vertices;
+      delete [] tube_base_vertices;
+      delete [] tube_indices;
+      delete [] tube_base_indices;
+
+}
+
+}

@@ -1,0 +1,37 @@
+Compile it
+	VTK_DIR=${YOUR_VTK_DIR} cmake -H. -Bbuild
+	cd build
+	make
+	make install
+
+Run it
+	./run
+
+
+Data structure:
+app: SplitTool/testapp.cpp
+librarys:
+	Data:
+		svQDOT
+		svQDOTData
+		svQDOTProcess
+	Glyphs:
+		svArrowGlyph
+		svLCArrow
+		svLTArrow
+		svLinearArrow
+	Image:
+		svImage
+		svImageList
+	Widget:
+		svWidget
+		svSlider
+		svROISlider
+	Interaction:
+		svMouseInteraction
+		svMouseGroup
+		svMouseEvent
+		svImageMouse
+		svWidgetMouse
+		svROISliderMouse
+

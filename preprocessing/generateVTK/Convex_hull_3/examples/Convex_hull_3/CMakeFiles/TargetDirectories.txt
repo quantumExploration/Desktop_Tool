@@ -1,0 +1,1 @@
+/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CMakeFiles/quickhull_3.dir

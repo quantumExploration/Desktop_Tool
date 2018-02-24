@@ -1,0 +1,641 @@
+The system is: Linux - 2.6.32-504.1.3.el6.x86_64 - x86_64
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
+Compiler: /usr/bin/c++ 
+Build flags: 
+Id flags: 
+
+The output was:
+0
+
+
+Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "a.out"
+
+The CXX compiler identification is GNU, found in "/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/2.8.12.2/CompilerIdCXX/a.out"
+
+Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
+Compiler: /usr/bin/cc 
+Build flags: 
+Id flags: 
+
+The output was:
+0
+
+
+Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "a.out"
+
+The C compiler identification is GNU, found in "/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/2.8.12.2/CompilerIdC/a.out"
+
+Determining if the CXX compiler works passed with the following output:
+Change Dir: /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/home/davinci/Documents/MATLAB/bin/glnxa64/gmake "cmTryCompileExec4232154509/fast"
+/home/davinci/Documents/MATLAB/bin/glnxa64/gmake -f CMakeFiles/cmTryCompileExec4232154509.dir/build.make CMakeFiles/cmTryCompileExec4232154509.dir/build
+gmake[1]: Entering directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building CXX object CMakeFiles/cmTryCompileExec4232154509.dir/testCXXCompiler.cxx.o
+/usr/bin/c++     -o CMakeFiles/cmTryCompileExec4232154509.dir/testCXXCompiler.cxx.o -c /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp/testCXXCompiler.cxx
+Linking CXX executable cmTryCompileExec4232154509
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec4232154509.dir/link.txt --verbose=1
+/usr/bin/c++        CMakeFiles/cmTryCompileExec4232154509.dir/testCXXCompiler.cxx.o  -o cmTryCompileExec4232154509 -rdynamic 
+gmake[1]: Leaving directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+
+
+Detecting CXX compiler ABI info compiled with the following output:
+Change Dir: /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/home/davinci/Documents/MATLAB/bin/glnxa64/gmake "cmTryCompileExec309926731/fast"
+/home/davinci/Documents/MATLAB/bin/glnxa64/gmake -f CMakeFiles/cmTryCompileExec309926731.dir/build.make CMakeFiles/cmTryCompileExec309926731.dir/build
+gmake[1]: Entering directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building CXX object CMakeFiles/cmTryCompileExec309926731.dir/CMakeCXXCompilerABI.cpp.o
+/usr/bin/c++     -o CMakeFiles/cmTryCompileExec309926731.dir/CMakeCXXCompilerABI.cpp.o -c /usr/share/cmake/Modules/CMakeCXXCompilerABI.cpp
+Linking CXX executable cmTryCompileExec309926731
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec309926731.dir/link.txt --verbose=1
+/usr/bin/c++      -v CMakeFiles/cmTryCompileExec309926731.dir/CMakeCXXCompilerABI.cpp.o  -o cmTryCompileExec309926731 -rdynamic  
+Using built-in specs.
+Target: x86_64-redhat-linux
+Configured with: ../configure --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=http://bugzilla.redhat.com/bugzilla --enable-bootstrap --enable-shared --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-languages=c,c++,objc,obj-c++,java,fortran,ada --enable-java-awt=gtk --disable-dssi --with-java-home=/usr/lib/jvm/java-1.5.0-gcj-1.5.0.0/jre --enable-libgcj-multifile --enable-java-maintainer-mode --with-ecj-jar=/usr/share/java/eclipse-ecj.jar --disable-libjava-multilib --with-ppl --with-cloog --with-tune=generic --with-arch_32=i686 --build=x86_64-redhat-linux
+Thread model: posix
+gcc version 4.4.7 20120313 (Red Hat 4.4.7-17) (GCC) 
+COMPILER_PATH=/usr/libexec/gcc/x86_64-redhat-linux/4.4.7/:/usr/libexec/gcc/x86_64-redhat-linux/4.4.7/:/usr/libexec/gcc/x86_64-redhat-linux/:/usr/lib/gcc/x86_64-redhat-linux/4.4.7/:/usr/lib/gcc/x86_64-redhat-linux/:/usr/libexec/gcc/x86_64-redhat-linux/4.4.7/:/usr/libexec/gcc/x86_64-redhat-linux/:/usr/lib/gcc/x86_64-redhat-linux/4.4.7/:/usr/lib/gcc/x86_64-redhat-linux/
+LIBRARY_PATH=/usr/lib/gcc/x86_64-redhat-linux/4.4.7/:/usr/lib/gcc/x86_64-redhat-linux/4.4.7/:/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../lib64/:/lib/../lib64/:/usr/lib/../lib64/:/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../:/lib/:/usr/lib/
+COLLECT_GCC_OPTIONS='-v' '-o' 'cmTryCompileExec309926731' '-rdynamic' '-shared-libgcc' '-mtune=generic'
+ /usr/libexec/gcc/x86_64-redhat-linux/4.4.7/collect2 --eh-frame-hdr --build-id -m elf_x86_64 --hash-style=gnu -export-dynamic -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTryCompileExec309926731 /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../lib64/crt1.o /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../lib64/crti.o /usr/lib/gcc/x86_64-redhat-linux/4.4.7/crtbegin.o -L/usr/lib/gcc/x86_64-redhat-linux/4.4.7 -L/usr/lib/gcc/x86_64-redhat-linux/4.4.7 -L/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../.. CMakeFiles/cmTryCompileExec309926731.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /usr/lib/gcc/x86_64-redhat-linux/4.4.7/crtend.o /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../lib64/crtn.o
+gmake[1]: Leaving directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+
+
+Parsed CXX implicit link information from above output:
+  link line regex: [^( *|.*[/\])(ld|([^/\]+-)?ld|collect2)[^/\]*( |$)]
+  ignore line: [Change Dir: /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp]
+  ignore line: []
+  ignore line: [Run Build Command:/home/davinci/Documents/MATLAB/bin/glnxa64/gmake "cmTryCompileExec309926731/fast"]
+  ignore line: [/home/davinci/Documents/MATLAB/bin/glnxa64/gmake -f CMakeFiles/cmTryCompileExec309926731.dir/build.make CMakeFiles/cmTryCompileExec309926731.dir/build]
+  ignore line: [gmake[1]: Entering directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp']
+  ignore line: [/usr/bin/cmake -E cmake_progress_report /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp/CMakeFiles 1]
+  ignore line: [Building CXX object CMakeFiles/cmTryCompileExec309926731.dir/CMakeCXXCompilerABI.cpp.o]
+  ignore line: [/usr/bin/c++     -o CMakeFiles/cmTryCompileExec309926731.dir/CMakeCXXCompilerABI.cpp.o -c /usr/share/cmake/Modules/CMakeCXXCompilerABI.cpp]
+  ignore line: [Linking CXX executable cmTryCompileExec309926731]
+  ignore line: [/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec309926731.dir/link.txt --verbose=1]
+  ignore line: [/usr/bin/c++      -v CMakeFiles/cmTryCompileExec309926731.dir/CMakeCXXCompilerABI.cpp.o  -o cmTryCompileExec309926731 -rdynamic  ]
+  ignore line: [Using built-in specs.]
+  ignore line: [Target: x86_64-redhat-linux]
+  ignore line: [Configured with: ../configure --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=http://bugzilla.redhat.com/bugzilla --enable-bootstrap --enable-shared --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-languages=c,c++,objc,obj-c++,java,fortran,ada --enable-java-awt=gtk --disable-dssi --with-java-home=/usr/lib/jvm/java-1.5.0-gcj-1.5.0.0/jre --enable-libgcj-multifile --enable-java-maintainer-mode --with-ecj-jar=/usr/share/java/eclipse-ecj.jar --disable-libjava-multilib --with-ppl --with-cloog --with-tune=generic --with-arch_32=i686 --build=x86_64-redhat-linux]
+  ignore line: [Thread model: posix]
+  ignore line: [gcc version 4.4.7 20120313 (Red Hat 4.4.7-17) (GCC) ]
+  ignore line: [COMPILER_PATH=/usr/libexec/gcc/x86_64-redhat-linux/4.4.7/:/usr/libexec/gcc/x86_64-redhat-linux/4.4.7/:/usr/libexec/gcc/x86_64-redhat-linux/:/usr/lib/gcc/x86_64-redhat-linux/4.4.7/:/usr/lib/gcc/x86_64-redhat-linux/:/usr/libexec/gcc/x86_64-redhat-linux/4.4.7/:/usr/libexec/gcc/x86_64-redhat-linux/:/usr/lib/gcc/x86_64-redhat-linux/4.4.7/:/usr/lib/gcc/x86_64-redhat-linux/]
+  ignore line: [LIBRARY_PATH=/usr/lib/gcc/x86_64-redhat-linux/4.4.7/:/usr/lib/gcc/x86_64-redhat-linux/4.4.7/:/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../lib64/:/lib/../lib64/:/usr/lib/../lib64/:/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../:/lib/:/usr/lib/]
+  ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'cmTryCompileExec309926731' '-rdynamic' '-shared-libgcc' '-mtune=generic']
+  link line: [ /usr/libexec/gcc/x86_64-redhat-linux/4.4.7/collect2 --eh-frame-hdr --build-id -m elf_x86_64 --hash-style=gnu -export-dynamic -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTryCompileExec309926731 /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../lib64/crt1.o /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../lib64/crti.o /usr/lib/gcc/x86_64-redhat-linux/4.4.7/crtbegin.o -L/usr/lib/gcc/x86_64-redhat-linux/4.4.7 -L/usr/lib/gcc/x86_64-redhat-linux/4.4.7 -L/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../.. CMakeFiles/cmTryCompileExec309926731.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /usr/lib/gcc/x86_64-redhat-linux/4.4.7/crtend.o /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../lib64/crtn.o]
+    arg [/usr/libexec/gcc/x86_64-redhat-linux/4.4.7/collect2] ==> ignore
+    arg [--eh-frame-hdr] ==> ignore
+    arg [--build-id] ==> ignore
+    arg [-m] ==> ignore
+    arg [elf_x86_64] ==> ignore
+    arg [--hash-style=gnu] ==> ignore
+    arg [-export-dynamic] ==> ignore
+    arg [-dynamic-linker] ==> ignore
+    arg [/lib64/ld-linux-x86-64.so.2] ==> ignore
+    arg [-o] ==> ignore
+    arg [cmTryCompileExec309926731] ==> ignore
+    arg [/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../lib64/crt1.o] ==> ignore
+    arg [/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../lib64/crti.o] ==> ignore
+    arg [/usr/lib/gcc/x86_64-redhat-linux/4.4.7/crtbegin.o] ==> ignore
+    arg [-L/usr/lib/gcc/x86_64-redhat-linux/4.4.7] ==> dir [/usr/lib/gcc/x86_64-redhat-linux/4.4.7]
+    arg [-L/usr/lib/gcc/x86_64-redhat-linux/4.4.7] ==> dir [/usr/lib/gcc/x86_64-redhat-linux/4.4.7]
+    arg [-L/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../lib64] ==> dir [/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../lib64]
+    arg [-L/lib/../lib64] ==> dir [/lib/../lib64]
+    arg [-L/usr/lib/../lib64] ==> dir [/usr/lib/../lib64]
+    arg [-L/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../..] ==> dir [/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../..]
+    arg [CMakeFiles/cmTryCompileExec309926731.dir/CMakeCXXCompilerABI.cpp.o] ==> ignore
+    arg [-lstdc++] ==> lib [stdc++]
+    arg [-lm] ==> lib [m]
+    arg [-lgcc_s] ==> lib [gcc_s]
+    arg [-lgcc] ==> lib [gcc]
+    arg [-lc] ==> lib [c]
+    arg [-lgcc_s] ==> lib [gcc_s]
+    arg [-lgcc] ==> lib [gcc]
+    arg [/usr/lib/gcc/x86_64-redhat-linux/4.4.7/crtend.o] ==> ignore
+    arg [/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../lib64/crtn.o] ==> ignore
+  remove lib [gcc_s]
+  remove lib [gcc]
+  remove lib [gcc_s]
+  remove lib [gcc]
+  collapse library dir [/usr/lib/gcc/x86_64-redhat-linux/4.4.7] ==> [/usr/lib/gcc/x86_64-redhat-linux/4.4.7]
+  collapse library dir [/usr/lib/gcc/x86_64-redhat-linux/4.4.7] ==> [/usr/lib/gcc/x86_64-redhat-linux/4.4.7]
+  collapse library dir [/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../lib64] ==> [/usr/lib64]
+  collapse library dir [/lib/../lib64] ==> [/lib64]
+  collapse library dir [/usr/lib/../lib64] ==> [/usr/lib64]
+  collapse library dir [/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../..] ==> [/usr/lib]
+  implicit libs: [stdc++;m;c]
+  implicit dirs: [/usr/lib/gcc/x86_64-redhat-linux/4.4.7;/usr/lib64;/lib64;/usr/lib]
+  implicit fwks: []
+
+
+Determining if the C compiler works passed with the following output:
+Change Dir: /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/home/davinci/Documents/MATLAB/bin/glnxa64/gmake "cmTryCompileExec3130223364/fast"
+/home/davinci/Documents/MATLAB/bin/glnxa64/gmake -f CMakeFiles/cmTryCompileExec3130223364.dir/build.make CMakeFiles/cmTryCompileExec3130223364.dir/build
+gmake[1]: Entering directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building C object CMakeFiles/cmTryCompileExec3130223364.dir/testCCompiler.c.o
+/usr/bin/cc    -o CMakeFiles/cmTryCompileExec3130223364.dir/testCCompiler.c.o   -c /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp/testCCompiler.c
+Linking C executable cmTryCompileExec3130223364
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec3130223364.dir/link.txt --verbose=1
+/usr/bin/cc       CMakeFiles/cmTryCompileExec3130223364.dir/testCCompiler.c.o  -o cmTryCompileExec3130223364 -rdynamic 
+gmake[1]: Leaving directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+
+
+Detecting C compiler ABI info compiled with the following output:
+Change Dir: /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/home/davinci/Documents/MATLAB/bin/glnxa64/gmake "cmTryCompileExec3641414030/fast"
+/home/davinci/Documents/MATLAB/bin/glnxa64/gmake -f CMakeFiles/cmTryCompileExec3641414030.dir/build.make CMakeFiles/cmTryCompileExec3641414030.dir/build
+gmake[1]: Entering directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building C object CMakeFiles/cmTryCompileExec3641414030.dir/CMakeCCompilerABI.c.o
+/usr/bin/cc    -o CMakeFiles/cmTryCompileExec3641414030.dir/CMakeCCompilerABI.c.o   -c /usr/share/cmake/Modules/CMakeCCompilerABI.c
+Linking C executable cmTryCompileExec3641414030
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec3641414030.dir/link.txt --verbose=1
+/usr/bin/cc     -v CMakeFiles/cmTryCompileExec3641414030.dir/CMakeCCompilerABI.c.o  -o cmTryCompileExec3641414030 -rdynamic  
+Using built-in specs.
+Target: x86_64-redhat-linux
+Configured with: ../configure --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=http://bugzilla.redhat.com/bugzilla --enable-bootstrap --enable-shared --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-languages=c,c++,objc,obj-c++,java,fortran,ada --enable-java-awt=gtk --disable-dssi --with-java-home=/usr/lib/jvm/java-1.5.0-gcj-1.5.0.0/jre --enable-libgcj-multifile --enable-java-maintainer-mode --with-ecj-jar=/usr/share/java/eclipse-ecj.jar --disable-libjava-multilib --with-ppl --with-cloog --with-tune=generic --with-arch_32=i686 --build=x86_64-redhat-linux
+Thread model: posix
+gcc version 4.4.7 20120313 (Red Hat 4.4.7-17) (GCC) 
+COMPILER_PATH=/usr/libexec/gcc/x86_64-redhat-linux/4.4.7/:/usr/libexec/gcc/x86_64-redhat-linux/4.4.7/:/usr/libexec/gcc/x86_64-redhat-linux/:/usr/lib/gcc/x86_64-redhat-linux/4.4.7/:/usr/lib/gcc/x86_64-redhat-linux/:/usr/libexec/gcc/x86_64-redhat-linux/4.4.7/:/usr/libexec/gcc/x86_64-redhat-linux/:/usr/lib/gcc/x86_64-redhat-linux/4.4.7/:/usr/lib/gcc/x86_64-redhat-linux/
+LIBRARY_PATH=/usr/lib/gcc/x86_64-redhat-linux/4.4.7/:/usr/lib/gcc/x86_64-redhat-linux/4.4.7/:/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../lib64/:/lib/../lib64/:/usr/lib/../lib64/:/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../:/lib/:/usr/lib/
+COLLECT_GCC_OPTIONS='-v' '-o' 'cmTryCompileExec3641414030' '-rdynamic' '-mtune=generic'
+ /usr/libexec/gcc/x86_64-redhat-linux/4.4.7/collect2 --eh-frame-hdr --build-id -m elf_x86_64 --hash-style=gnu -export-dynamic -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTryCompileExec3641414030 /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../lib64/crt1.o /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../lib64/crti.o /usr/lib/gcc/x86_64-redhat-linux/4.4.7/crtbegin.o -L/usr/lib/gcc/x86_64-redhat-linux/4.4.7 -L/usr/lib/gcc/x86_64-redhat-linux/4.4.7 -L/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../.. CMakeFiles/cmTryCompileExec3641414030.dir/CMakeCCompilerABI.c.o -lgcc --as-needed -lgcc_s --no-as-needed -lc -lgcc --as-needed -lgcc_s --no-as-needed /usr/lib/gcc/x86_64-redhat-linux/4.4.7/crtend.o /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../lib64/crtn.o
+gmake[1]: Leaving directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+
+
+Parsed C implicit link information from above output:
+  link line regex: [^( *|.*[/\])(ld|([^/\]+-)?ld|collect2)[^/\]*( |$)]
+  ignore line: [Change Dir: /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp]
+  ignore line: []
+  ignore line: [Run Build Command:/home/davinci/Documents/MATLAB/bin/glnxa64/gmake "cmTryCompileExec3641414030/fast"]
+  ignore line: [/home/davinci/Documents/MATLAB/bin/glnxa64/gmake -f CMakeFiles/cmTryCompileExec3641414030.dir/build.make CMakeFiles/cmTryCompileExec3641414030.dir/build]
+  ignore line: [gmake[1]: Entering directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp']
+  ignore line: [/usr/bin/cmake -E cmake_progress_report /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp/CMakeFiles 1]
+  ignore line: [Building C object CMakeFiles/cmTryCompileExec3641414030.dir/CMakeCCompilerABI.c.o]
+  ignore line: [/usr/bin/cc    -o CMakeFiles/cmTryCompileExec3641414030.dir/CMakeCCompilerABI.c.o   -c /usr/share/cmake/Modules/CMakeCCompilerABI.c]
+  ignore line: [Linking C executable cmTryCompileExec3641414030]
+  ignore line: [/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec3641414030.dir/link.txt --verbose=1]
+  ignore line: [/usr/bin/cc     -v CMakeFiles/cmTryCompileExec3641414030.dir/CMakeCCompilerABI.c.o  -o cmTryCompileExec3641414030 -rdynamic  ]
+  ignore line: [Using built-in specs.]
+  ignore line: [Target: x86_64-redhat-linux]
+  ignore line: [Configured with: ../configure --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=http://bugzilla.redhat.com/bugzilla --enable-bootstrap --enable-shared --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-languages=c,c++,objc,obj-c++,java,fortran,ada --enable-java-awt=gtk --disable-dssi --with-java-home=/usr/lib/jvm/java-1.5.0-gcj-1.5.0.0/jre --enable-libgcj-multifile --enable-java-maintainer-mode --with-ecj-jar=/usr/share/java/eclipse-ecj.jar --disable-libjava-multilib --with-ppl --with-cloog --with-tune=generic --with-arch_32=i686 --build=x86_64-redhat-linux]
+  ignore line: [Thread model: posix]
+  ignore line: [gcc version 4.4.7 20120313 (Red Hat 4.4.7-17) (GCC) ]
+  ignore line: [COMPILER_PATH=/usr/libexec/gcc/x86_64-redhat-linux/4.4.7/:/usr/libexec/gcc/x86_64-redhat-linux/4.4.7/:/usr/libexec/gcc/x86_64-redhat-linux/:/usr/lib/gcc/x86_64-redhat-linux/4.4.7/:/usr/lib/gcc/x86_64-redhat-linux/:/usr/libexec/gcc/x86_64-redhat-linux/4.4.7/:/usr/libexec/gcc/x86_64-redhat-linux/:/usr/lib/gcc/x86_64-redhat-linux/4.4.7/:/usr/lib/gcc/x86_64-redhat-linux/]
+  ignore line: [LIBRARY_PATH=/usr/lib/gcc/x86_64-redhat-linux/4.4.7/:/usr/lib/gcc/x86_64-redhat-linux/4.4.7/:/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../lib64/:/lib/../lib64/:/usr/lib/../lib64/:/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../:/lib/:/usr/lib/]
+  ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'cmTryCompileExec3641414030' '-rdynamic' '-mtune=generic']
+  link line: [ /usr/libexec/gcc/x86_64-redhat-linux/4.4.7/collect2 --eh-frame-hdr --build-id -m elf_x86_64 --hash-style=gnu -export-dynamic -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTryCompileExec3641414030 /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../lib64/crt1.o /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../lib64/crti.o /usr/lib/gcc/x86_64-redhat-linux/4.4.7/crtbegin.o -L/usr/lib/gcc/x86_64-redhat-linux/4.4.7 -L/usr/lib/gcc/x86_64-redhat-linux/4.4.7 -L/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../.. CMakeFiles/cmTryCompileExec3641414030.dir/CMakeCCompilerABI.c.o -lgcc --as-needed -lgcc_s --no-as-needed -lc -lgcc --as-needed -lgcc_s --no-as-needed /usr/lib/gcc/x86_64-redhat-linux/4.4.7/crtend.o /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../lib64/crtn.o]
+    arg [/usr/libexec/gcc/x86_64-redhat-linux/4.4.7/collect2] ==> ignore
+    arg [--eh-frame-hdr] ==> ignore
+    arg [--build-id] ==> ignore
+    arg [-m] ==> ignore
+    arg [elf_x86_64] ==> ignore
+    arg [--hash-style=gnu] ==> ignore
+    arg [-export-dynamic] ==> ignore
+    arg [-dynamic-linker] ==> ignore
+    arg [/lib64/ld-linux-x86-64.so.2] ==> ignore
+    arg [-o] ==> ignore
+    arg [cmTryCompileExec3641414030] ==> ignore
+    arg [/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../lib64/crt1.o] ==> ignore
+    arg [/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../lib64/crti.o] ==> ignore
+    arg [/usr/lib/gcc/x86_64-redhat-linux/4.4.7/crtbegin.o] ==> ignore
+    arg [-L/usr/lib/gcc/x86_64-redhat-linux/4.4.7] ==> dir [/usr/lib/gcc/x86_64-redhat-linux/4.4.7]
+    arg [-L/usr/lib/gcc/x86_64-redhat-linux/4.4.7] ==> dir [/usr/lib/gcc/x86_64-redhat-linux/4.4.7]
+    arg [-L/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../lib64] ==> dir [/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../lib64]
+    arg [-L/lib/../lib64] ==> dir [/lib/../lib64]
+    arg [-L/usr/lib/../lib64] ==> dir [/usr/lib/../lib64]
+    arg [-L/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../..] ==> dir [/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../..]
+    arg [CMakeFiles/cmTryCompileExec3641414030.dir/CMakeCCompilerABI.c.o] ==> ignore
+    arg [-lgcc] ==> lib [gcc]
+    arg [--as-needed] ==> ignore
+    arg [-lgcc_s] ==> lib [gcc_s]
+    arg [--no-as-needed] ==> ignore
+    arg [-lc] ==> lib [c]
+    arg [-lgcc] ==> lib [gcc]
+    arg [--as-needed] ==> ignore
+    arg [-lgcc_s] ==> lib [gcc_s]
+    arg [--no-as-needed] ==> ignore
+    arg [/usr/lib/gcc/x86_64-redhat-linux/4.4.7/crtend.o] ==> ignore
+    arg [/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../lib64/crtn.o] ==> ignore
+  remove lib [gcc]
+  remove lib [gcc_s]
+  remove lib [gcc]
+  remove lib [gcc_s]
+  collapse library dir [/usr/lib/gcc/x86_64-redhat-linux/4.4.7] ==> [/usr/lib/gcc/x86_64-redhat-linux/4.4.7]
+  collapse library dir [/usr/lib/gcc/x86_64-redhat-linux/4.4.7] ==> [/usr/lib/gcc/x86_64-redhat-linux/4.4.7]
+  collapse library dir [/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../lib64] ==> [/usr/lib64]
+  collapse library dir [/lib/../lib64] ==> [/lib64]
+  collapse library dir [/usr/lib/../lib64] ==> [/usr/lib64]
+  collapse library dir [/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../..] ==> [/usr/lib]
+  implicit libs: [c]
+  implicit dirs: [/usr/lib/gcc/x86_64-redhat-linux/4.4.7;/usr/lib64;/lib64;/usr/lib]
+  implicit fwks: []
+
+
+Performing C++ SOURCE FILE Test CGAL_CFG_BOOST_VARIANT_SWAP_BUG succeded with the following output:
+Change Dir: /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/home/davinci/Documents/MATLAB/bin/glnxa64/gmake "cmTryCompileExec824308186/fast"
+/home/davinci/Documents/MATLAB/bin/glnxa64/gmake -f CMakeFiles/cmTryCompileExec824308186.dir/build.make CMakeFiles/cmTryCompileExec824308186.dir/build
+gmake[1]: Entering directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building CXX object CMakeFiles/cmTryCompileExec824308186.dir/CGAL_CFG_BOOST_VARIANT_SWAP_BUG.cpp.o
+/usr/bin/c++    -frounding-math    -o CMakeFiles/cmTryCompileExec824308186.dir/CGAL_CFG_BOOST_VARIANT_SWAP_BUG.cpp.o -c /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/config/testfiles/CGAL_CFG_BOOST_VARIANT_SWAP_BUG.cpp
+Linking CXX executable cmTryCompileExec824308186
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec824308186.dir/link.txt --verbose=1
+/usr/bin/c++    -frounding-math     CMakeFiles/cmTryCompileExec824308186.dir/CGAL_CFG_BOOST_VARIANT_SWAP_BUG.cpp.o  -o cmTryCompileExec824308186 -rdynamic 
+gmake[1]: Leaving directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+
+Source file was:
+
+Performing C++ SOURCE FILE Test CGAL_CFG_DENORMALS_COMPILE_BUG succeded with the following output:
+Change Dir: /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/home/davinci/Documents/MATLAB/bin/glnxa64/gmake "cmTryCompileExec1505728210/fast"
+/home/davinci/Documents/MATLAB/bin/glnxa64/gmake -f CMakeFiles/cmTryCompileExec1505728210.dir/build.make CMakeFiles/cmTryCompileExec1505728210.dir/build
+gmake[1]: Entering directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building CXX object CMakeFiles/cmTryCompileExec1505728210.dir/CGAL_CFG_DENORMALS_COMPILE_BUG.cpp.o
+/usr/bin/c++    -frounding-math    -o CMakeFiles/cmTryCompileExec1505728210.dir/CGAL_CFG_DENORMALS_COMPILE_BUG.cpp.o -c /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/config/testfiles/CGAL_CFG_DENORMALS_COMPILE_BUG.cpp
+Linking CXX executable cmTryCompileExec1505728210
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec1505728210.dir/link.txt --verbose=1
+/usr/bin/c++    -frounding-math     CMakeFiles/cmTryCompileExec1505728210.dir/CGAL_CFG_DENORMALS_COMPILE_BUG.cpp.o  -o cmTryCompileExec1505728210 -rdynamic 
+gmake[1]: Leaving directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+
+Source file was:
+
+Performing C++ SOURCE FILE Test CGAL_CFG_FPU_ROUNDING_MODE_UNWINDING_VC_BUG succeded with the following output:
+Change Dir: /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/home/davinci/Documents/MATLAB/bin/glnxa64/gmake "cmTryCompileExec3002528189/fast"
+/home/davinci/Documents/MATLAB/bin/glnxa64/gmake -f CMakeFiles/cmTryCompileExec3002528189.dir/build.make CMakeFiles/cmTryCompileExec3002528189.dir/build
+gmake[1]: Entering directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building CXX object CMakeFiles/cmTryCompileExec3002528189.dir/CGAL_CFG_FPU_ROUNDING_MODE_UNWINDING_VC_BUG.cpp.o
+/usr/bin/c++    -frounding-math    -o CMakeFiles/cmTryCompileExec3002528189.dir/CGAL_CFG_FPU_ROUNDING_MODE_UNWINDING_VC_BUG.cpp.o -c /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/config/testfiles/CGAL_CFG_FPU_ROUNDING_MODE_UNWINDING_VC_BUG.cpp
+Linking CXX executable cmTryCompileExec3002528189
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec3002528189.dir/link.txt --verbose=1
+/usr/bin/c++    -frounding-math     CMakeFiles/cmTryCompileExec3002528189.dir/CGAL_CFG_FPU_ROUNDING_MODE_UNWINDING_VC_BUG.cpp.o  -o cmTryCompileExec3002528189 -rdynamic 
+gmake[1]: Leaving directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+
+Source file was:
+
+Performing C++ SOURCE FILE Test CGAL_CFG_IEEE_754_BUG succeded with the following output:
+Change Dir: /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/home/davinci/Documents/MATLAB/bin/glnxa64/gmake "cmTryCompileExec3267099968/fast"
+/home/davinci/Documents/MATLAB/bin/glnxa64/gmake -f CMakeFiles/cmTryCompileExec3267099968.dir/build.make CMakeFiles/cmTryCompileExec3267099968.dir/build
+gmake[1]: Entering directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building CXX object CMakeFiles/cmTryCompileExec3267099968.dir/CGAL_CFG_IEEE_754_BUG.cpp.o
+/usr/bin/c++    -frounding-math    -o CMakeFiles/cmTryCompileExec3267099968.dir/CGAL_CFG_IEEE_754_BUG.cpp.o -c /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/config/testfiles/CGAL_CFG_IEEE_754_BUG.cpp
+Linking CXX executable cmTryCompileExec3267099968
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec3267099968.dir/link.txt --verbose=1
+/usr/bin/c++    -frounding-math     CMakeFiles/cmTryCompileExec3267099968.dir/CGAL_CFG_IEEE_754_BUG.cpp.o  -o cmTryCompileExec3267099968 -rdynamic 
+gmake[1]: Leaving directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+
+Source file was:
+
+Performing C++ SOURCE FILE Test CGAL_CFG_ISTREAM_INT_BUG succeded with the following output:
+Change Dir: /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/home/davinci/Documents/MATLAB/bin/glnxa64/gmake "cmTryCompileExec1416309897/fast"
+/home/davinci/Documents/MATLAB/bin/glnxa64/gmake -f CMakeFiles/cmTryCompileExec1416309897.dir/build.make CMakeFiles/cmTryCompileExec1416309897.dir/build
+gmake[1]: Entering directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building CXX object CMakeFiles/cmTryCompileExec1416309897.dir/CGAL_CFG_ISTREAM_INT_BUG.cpp.o
+/usr/bin/c++    -frounding-math    -o CMakeFiles/cmTryCompileExec1416309897.dir/CGAL_CFG_ISTREAM_INT_BUG.cpp.o -c /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/config/testfiles/CGAL_CFG_ISTREAM_INT_BUG.cpp
+Linking CXX executable cmTryCompileExec1416309897
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec1416309897.dir/link.txt --verbose=1
+/usr/bin/c++    -frounding-math     CMakeFiles/cmTryCompileExec1416309897.dir/CGAL_CFG_ISTREAM_INT_BUG.cpp.o  -o cmTryCompileExec1416309897 -rdynamic 
+gmake[1]: Leaving directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+7812
+
+Source file was:
+
+Performing C++ SOURCE FILE Test CGAL_CFG_MATCHING_BUG_5 succeded with the following output:
+Change Dir: /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/home/davinci/Documents/MATLAB/bin/glnxa64/gmake "cmTryCompileExec3131609970/fast"
+/home/davinci/Documents/MATLAB/bin/glnxa64/gmake -f CMakeFiles/cmTryCompileExec3131609970.dir/build.make CMakeFiles/cmTryCompileExec3131609970.dir/build
+gmake[1]: Entering directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building CXX object CMakeFiles/cmTryCompileExec3131609970.dir/CGAL_CFG_MATCHING_BUG_5.cpp.o
+/usr/bin/c++    -frounding-math    -o CMakeFiles/cmTryCompileExec3131609970.dir/CGAL_CFG_MATCHING_BUG_5.cpp.o -c /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/config/testfiles/CGAL_CFG_MATCHING_BUG_5.cpp
+Linking CXX executable cmTryCompileExec3131609970
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec3131609970.dir/link.txt --verbose=1
+/usr/bin/c++    -frounding-math     CMakeFiles/cmTryCompileExec3131609970.dir/CGAL_CFG_MATCHING_BUG_5.cpp.o  -o cmTryCompileExec3131609970 -rdynamic 
+gmake[1]: Leaving directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+
+Source file was:
+
+Performing C++ SOURCE FILE Test CGAL_CFG_MATCHING_BUG_6 succeded with the following output:
+Change Dir: /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/home/davinci/Documents/MATLAB/bin/glnxa64/gmake "cmTryCompileExec2937373439/fast"
+/home/davinci/Documents/MATLAB/bin/glnxa64/gmake -f CMakeFiles/cmTryCompileExec2937373439.dir/build.make CMakeFiles/cmTryCompileExec2937373439.dir/build
+gmake[1]: Entering directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building CXX object CMakeFiles/cmTryCompileExec2937373439.dir/CGAL_CFG_MATCHING_BUG_6.cpp.o
+/usr/bin/c++    -frounding-math    -o CMakeFiles/cmTryCompileExec2937373439.dir/CGAL_CFG_MATCHING_BUG_6.cpp.o -c /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/config/testfiles/CGAL_CFG_MATCHING_BUG_6.cpp
+Linking CXX executable cmTryCompileExec2937373439
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec2937373439.dir/link.txt --verbose=1
+/usr/bin/c++    -frounding-math     CMakeFiles/cmTryCompileExec2937373439.dir/CGAL_CFG_MATCHING_BUG_6.cpp.o  -o cmTryCompileExec2937373439 -rdynamic 
+gmake[1]: Leaving directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+
+Source file was:
+
+Performing C++ SOURCE FILE Test CGAL_CFG_MATCHING_BUG_7 succeded with the following output:
+Change Dir: /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/home/davinci/Documents/MATLAB/bin/glnxa64/gmake "cmTryCompileExec3431845127/fast"
+/home/davinci/Documents/MATLAB/bin/glnxa64/gmake -f CMakeFiles/cmTryCompileExec3431845127.dir/build.make CMakeFiles/cmTryCompileExec3431845127.dir/build
+gmake[1]: Entering directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building CXX object CMakeFiles/cmTryCompileExec3431845127.dir/CGAL_CFG_MATCHING_BUG_7.cpp.o
+/usr/bin/c++    -frounding-math    -o CMakeFiles/cmTryCompileExec3431845127.dir/CGAL_CFG_MATCHING_BUG_7.cpp.o -c /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/config/testfiles/CGAL_CFG_MATCHING_BUG_7.cpp
+Linking CXX executable cmTryCompileExec3431845127
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec3431845127.dir/link.txt --verbose=1
+/usr/bin/c++    -frounding-math     CMakeFiles/cmTryCompileExec3431845127.dir/CGAL_CFG_MATCHING_BUG_7.cpp.o  -o cmTryCompileExec3431845127 -rdynamic 
+gmake[1]: Leaving directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+
+Source file was:
+
+Performing C++ SOURCE FILE Test CGAL_CFG_MATCHING_BUG_8 succeded with the following output:
+Change Dir: /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/home/davinci/Documents/MATLAB/bin/glnxa64/gmake "cmTryCompileExec46101429/fast"
+/home/davinci/Documents/MATLAB/bin/glnxa64/gmake -f CMakeFiles/cmTryCompileExec46101429.dir/build.make CMakeFiles/cmTryCompileExec46101429.dir/build
+gmake[1]: Entering directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building CXX object CMakeFiles/cmTryCompileExec46101429.dir/CGAL_CFG_MATCHING_BUG_8.cpp.o
+/usr/bin/c++    -frounding-math    -o CMakeFiles/cmTryCompileExec46101429.dir/CGAL_CFG_MATCHING_BUG_8.cpp.o -c /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/config/testfiles/CGAL_CFG_MATCHING_BUG_8.cpp
+Linking CXX executable cmTryCompileExec46101429
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec46101429.dir/link.txt --verbose=1
+/usr/bin/c++    -frounding-math     CMakeFiles/cmTryCompileExec46101429.dir/CGAL_CFG_MATCHING_BUG_8.cpp.o  -o cmTryCompileExec46101429 -rdynamic 
+gmake[1]: Leaving directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+
+Source file was:
+
+Performing C++ SOURCE FILE Test CGAL_CFG_NESTED_CLASS_FRIEND_DECLARATION_BUG succeded with the following output:
+Change Dir: /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/home/davinci/Documents/MATLAB/bin/glnxa64/gmake "cmTryCompileExec3838676253/fast"
+/home/davinci/Documents/MATLAB/bin/glnxa64/gmake -f CMakeFiles/cmTryCompileExec3838676253.dir/build.make CMakeFiles/cmTryCompileExec3838676253.dir/build
+gmake[1]: Entering directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building CXX object CMakeFiles/cmTryCompileExec3838676253.dir/CGAL_CFG_NESTED_CLASS_FRIEND_DECLARATION_BUG.cpp.o
+/usr/bin/c++    -frounding-math    -o CMakeFiles/cmTryCompileExec3838676253.dir/CGAL_CFG_NESTED_CLASS_FRIEND_DECLARATION_BUG.cpp.o -c /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/config/testfiles/CGAL_CFG_NESTED_CLASS_FRIEND_DECLARATION_BUG.cpp
+Linking CXX executable cmTryCompileExec3838676253
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec3838676253.dir/link.txt --verbose=1
+/usr/bin/c++    -frounding-math     CMakeFiles/cmTryCompileExec3838676253.dir/CGAL_CFG_NESTED_CLASS_FRIEND_DECLARATION_BUG.cpp.o  -o cmTryCompileExec3838676253 -rdynamic 
+gmake[1]: Leaving directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+A's do_something
+C's do_something
+B's do_something
+C's do_something
+
+Source file was:
+
+Performing C++ SOURCE FILE Test CGAL_CFG_NO_LIMITS succeded with the following output:
+Change Dir: /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/home/davinci/Documents/MATLAB/bin/glnxa64/gmake "cmTryCompileExec2607024573/fast"
+/home/davinci/Documents/MATLAB/bin/glnxa64/gmake -f CMakeFiles/cmTryCompileExec2607024573.dir/build.make CMakeFiles/cmTryCompileExec2607024573.dir/build
+gmake[1]: Entering directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building CXX object CMakeFiles/cmTryCompileExec2607024573.dir/CGAL_CFG_NO_LIMITS.cpp.o
+/usr/bin/c++    -frounding-math    -o CMakeFiles/cmTryCompileExec2607024573.dir/CGAL_CFG_NO_LIMITS.cpp.o -c /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/config/testfiles/CGAL_CFG_NO_LIMITS.cpp
+Linking CXX executable cmTryCompileExec2607024573
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec2607024573.dir/link.txt --verbose=1
+/usr/bin/c++    -frounding-math     CMakeFiles/cmTryCompileExec2607024573.dir/CGAL_CFG_NO_LIMITS.cpp.o  -o cmTryCompileExec2607024573 -rdynamic 
+gmake[1]: Leaving directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+
+Source file was:
+
+Performing C++ SOURCE FILE Test CGAL_CFG_NO_NEXTAFTER succeded with the following output:
+Change Dir: /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/home/davinci/Documents/MATLAB/bin/glnxa64/gmake "cmTryCompileExec2245289620/fast"
+/home/davinci/Documents/MATLAB/bin/glnxa64/gmake -f CMakeFiles/cmTryCompileExec2245289620.dir/build.make CMakeFiles/cmTryCompileExec2245289620.dir/build
+gmake[1]: Entering directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building CXX object CMakeFiles/cmTryCompileExec2245289620.dir/CGAL_CFG_NO_NEXTAFTER.cpp.o
+/usr/bin/c++    -frounding-math    -o CMakeFiles/cmTryCompileExec2245289620.dir/CGAL_CFG_NO_NEXTAFTER.cpp.o -c /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/config/testfiles/CGAL_CFG_NO_NEXTAFTER.cpp
+Linking CXX executable cmTryCompileExec2245289620
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec2245289620.dir/link.txt --verbose=1
+/usr/bin/c++    -frounding-math     CMakeFiles/cmTryCompileExec2245289620.dir/CGAL_CFG_NO_NEXTAFTER.cpp.o  -o cmTryCompileExec2245289620 -rdynamic 
+gmake[1]: Leaving directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+
+Source file was:
+
+Performing C++ SOURCE FILE Test CGAL_CFG_NO_STL succeded with the following output:
+Change Dir: /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/home/davinci/Documents/MATLAB/bin/glnxa64/gmake "cmTryCompileExec3840237540/fast"
+/home/davinci/Documents/MATLAB/bin/glnxa64/gmake -f CMakeFiles/cmTryCompileExec3840237540.dir/build.make CMakeFiles/cmTryCompileExec3840237540.dir/build
+gmake[1]: Entering directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building CXX object CMakeFiles/cmTryCompileExec3840237540.dir/CGAL_CFG_NO_STL.cpp.o
+/usr/bin/c++    -frounding-math    -o CMakeFiles/cmTryCompileExec3840237540.dir/CGAL_CFG_NO_STL.cpp.o -c /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/config/testfiles/CGAL_CFG_NO_STL.cpp
+Linking CXX executable cmTryCompileExec3840237540
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec3840237540.dir/link.txt --verbose=1
+/usr/bin/c++    -frounding-math     CMakeFiles/cmTryCompileExec3840237540.dir/CGAL_CFG_NO_STL.cpp.o  -o cmTryCompileExec3840237540 -rdynamic 
+gmake[1]: Leaving directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+
+Source file was:
+
+Performing C++ SOURCE FILE Test CGAL_CFG_NO_WARNING_CPP_DIRECTIVE_BUG succeded with the following output:
+Change Dir: /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/home/davinci/Documents/MATLAB/bin/glnxa64/gmake "cmTryCompileExec965426542/fast"
+/home/davinci/Documents/MATLAB/bin/glnxa64/gmake -f CMakeFiles/cmTryCompileExec965426542.dir/build.make CMakeFiles/cmTryCompileExec965426542.dir/build
+gmake[1]: Entering directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building CXX object CMakeFiles/cmTryCompileExec965426542.dir/CGAL_CFG_NO_WARNING_CPP_DIRECTIVE_BUG.cpp.o
+/usr/bin/c++    -frounding-math    -o CMakeFiles/cmTryCompileExec965426542.dir/CGAL_CFG_NO_WARNING_CPP_DIRECTIVE_BUG.cpp.o -c /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/config/testfiles/CGAL_CFG_NO_WARNING_CPP_DIRECTIVE_BUG.cpp
+/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/config/testfiles/CGAL_CFG_NO_WARNING_CPP_DIRECTIVE_BUG.cpp:25:2: warning: #warning "Hello world"
+Linking CXX executable cmTryCompileExec965426542
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec965426542.dir/link.txt --verbose=1
+/usr/bin/c++    -frounding-math     CMakeFiles/cmTryCompileExec965426542.dir/CGAL_CFG_NO_WARNING_CPP_DIRECTIVE_BUG.cpp.o  -o cmTryCompileExec965426542 -rdynamic 
+gmake[1]: Leaving directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+
+Source file was:
+
+Performing C++ SOURCE FILE Test CGAL_CFG_NUMERIC_LIMITS_BUG succeded with the following output:
+Change Dir: /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/home/davinci/Documents/MATLAB/bin/glnxa64/gmake "cmTryCompileExec912805205/fast"
+/home/davinci/Documents/MATLAB/bin/glnxa64/gmake -f CMakeFiles/cmTryCompileExec912805205.dir/build.make CMakeFiles/cmTryCompileExec912805205.dir/build
+gmake[1]: Entering directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building CXX object CMakeFiles/cmTryCompileExec912805205.dir/CGAL_CFG_NUMERIC_LIMITS_BUG.cpp.o
+/usr/bin/c++    -frounding-math    -o CMakeFiles/cmTryCompileExec912805205.dir/CGAL_CFG_NUMERIC_LIMITS_BUG.cpp.o -c /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/config/testfiles/CGAL_CFG_NUMERIC_LIMITS_BUG.cpp
+Linking CXX executable cmTryCompileExec912805205
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec912805205.dir/link.txt --verbose=1
+/usr/bin/c++    -frounding-math     CMakeFiles/cmTryCompileExec912805205.dir/CGAL_CFG_NUMERIC_LIMITS_BUG.cpp.o  -o cmTryCompileExec912805205 -rdynamic 
+gmake[1]: Leaving directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+
+Source file was:
+
+Performing C++ SOURCE FILE Test CGAL_CFG_OUTOFLINE_MEMBER_DEFINITION_BUG succeded with the following output:
+Change Dir: /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/home/davinci/Documents/MATLAB/bin/glnxa64/gmake "cmTryCompileExec3103394085/fast"
+/home/davinci/Documents/MATLAB/bin/glnxa64/gmake -f CMakeFiles/cmTryCompileExec3103394085.dir/build.make CMakeFiles/cmTryCompileExec3103394085.dir/build
+gmake[1]: Entering directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building CXX object CMakeFiles/cmTryCompileExec3103394085.dir/CGAL_CFG_OUTOFLINE_MEMBER_DEFINITION_BUG.cpp.o
+/usr/bin/c++    -frounding-math    -o CMakeFiles/cmTryCompileExec3103394085.dir/CGAL_CFG_OUTOFLINE_MEMBER_DEFINITION_BUG.cpp.o -c /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/config/testfiles/CGAL_CFG_OUTOFLINE_MEMBER_DEFINITION_BUG.cpp
+Linking CXX executable cmTryCompileExec3103394085
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec3103394085.dir/link.txt --verbose=1
+/usr/bin/c++    -frounding-math     CMakeFiles/cmTryCompileExec3103394085.dir/CGAL_CFG_OUTOFLINE_MEMBER_DEFINITION_BUG.cpp.o  -o cmTryCompileExec3103394085 -rdynamic 
+gmake[1]: Leaving directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+
+Source file was:
+
+Performing C++ SOURCE FILE Test CGAL_CFG_TEMPLATE_IN_DEFAULT_PARAMETER_BUG succeded with the following output:
+Change Dir: /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/home/davinci/Documents/MATLAB/bin/glnxa64/gmake "cmTryCompileExec3271795751/fast"
+/home/davinci/Documents/MATLAB/bin/glnxa64/gmake -f CMakeFiles/cmTryCompileExec3271795751.dir/build.make CMakeFiles/cmTryCompileExec3271795751.dir/build
+gmake[1]: Entering directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building CXX object CMakeFiles/cmTryCompileExec3271795751.dir/CGAL_CFG_TEMPLATE_IN_DEFAULT_PARAMETER_BUG.cpp.o
+/usr/bin/c++    -frounding-math    -o CMakeFiles/cmTryCompileExec3271795751.dir/CGAL_CFG_TEMPLATE_IN_DEFAULT_PARAMETER_BUG.cpp.o -c /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/config/testfiles/CGAL_CFG_TEMPLATE_IN_DEFAULT_PARAMETER_BUG.cpp
+Linking CXX executable cmTryCompileExec3271795751
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec3271795751.dir/link.txt --verbose=1
+/usr/bin/c++    -frounding-math     CMakeFiles/cmTryCompileExec3271795751.dir/CGAL_CFG_TEMPLATE_IN_DEFAULT_PARAMETER_BUG.cpp.o  -o cmTryCompileExec3271795751 -rdynamic 
+gmake[1]: Leaving directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+
+Source file was:
+
+Performing C++ SOURCE FILE Test CGAL_CFG_TYPENAME_BEFORE_DEFAULT_ARGUMENT_BUG succeded with the following output:
+Change Dir: /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/home/davinci/Documents/MATLAB/bin/glnxa64/gmake "cmTryCompileExec3590796184/fast"
+/home/davinci/Documents/MATLAB/bin/glnxa64/gmake -f CMakeFiles/cmTryCompileExec3590796184.dir/build.make CMakeFiles/cmTryCompileExec3590796184.dir/build
+gmake[1]: Entering directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building CXX object CMakeFiles/cmTryCompileExec3590796184.dir/CGAL_CFG_TYPENAME_BEFORE_DEFAULT_ARGUMENT_BUG.cpp.o
+/usr/bin/c++    -frounding-math    -o CMakeFiles/cmTryCompileExec3590796184.dir/CGAL_CFG_TYPENAME_BEFORE_DEFAULT_ARGUMENT_BUG.cpp.o -c /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/config/testfiles/CGAL_CFG_TYPENAME_BEFORE_DEFAULT_ARGUMENT_BUG.cpp
+Linking CXX executable cmTryCompileExec3590796184
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec3590796184.dir/link.txt --verbose=1
+/usr/bin/c++    -frounding-math     CMakeFiles/cmTryCompileExec3590796184.dir/CGAL_CFG_TYPENAME_BEFORE_DEFAULT_ARGUMENT_BUG.cpp.o  -o cmTryCompileExec3590796184 -rdynamic 
+gmake[1]: Leaving directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+
+Source file was:
+
+Performing C++ SOURCE FILE Test CGAL_CFG_USING_BASE_MEMBER_BUG_2 succeded with the following output:
+Change Dir: /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/home/davinci/Documents/MATLAB/bin/glnxa64/gmake "cmTryCompileExec2868881894/fast"
+/home/davinci/Documents/MATLAB/bin/glnxa64/gmake -f CMakeFiles/cmTryCompileExec2868881894.dir/build.make CMakeFiles/cmTryCompileExec2868881894.dir/build
+gmake[1]: Entering directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building CXX object CMakeFiles/cmTryCompileExec2868881894.dir/CGAL_CFG_USING_BASE_MEMBER_BUG_2.cpp.o
+/usr/bin/c++    -frounding-math    -o CMakeFiles/cmTryCompileExec2868881894.dir/CGAL_CFG_USING_BASE_MEMBER_BUG_2.cpp.o -c /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/config/testfiles/CGAL_CFG_USING_BASE_MEMBER_BUG_2.cpp
+Linking CXX executable cmTryCompileExec2868881894
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec2868881894.dir/link.txt --verbose=1
+/usr/bin/c++    -frounding-math     CMakeFiles/cmTryCompileExec2868881894.dir/CGAL_CFG_USING_BASE_MEMBER_BUG_2.cpp.o  -o cmTryCompileExec2868881894 -rdynamic 
+gmake[1]: Leaving directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+
+Source file was:
+
+Determining if the function XOpenDisplay exists in the /usr/lib64/libX11.so;/usr/lib64/libXext.so passed with the following output:
+Change Dir: /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/home/davinci/Documents/MATLAB/bin/glnxa64/gmake "cmTryCompileExec4115949316/fast"
+/home/davinci/Documents/MATLAB/bin/glnxa64/gmake -f CMakeFiles/cmTryCompileExec4115949316.dir/build.make CMakeFiles/cmTryCompileExec4115949316.dir/build
+gmake[1]: Entering directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building C object CMakeFiles/cmTryCompileExec4115949316.dir/CheckFunctionExists.c.o
+/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=XOpenDisplay   -o CMakeFiles/cmTryCompileExec4115949316.dir/CheckFunctionExists.c.o   -c /usr/share/cmake/Modules/CheckFunctionExists.c
+Linking C executable cmTryCompileExec4115949316
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec4115949316.dir/link.txt --verbose=1
+/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=XOpenDisplay    CMakeFiles/cmTryCompileExec4115949316.dir/CheckFunctionExists.c.o  -o cmTryCompileExec4115949316 -rdynamic -lX11 -lXext 
+gmake[1]: Leaving directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+
+
+Determining if the function gethostbyname exists passed with the following output:
+Change Dir: /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/home/davinci/Documents/MATLAB/bin/glnxa64/gmake "cmTryCompileExec3610778351/fast"
+/home/davinci/Documents/MATLAB/bin/glnxa64/gmake -f CMakeFiles/cmTryCompileExec3610778351.dir/build.make CMakeFiles/cmTryCompileExec3610778351.dir/build
+gmake[1]: Entering directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building C object CMakeFiles/cmTryCompileExec3610778351.dir/CheckFunctionExists.c.o
+/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=gethostbyname   -o CMakeFiles/cmTryCompileExec3610778351.dir/CheckFunctionExists.c.o   -c /usr/share/cmake/Modules/CheckFunctionExists.c
+Linking C executable cmTryCompileExec3610778351
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec3610778351.dir/link.txt --verbose=1
+/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=gethostbyname    CMakeFiles/cmTryCompileExec3610778351.dir/CheckFunctionExists.c.o  -o cmTryCompileExec3610778351 -rdynamic 
+gmake[1]: Leaving directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+
+
+Determining if the function connect exists passed with the following output:
+Change Dir: /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/home/davinci/Documents/MATLAB/bin/glnxa64/gmake "cmTryCompileExec410470805/fast"
+/home/davinci/Documents/MATLAB/bin/glnxa64/gmake -f CMakeFiles/cmTryCompileExec410470805.dir/build.make CMakeFiles/cmTryCompileExec410470805.dir/build
+gmake[1]: Entering directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building C object CMakeFiles/cmTryCompileExec410470805.dir/CheckFunctionExists.c.o
+/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=connect   -o CMakeFiles/cmTryCompileExec410470805.dir/CheckFunctionExists.c.o   -c /usr/share/cmake/Modules/CheckFunctionExists.c
+Linking C executable cmTryCompileExec410470805
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec410470805.dir/link.txt --verbose=1
+/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=connect    CMakeFiles/cmTryCompileExec410470805.dir/CheckFunctionExists.c.o  -o cmTryCompileExec410470805 -rdynamic 
+gmake[1]: Leaving directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+
+
+Determining if the function remove exists passed with the following output:
+Change Dir: /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/home/davinci/Documents/MATLAB/bin/glnxa64/gmake "cmTryCompileExec4259220164/fast"
+/home/davinci/Documents/MATLAB/bin/glnxa64/gmake -f CMakeFiles/cmTryCompileExec4259220164.dir/build.make CMakeFiles/cmTryCompileExec4259220164.dir/build
+gmake[1]: Entering directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building C object CMakeFiles/cmTryCompileExec4259220164.dir/CheckFunctionExists.c.o
+/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=remove   -o CMakeFiles/cmTryCompileExec4259220164.dir/CheckFunctionExists.c.o   -c /usr/share/cmake/Modules/CheckFunctionExists.c
+Linking C executable cmTryCompileExec4259220164
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec4259220164.dir/link.txt --verbose=1
+/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=remove    CMakeFiles/cmTryCompileExec4259220164.dir/CheckFunctionExists.c.o  -o cmTryCompileExec4259220164 -rdynamic 
+gmake[1]: Leaving directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+
+
+Determining if the function shmat exists passed with the following output:
+Change Dir: /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/home/davinci/Documents/MATLAB/bin/glnxa64/gmake "cmTryCompileExec2708320459/fast"
+/home/davinci/Documents/MATLAB/bin/glnxa64/gmake -f CMakeFiles/cmTryCompileExec2708320459.dir/build.make CMakeFiles/cmTryCompileExec2708320459.dir/build
+gmake[1]: Entering directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building C object CMakeFiles/cmTryCompileExec2708320459.dir/CheckFunctionExists.c.o
+/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=shmat   -o CMakeFiles/cmTryCompileExec2708320459.dir/CheckFunctionExists.c.o   -c /usr/share/cmake/Modules/CheckFunctionExists.c
+Linking C executable cmTryCompileExec2708320459
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec2708320459.dir/link.txt --verbose=1
+/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=shmat    CMakeFiles/cmTryCompileExec2708320459.dir/CheckFunctionExists.c.o  -o cmTryCompileExec2708320459 -rdynamic 
+gmake[1]: Leaving directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+
+
+Determining if the function IceConnectionNumber exists in the ICE passed with the following output:
+Change Dir: /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp
+
+Run Build Command:/home/davinci/Documents/MATLAB/bin/glnxa64/gmake "cmTryCompileExec593305368/fast"
+/home/davinci/Documents/MATLAB/bin/glnxa64/gmake -f CMakeFiles/cmTryCompileExec593305368.dir/build.make CMakeFiles/cmTryCompileExec593305368.dir/build
+gmake[1]: Entering directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building C object CMakeFiles/cmTryCompileExec593305368.dir/CheckFunctionExists.c.o
+/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=IceConnectionNumber   -o CMakeFiles/cmTryCompileExec593305368.dir/CheckFunctionExists.c.o   -c /usr/share/cmake/Modules/CheckFunctionExists.c
+Linking C executable cmTryCompileExec593305368
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec593305368.dir/link.txt --verbose=1
+/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=IceConnectionNumber    CMakeFiles/cmTryCompileExec593305368.dir/CheckFunctionExists.c.o  -o cmTryCompileExec593305368 -rdynamic -lICE 
+gmake[1]: Leaving directory `/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/CMakeTmp'
+
+

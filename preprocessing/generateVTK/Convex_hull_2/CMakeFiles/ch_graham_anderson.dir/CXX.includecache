@@ -1,0 +1,20 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_2/ch_graham_anderson.cpp
+CGAL/Exact_predicates_inexact_constructions_kernel.h
+-
+CGAL/ch_graham_andrew.h
+-
+vector
+-
+algorithm
+-
+boost/bind.hpp
+-
+

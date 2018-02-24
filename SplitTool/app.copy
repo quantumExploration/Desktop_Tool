@@ -1,0 +1,476 @@
+#include "peeling.h"
+#include <GL/glext.h>
+
+#include <sstream>
+#include <stdio.h>
+#include <iostream>
+#include <fstream>
+#include <math.h>
+#include <assert.h>
+#include <string.h>
+#ifdef __APPLE__
+#include <GLUT/glut.h>
+#else
+#include <GL/glut.h>
+#endif
+
+#include "svConfig.h"
+#include "ivTrackball.h"
+#include "svLTArrow.h"
+#include "svLCArrow.h"
+#include "parser.h"
+#include "dataApi.h"
+
+//#include "renderApi.h"
+//#include "interfaceApi.h"
+
+int image_height =1000;
+int image_width = 1000;
+
+GLfloat m[16];
+
+Paser *paser;
+
+Trackball trackball;
+svLTArrow *lt;
+svLCArrow *lc;
+dataApi *raw;
+dataApi *contour;
+
+float alphainside = 0.5;
+float alphaoutside = 0.;
+float alpha = 0.25;
+svVector4 blackcolor(0,0,0,0.0);
+
+vector<int> symmetrytype;
+
+
+//========peeling==========
+int g_numPasses;
+int g_imageWidth;
+int g_imageHeight;
+GLuint g_quadDisplayList;
+bool g_useOQ;
+GLuint g_queryId;
+GLSLProgramObject g_shaderDualInit;
+GLSLProgramObject g_shaderDualPeel;
+GLSLProgramObject g_shaderDualBlend;
+GLSLProgramObject g_shaderDualFinal;
+unsigned g_numGeoPasses;
+float *g_backgroundColor;
+GLuint g_dualBackBlenderFboId;
+GLuint g_dualPeelingSingleFboId;
+GLuint g_dualDepthTexId[2];
+GLuint g_dualFrontBlenderTexId[2];
+GLuint g_dualBackTempTexId[2];
+GLuint g_dualBackBlenderTexId;
+GLenum g_drawBuffers[7];
+//========peeling done=====
+
+
+void readConfig(char *inputfile){
+  paser->ReadFiles(inputfile);
+  raw->init(paser->GetRawDir(), paser->GetRawFile(), paser->GetStoreDir(),
+              paser->GetPlaneCenter(), paser->GetPlaneVector(),
+              paser->GetPlaneDistance(), paser->GetFormat());
+cerr<<"raw"<<endl;
+  contour->init(paser->GetRawDir(), paser->GetRawFile(), paser->GetStoreDir(),
+              paser->GetPlaneCenter(), paser->GetPlaneVector(),
+              paser->GetPlaneDistance(), paser->GetFormat());
+cerr<<"contour"<<endl;
+  svVector3 c = raw->getPlaneC();
+  paser->SetSeedNum(raw->getSeed());
+  paser->SetPlane(raw->getPlaneD(),raw->getPlaneC());
+  char *str = new char[400];
+  sprintf(str, "%s/%s/density%s", paser->GetStoreDir(), paser->GetRawFile(), paser->GetPlaneName());
+cerr<<str<<endl;
+  paser->ProcessContour();
+cerr<<1<<endl;
+  paser->SetContourValues(raw->getContourValues(str));
+cerr<<2<<endl;
+  paser->ProcessClusterLayers();
+  paser->ResetBool();
+  delete [] str;
+}
+
+void init(){
+  raw = new dataApi();
+  contour = new dataApi();  
+  paser = new Paser();
+}
+
+void setData();
+
+void ArrowLight()
+{
+  GLfloat mat_ambient[] = {1,1,1,1};
+  GLfloat mat_diffuse[] = { 0.8, 0.8, 0.8, .8};
+  GLfloat mat_specular[] = { 0.2,0.2,0.2,0.2 };
+  GLfloat mat_shininess[] = { 50 };
+  glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient);
+  glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
+  glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, mat_specular);
+  glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+}
+
+
+void InitLight()
+{
+  GLfloat mat_diffuse[] = { 0.8, 0.8, 0.8,1};
+  GLfloat mat_specular[] = { 0.2,0.2,0.2,0.2 };
+  GLfloat light_position[] = { 100,100,200, 0 };
+  GLfloat white_light[] = { 0.8, 0.8, 0.8, 1.0 };
+  glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+  glLightfv(GL_LIGHT0, GL_DIFFUSE, white_light);
+  glLightfv(GL_LIGHT0, GL_SPECULAR, white_light);
+
+  GLfloat lmodel_ambient[] = {0.2,0.2,0.2,1.0};
+  GLfloat local_view[] = {0.0};
+  glLightModelfv(GL_LIGHT_MODEL_AMBIENT,lmodel_ambient);
+  glLightModelfv(GL_LIGHT_MODEL_LOCAL_VIEWER, local_view);
+
+  GLfloat light1_position[] = {0,0,100,0};
+  GLfloat light1_ambient[] = {0.2,0.2,0.2,1};
+  GLfloat light1_diffuse[] = {0.5,0.5,0.5,1.0};
+  GLfloat light1_specular[] = {0.5,0.5,0.5,1.0};
+  glLightfv(GL_LIGHT1, GL_AMBIENT, light1_ambient);
+  glLightfv(GL_LIGHT1, GL_POSITION, light1_position);
+  glLightfv(GL_LIGHT1, GL_DIFFUSE, light1_diffuse);
+  glLightfv(GL_LIGHT1, GL_SPECULAR,light1_specular);
+
+  ArrowLight();
+}
+
+
+void Reshape(int w, int h)
+{
+   g_imageWidth=w;g_imageHeight=h;
+
+   glClearColor(0., 0., 0., 1);
+   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+   glViewport(0, 0, (GLsizei) w, (GLsizei) h);
+
+   image_width = w;
+   image_height = h;
+
+   glMatrixMode(GL_PROJECTION);
+   glLoadIdentity();
+
+   float aspect =  float(w)/float(h);
+   float GLfloat_fov=60;
+    gluPerspective(GLfloat_fov,
+                        aspect,
+                        0.1,//   view_info.hither,
+                        1000);//  view_info.yon);
+
+   glMatrixMode(GL_MODELVIEW);
+   glLoadIdentity();
+   gluLookAt(0,0,55, 0,0,0,0,1,0);
+
+   DeleteDualPeelingRenderTargets();
+   InitDualPeelingRenderTargets();
+}
+void drawplane(){
+        glColor4f(0,0,1,0.5);
+
+       glBegin(GL_QUADS);
+       glVertex3f(-1.5, 0, -1.5);
+       glVertex3f(1.5, 0, -1.5);
+       glVertex3f(1.5, 0, 1.5);
+       glVertex3f(-1.5, 0, 1.5);
+       glEnd(); 
+}
+void RenderDualPeeling(){
+        glDisable(GL_DEPTH_TEST);
+        glEnable(GL_BLEND);
+
+ //===================================
+        glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, g_dualPeelingSingleFboId);
+        glDrawBuffers(2, &g_drawBuffers[1]);
+        glClearColor(0, 0, 0, 0);
+        glClear(GL_COLOR_BUFFER_BIT);
+        glDrawBuffer(g_drawBuffers[0]);
+        glClearColor(-MAX_DEPTH, -MAX_DEPTH, 0, 0);
+        glClear(GL_COLOR_BUFFER_BIT);
+        glBlendEquationEXT(GL_MAX_EXT);
+
+        glPushMatrix();
+        glMultMatrixf(m);
+        g_shaderDualInit.bind();
+        drawplane();
+        lt->RenderVBO();
+        g_shaderDualInit.unbind();
+        glPopMatrix();
+
+        CHECK_GL_ERRORS;
+
+//=======================================
+
+        glDrawBuffer(g_drawBuffers[6]);
+        glClearColor(g_backgroundColor[0], g_backgroundColor[1], g_backgroundColor[2], 0);
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        int currId = 0;
+
+        for (int pass = 1; g_useOQ || pass < g_numPasses; pass++) {
+                currId = pass % 2;
+                int prevId = 1 - currId;
+                int bufId = currId * 3;
+
+                glDrawBuffers(2, &g_drawBuffers[bufId+1]);
+                glClearColor(0, 0, 0, 0);
+                glClear(GL_COLOR_BUFFER_BIT);
+
+                glDrawBuffer(g_drawBuffers[bufId+0]);
+                glClearColor(-MAX_DEPTH, -MAX_DEPTH, 0, 0);
+                glClear(GL_COLOR_BUFFER_BIT);
+                glDrawBuffers(3, &g_drawBuffers[bufId+0]);
+                glBlendEquationEXT(GL_MAX_EXT);
+
+                glPushMatrix();
+                glMultMatrixf(m);
+                g_shaderDualPeel.bind();
+                g_shaderDualPeel.bindTextureRECT("DepthBlenderTex", g_dualDepthTexId[prevId], 0);
+                g_shaderDualPeel.bindTextureRECT("FrontBlenderTex", g_dualFrontBlenderTexId[prevId], 1);
+
+         //       glEnable(GL_LIGHTING);
+          //      g_shaderDualPeel.setUniform("Alpha", (float*)&(alphainside),1);
+            //    lt->RenderVBO();
+
+                g_shaderDualPeel.setUniform("Alpha", (float*)&(alphainside),1);
+                drawplane();
+                g_shaderDualPeel.setUniform("Alpha", (float*)&(alphaoutside),1);
+                lt->RenderVBO();
+                g_shaderDualPeel.unbind();
+
+                glPopMatrix();
+
+
+                CHECK_GL_ERRORS;
+
+                glDrawBuffer(g_drawBuffers[6]);
+
+                glBlendEquationEXT(GL_FUNC_ADD);
+                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+                if (g_useOQ) {
+                        glBeginQuery(GL_SAMPLES_PASSED_ARB, g_queryId);
+                }
+
+                g_shaderDualBlend.bind();
+                g_shaderDualBlend.bindTextureRECT("TempTex", g_dualBackTempTexId[currId], 0);
+                glCallList(g_quadDisplayList);
+                g_shaderDualBlend.unbind();
+
+                CHECK_GL_ERRORS;
+
+                if (g_useOQ) {
+                        glEndQuery(GL_SAMPLES_PASSED_ARB);
+                        GLuint sample_count;
+                        glGetQueryObjectuiv(g_queryId, GL_QUERY_RESULT_ARB, &sample_count);
+                        if (sample_count == 0) {
+                                break;
+                        }
+                }
+        }
+
+        glDisable(GL_BLEND);
+
+//==============================================
+        glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+        glDrawBuffer(GL_BACK);
+        g_shaderDualFinal.bind();
+        g_shaderDualFinal.bindTextureRECT("DepthBlenderTex", g_dualDepthTexId[currId], 0);
+        g_shaderDualFinal.bindTextureRECT("FrontBlenderTex", g_dualFrontBlenderTexId[currId], 1);
+        g_shaderDualFinal.bindTextureRECT("BackBlenderTex", g_dualBackBlenderTexId, 2);
+        glCallList(g_quadDisplayList);
+        g_shaderDualFinal.unbind();
+
+        CHECK_GL_ERRORS;
+}
+void Display(){
+   //InitLight();
+   glEnable(GL_DEPTH_TEST);
+   glClearColor(1., 1., 1., 1);
+   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+   glDisable(GL_LIGHTING);
+   glDisable(GL_LIGHT0);
+   glDisable(GL_LIGHT1);
+//   glEnable(GL_LIGHTING);
+//   glEnable(GL_LIGHT0);
+//   glEnable(GL_LIGHT1);
+//   glEnable(GL_NORMALIZE);
+   glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+   glEnable(GL_BLEND);  
+//   glEnable(GL_COLOR_MATERIAL);
+//   glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE); 
+
+   glPushMatrix();
+  // glMultMatrixf(m);
+   trackball.getMatrix().getValue(m);
+   RenderDualPeeling();
+
+    glPopMatrix();
+
+   glFlush();
+   glutSwapBuffers();
+}
+
+void mouse(int button, int state, int x, int y){
+        long s=0x00000000;
+    s |= (button == GLUT_LEFT_BUTTON)   ? ((state == GLUT_DOWN) ? Trackball::LBUTTON_DOWN : Trackball::LBUTTON_UP) : 0;
+    s |= (button == GLUT_MIDDLE_BUTTON) ? ((state == GLUT_DOWN) ? Trackball::MBUTTON_DOWN : Trackball::MBUTTON_UP) : 0;
+    s |= (button == GLUT_RIGHT_BUTTON)  ? ((state == GLUT_DOWN) ? Trackball::RBUTTON_DOWN : Trackball::RBUTTON_UP) : 0;
+
+
+    int key_state = glutGetModifiers();
+    s |= (key_state & GLUT_ACTIVE_CTRL)  ? Trackball::CTRL_DOWN  : 0;
+//    s |= (key_state & GLUT_ACTIVE_ALT)   ? Trackball::ALT_DOWN   : 0;
+        s |= (key_state & GLUT_ACTIVE_SHIFT) ? Trackball::SHIFT_DOWN : 0;
+
+        if (s & Trackball::BUTTON_DOWN){
+          trackball.mouseDown(s, x, y);
+          g_numPasses = 2;
+          glEnable(GL_CULL_FACE);
+        }
+
+        if (s & Trackball::BUTTON_UP){
+          trackball.mouseUp(s, x, y);
+          g_numPasses = 4;
+          glDisable(GL_CULL_FACE);
+        }
+        glutPostRedisplay();
+}
+
+void motion(int x, int y){
+        trackball.mouseMotion(x, y);
+        glutPostRedisplay();
+}
+
+void key(unsigned char key, int x, int y){
+        switch (key) {
+        case '\033':
+        case 'q':
+        case 'Q':
+                exit(0);
+                break;
+        case 'h':
+        case 'H':
+               trackball.reset();
+               break;
+        case 'a':
+               alphaoutside+=0.05;
+               break;
+        case 'A':
+               alphaoutside-=0.05;
+               break;
+        }
+        glutPostRedisplay();
+
+}
+
+int main(int argc, char **argv){
+
+   glutInit(&argc, argv);
+   glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGBA
+                          | GLUT_DEPTH);// | GLUT_ACCUM | GLUT_MULTISAMPLE);
+   glutInitWindowSize(image_width, image_height);
+   glutInitWindowPosition(0, 0);
+
+  glutCreateWindow("QDOT");
+  if (glewInit() != GLEW_OK)
+        {
+                printf("glewInit failed. Exiting...\n");
+                exit(1);
+        }
+  init();
+  readConfig(strdup(argv[1]));
+  setData();
+
+  cerr<<"Render routine..."<<endl;
+  lt = new svLTArrow(raw->getData());
+  lt->SetColor(blackcolor);
+ // lc ->SetColorByPower();cerr<<"color"<<endl;
+  lt->UpdateData();cerr<<"update data"<<endl;
+  lt->SetES(raw->getScaling());
+  lt->SetNumPower(raw->getNumPower());
+  lt->SetScaling(raw->getScaling());
+  lt->UpdateIndex(1);cerr<<"update index"<<endl;
+  lt->SetTubeRadius(0.05);cerr<<"radius"<<endl;
+  lt->SetRadius(0.1);
+  lt->SetScale(0.05);
+  lt->GenerateTubes();cerr<<"tube"<<endl;
+  lt->GenerateArrows();cerr<<"arrow"<<endl;
+ // lc->GenerateLegend();cerr<<"legend"<<endl;
+  lt->GenerateIndex(1);cerr<<"index"<<endl;
+  lt->UpdateTubeVBO();cerr<<"tvbo"<<endl;
+  lt->UpdateArrowVBO();cerr<<"avbo"<<endl;
+  lt->UpdateIndexVBO();cerr<<"ivbo"<<endl;
+ 
+  lc = new svLCArrow(raw->getData());
+  lc->SetES(raw->getScaling());
+  lc->SetNumPower(raw->getNumPower());
+  lc->SetScaling(raw->getScaling());
+  lc ->SetColorByPower();
+  lc->UpdateData();cerr<<"update data"<<endl;
+  lc->UpdateIndex(2);cerr<<"update index"<<endl;
+  lc->SetTubeRadius(0.05);cerr<<"radius"<<endl;
+  lc->SetRadius(0.1);
+  lc->SetScale(0.05);
+  lc->GenerateTubes();cerr<<"tube"<<endl;
+  lc->GenerateArrows();cerr<<"arrow"<<endl;
+  lc->GenerateIndex(2);cerr<<"index"<<endl;
+  lc->UpdateTubeVBO();cerr<<"tvbo"<<endl;
+  lc->UpdateArrowVBO();cerr<<"avbo"<<endl;
+  lc->UpdateIndexVBO();cerr<<"ivbo"<<endl;
+
+  svVector3 eye(0,0,55);
+  svVector3 center(0,0,0);
+  trackball.setEye(eye);
+  trackball.setFocus(center);
+  trackball.setWindowSize(image_width, image_height);
+
+  InitLight();
+  char *str = new char[200];
+  sprintf(str,"%s/libs/dual_depth_peeling/shaders/",SRC_DIR);
+
+  glutReshapeFunc(Reshape);
+  InitGL(str);
+  glutDisplayFunc(Display);
+  glutMouseFunc(mouse);
+  glutMotionFunc(motion);
+  glutKeyboardFunc(key);
+
+  glutMainLoop();
+  return 0;
+}
+
+void setData(){
+cerr<<"setdata"<<endl;
+  //raw->init(paser->GetRawDir(), paser->GetRawFile(), paser->GetStoreDir(),
+  //         paser->GetPlaneCenter(),
+  //        paser->GetPlaneVector(),
+ //         paser->GetPlaneDistance(),
+ //         paser->GetFormat());
+ // contour->init(paser->GetRawDir(), paser->GetRawFile(), paser->GetStoreDir(),
+   //        paser->GetPlaneCenter(),
+     //     paser->GetPlaneVector(),
+       //   paser->GetPlaneDistance(),
+         // paser->GetFormat());
+  contour->setContourData(paser->GetContourProperty());
+cerr<<"contour"<<endl;                      //    paser->GetSymmetryProperty());
+  raw->setRawData(paser->GetStoreDir(), paser->GetRawFile(),
+                  paser->GetSymmetryProperty());
+//  contour->setCluster(paser->GetMagRange00(),paser->GetMagRange10(),
+  //                    paser->GetMagRange01(),paser->GetMagRange11()
+    //                  paser->GetStep1Property(), paser->GetStep2Property(),
+      //                paser->GetSymmetryProperty(), symmetrytype);
+  raw->setCluster(paser->GetMagRange00(),paser->GetMagRange10(),
+                      paser->GetMagRange01(),paser->GetMagRange11(),
+                      paser->GetStep1Property(), paser->GetStep2Property(),
+                      paser->GetSymmetryProperty(), symmetrytype);
+  contour->setContourVariables(raw->getCluster(), raw->getAtom(),
+                               raw->getRegion(), raw->getPos());
+} 
+

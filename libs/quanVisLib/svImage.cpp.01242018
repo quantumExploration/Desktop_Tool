@@ -1,0 +1,517 @@
+#include "svImage.h"
+#include <fstream>
+#include <string.h>
+
+using namespace std;
+
+namespace __svl_lib {
+
+svImage::svImage(svRawQDOTData *d){
+  seed_num = 0;
+  New(d);  
+}
+
+void svImage::New(svRawQDOTData *d){
+  if(seed_num){cleanup();}
+  myData = d;
+  seed_num = myData->GetSeed();
+  myImage = new vector<imageData>[seed_num];
+  myImagePlane = new imagePlane[seed_num];
+  for(int i=0;i<seed_num;i++){
+    svVector3 p(0,0,0);
+    image_pos.add(p);
+  }
+  GenerateCoor();
+}
+
+bool sortimage(imageData data1, imageData data2){
+  if(fabs(data1.ipos[1]-data2.ipos[1])>1e-8){
+      return (data1.ipos[1]<data2.ipos[1]);
+  }
+  else if(fabs(data1.ipos[0]-data2.ipos[0])>1e-8){
+      return (data1.ipos[0]<data2.ipos[0]);
+  }
+}
+
+void svImage::GenerateCoor(){
+  svVector3 pc = myData->GetMinPlane();
+  svVector3 pd = myData->GetPlaneDir();
+  svScalar distance = myData->GetPlaneDistance();
+  svVector3Array *pos = myData->GetGlyphs();
+  svVector3 xcoor, ycoor;
+  svVector3 zcoor;
+  zcoor[0]=0;zcoor[1]=0;zcoor[2]=1;
+  if(fabs(pd[0])<1e-8 && fabs(pd[1])<1e-8 && fabs(pd[2]-1)<1e-8){
+     xcoor[0]=1;xcoor[1]=0;xcoor[2]=1;
+     ycoor[0]=0;ycoor[1]=1;ycoor[2]=0;
+  } 
+  else{
+     xcoor = cross(zcoor, pd);
+     ycoor = cross(pd, xcoor);
+  }
+  myCoor[0] = xcoor;
+  myCoor[1] = ycoor;
+  myCoor[2] = pd;
+  ilbbox[0]=9e+9;ilbbox[1]=9e+9;ilbbox[2]=9e+9;
+  irbbox[0]=-9e+9;irbbox[1]=-9e+9;irbbox[2]=-9e+9;
+  svVector3 lb;
+//compute the origin 
+  for(int i=0;i<seed_num;i++){
+     for(int j=0;j<pos[i].size();j++){
+        svVector3 newpos;
+        newpos[0] = GetDot(pos[i][j]-pos[0][0],myCoor[0]);
+        newpos[1] = GetDot(pos[i][j]-pos[0][0],myCoor[1]);
+        if(ilbbox[0]>newpos[0]){ilbbox[0]=newpos[0];}
+        if(ilbbox[1]>newpos[1]){ilbbox[1]=newpos[1];}
+     }
+  }
+//project back to world cooridinate
+  svVector3 origin = ilbbox[0] * myCoor[0] 
+                   + ilbbox[1] * myCoor[1];
+  ilbbox[0]=9e+9;ilbbox[1]=9e+9;ilbbox[2]=9e+9;
+//compute the image data on plane cooridinate with origin
+  for(int i=0;i<seed_num;i++){
+     svVector3 pp = pc + (svScalar)i * distance * pd;
+     double od = pointtoPlane(origin, pp, pd);
+     svVector3 op = origin - (svScalar)od * pd;
+     myOrigin.add(op);
+     for(int j=0;j<pos[i].size();j++){
+        svVector3 newpos; 
+        newpos[0] = GetDot(pos[i][j]-op,myCoor[0]);
+        newpos[1] = GetDot(pos[i][j]-op,myCoor[1]);
+        newpos[2] = GetDot(pos[i][j]-op,myCoor[2]);//(svScalar)i * distance * pd;
+        imageData tmpimage; 
+        tmpimage.ipos = newpos;
+        tmpimage.torindex = j;
+        myImage[i].push_back(tmpimage);
+        if(ilbbox[0]>newpos[0]){ilbbox[0]=newpos[0];}
+        if(ilbbox[1]>newpos[1]){ilbbox[1]=newpos[1];}
+        if(ilbbox[2]>newpos[2]){ilbbox[2]=newpos[2];}
+        if(irbbox[0]<newpos[0]){irbbox[0]=newpos[0];}
+        if(irbbox[1]<newpos[1]){irbbox[1]=newpos[1];}
+        if(irbbox[2]<newpos[2]){irbbox[2]=newpos[2];}
+     }
+     sort(myImage[i].begin(), myImage[i].end(), sortimage);
+  }
+}
+
+void svImage::SetRegion(svVector3 *r3d, svVector3 *r2d){
+  region3d[0] = r3d[0];
+  region3d[1] = r3d[1];
+  region2d[0] = r2d[0];
+  region2d[1] = r2d[1];
+}
+
+void svImage::Reshape(int segment, int rw, int rh, int rx, int ry){
+   tranx = rx;
+   trany = ry;
+   this->segment = segment;//the number of "bar" charts
+   sidex = (region2d[1][0]-region2d[0][0])/segment;
+   svScalar ratio = (irbbox[1]-ilbbox[1])/(irbbox[0]-ilbbox[0]);
+   sidey = sidey * ratio;
+}
+
+void svImage::GenerateImage(){
+//grid
+   int ii = seed_num/2;
+   for(int j=0;j<myImage[ii].size();j++){ 
+      svScalar dd = myImage[ii][j].ipos[1] - myImage[ii][0].ipos[1];
+      if(dd>0){
+         minD[1] = dd;break;
+      }
+   }
+   minD[0]=9e+9;
+   for(int j=1;j<myImage[ii].size();j++){
+      svScalar dd = myImage[ii][j].ipos[0] - myImage[ii][0].ipos[0];
+      if(dd>0 && dd<minD[0]) minD[0] =dd;
+   }
+   minD[2] = myData->GetPlaneDistance();
+//image
+   int fill = (int)((myImage[ii][1].ipos[0] - myImage[ii][0].ipos[0])/minD[0]);
+   svVector4 white(1,1,1,1);
+   int row = (irbbox[1] - ilbbox[1])/(minD[1])+1;
+   int column = (irbbox[0] - ilbbox[0])/(minD[0])+fill;
+   for(int i=0;i<seed_num;i++){
+      int indexj = 0;
+      int indexr1 = (myImage[i][0].ipos[1]-ilbbox[1])/minD[1];
+      int indexr2 = (myImage[i][myImage[i].size()-1].ipos[1]-ilbbox[1])/minD[1];
+      myImagePlane[i].row = row;
+      myImagePlane[i].column = column;
+      for(int j=0; j<row; j++){
+        if(j<indexr1 || j>indexr2){
+         for(int t=0;t<column;t++){
+           myImagePlane[i].rgb.add(white);
+         }
+        }
+        else{
+         for(int t=0;t<column;){
+            if(indexj >= myImage[i].size()){ //fill in the pixel after the data
+               for(int d=t;d<t+fill-1;d++){
+                   myImagePlane[i].rgb.add(colors->GetColor(i,
+                               myImage[i][indexj-1].torindex)); t++;
+               }
+               for(int d=t;d<column;d++){
+                myImagePlane[i].rgb.add(white);t++;
+               } break;
+            }
+            if(myImage[i][indexj+1].ipos[1] > myImage[i][indexj].ipos[1]){
+               for(int d=t;d<t+fill-1;d++){
+                   myImagePlane[i].rgb.add(colors->GetColor(i,
+                               myImage[i][indexj-1].torindex)); t++;
+               }
+               for(int d=t;d<column;d++){
+                myImagePlane[i].rgb.add(white);t++;
+               } break;
+            }
+            int index = (myImage[i][indexj].ipos[0]-ilbbox[0])/minD[0];
+            if(index>t){
+             if(t==0){ //fill in the pixel before the data
+              for(int d=0;d<index;d++){
+                myImagePlane[i].rgb.add(white);t++;
+              }
+             }
+             else{ //fill in the pixel between two data
+              int indexd = index - t;
+              int mid = indexd/2;
+              for(int d=0;d<=mid;d++){
+                myImagePlane[i].rgb.add(colors->GetColor(i,
+                                     myImage[i][indexj-1].torindex));
+                t++;
+              }
+              for(int d=mid+1;d<indexd;d++){
+               myImagePlane[i].rgb.add(colors->GetColor(i,
+                                     myImage[i][indexj].torindex));
+               t++;
+              }
+              myImagePlane[i].rgb.add(colors->GetColor(i,
+                               myImage[i][indexj].torindex));
+              t++; indexj++;
+             }
+            }
+            else if(index==t){ //fill in the pixel of a data
+              myImagePlane[i].rgb.add(colors->GetColor(i,
+                               myImage[i][indexj].torindex));
+              t++; indexj++;
+            }
+          }
+       }
+    }
+  }
+// update data
+  for(int i=0;i<seed_num;i++){
+     for(int j=0;j<myImage[i].size();j++){
+         svVector3 pos = myImage[i][j].ipos;
+         svScalar s = (irbbox[0]-ilbbox[0])/(irbbox[0]-ilbbox[0]+minD[0]);
+         pos[0]=pos[0]/s;
+         s = (irbbox[1]-ilbbox[1])/(irbbox[1]-ilbbox[1]+minD[1]);
+         pos[1]=pos[1]/s;
+         myImage[i][j].ipos = pos;
+     }
+  }   
+}
+void svImage::GenerateGroupByColor(char *dir){//by clustering
+  char *str = new char[400];
+  sprintf(str, "%s/tmpimagecluster.txt", dir);
+  ofstream outfile(str);
+  for(int i=0;i<seed_num;i++){
+     for(int j=0;j<myImagePlane[i].rgb.size();j++){
+        outfile<<myImagePlane[i].rgb[j][0]<<" "
+               <<myImagePlane[i].rgb[j][1]<<" "
+               <<myImagePlane[i].rgb[j][2]<<endl;
+     }
+  }
+  outfile.close();
+  char *clusterfile = new char[400];
+  sprintf(clusterfile, "%s/imagecluster.txt", dir);
+//===============================================
+  svKmeans *clusterField = new svKmeans();
+  clusterField->ComputeClusters(str, clusterfile, 
+               myImagePlane[0].rgb.size(),
+               seed_num, segment);
+//================Sort cluster label and arrange the grouping=================
+  ifstream infile(clusterfile);
+  vector<int> clusterlabel;
+  vector<int> uniquelabel;
+  for(int i=0;i<seed_num;i++){
+    int c; infile>>c;
+    uniquelabel.push_back(c);
+    clusterlabel.push_back(c);
+  }
+  std::vector<int>::iterator it;
+  sort(uniquelabel.begin(), uniquelabel.end());
+  it = std::unique (uniquelabel.begin(), uniquelabel.end());  
+  uniquelabel.resize(std::distance(uniquelabel.begin(),it));
+  groupList.resize(uniquelabel.size());
+  infile.close();
+ //order layer from the small to large 
+  int *clustermap = new int[uniquelabel.size()];
+  for(int i=0;i<uniquelabel.size();i++) clustermap[i] = -1;
+  int currentcluster = 0;
+  for(int i=0;i<clusterlabel.size();i++){
+    if(clustermap[clusterlabel[i]]<0){
+     if(clusterlabel[i]<currentcluster){
+       clusterlabel[i] = currentcluster;
+       clustermap[clusterlabel[i]] = currentcluster;
+       currentcluster++;
+     }
+    }
+    else{
+       clusterlabel[i] = clustermap[clusterlabel[i]];
+    }
+  }
+  for(int i=0;i<clusterlabel.size();i++){
+    groupList[clusterlabel[i]].push_back(i);
+  }
+  for(int i=0;i<groupList.size();i++){
+    sort(groupList[i].begin(), groupList[i].end());
+  }
+//==============================================
+  char *exe = new char[1024];
+  sprintf(exe, "rm %s %s", str, clusterfile);
+  system(exe); 
+  delete clusterField;
+  delete [] str;
+  delete [] clusterfile;
+  delete [] exe;
+  delete [] clustermap;
+  uniquelabel.clear();
+  clusterlabel.clear();
+  SetPosition();
+}
+void svImage::SetPosition(svImage *image){
+  image_pos = image->GetImagePos();
+  sidex = image->GetSideX();
+  sidey = image->GetSideY();
+  tranx = image->GetTranX();
+  trany = image->GetTranY();
+  scale = image->GetScale();
+  segment = image->GetSegment();
+  minD = image->GetMinD();
+  myOrigin = image->GetOrigin();
+  svVector3 *tmpCoor = image->GetCoor();
+  myCoor[0] = tmpCoor[0];
+  myCoor[1] = tmpCoor[1];
+  myCoor[2] = tmpCoor[2];
+}
+void svImage::SetPosition(){
+   int x = 0;
+   int y = 0;
+   svScalar sx = myImagePlane[0].column * minD[0];
+   scale = sidex / sx;
+   svScalar sy = myImagePlane[1].row * minD[1];
+   sidey = sy * scale;
+   for(int i=0;i<groupList.size();i++){
+     y = 0;
+     for(int j=0;j<groupList[i].size();j++){
+        int index = groupList[i][j];
+        if(index>=0){
+          image_pos[index][0] = x + tranx;
+          image_pos[index][1] = y + trany;      
+        }
+        y = y - sidey;
+     }
+     x = x + sidex;
+   } 
+}
+
+void svImage::Select(int button, int state, int x, int y){
+   if(x>=region2d[0][0] && x<=region2d[1][0]
+   && y>=region2d[0][1] && y<=region2d[1][1]){
+     for(int i=0;i<seed_num;i++){
+       if(x >= image_pos[i][0] && x <= image_pos[i][0] + sidex
+       && y >= image_pos[i][1] - sidey && y <= image_pos[i][1]){
+         bool exist = false;
+         for(int j=0;j<selectImage.size();j++){
+            if(i == selectImage[j]){
+               selectImage.erase(selectImage.begin()+j);
+               exist = true; break;
+            }
+         }
+         if(!exist){
+             ghostImagePos.add(image_pos[i]);
+             selectImage.push_back(i);
+         }
+       }
+     }
+   }
+}
+
+void svImage::SelectData(int x, int y){
+   selectData[0]=-1;
+   selectData[1]=-1;
+   if(x>=region2d[0][0] && x<=region2d[1][0]
+   && y>=region2d[0][1] && y<=region2d[1][1]){
+     for(int i=0;i<seed_num;i++){
+       if(x >= image_pos[i][0] && x <= image_pos[i][0] + sidex
+       && y >= image_pos[i][1] - sidey && y <= image_pos[i][1]){
+         selectData[0] = i;break;
+       }
+     }
+     if(selectData[0]<0) return;
+     svScalar s = (irbbox[0]-ilbbox[0])/(irbbox[0]-ilbbox[0]+minD[0]);
+     double td, dd;dd = 9e+9;
+     for(int j=0;j<myImage[selectData[0]].size();j++){
+       svScalar xd = myImage[selectData[0]][j].ipos[0] - x;
+       svScalar yd = myImage[selectData[0]][j].ipos[1] - y;
+       td = xd*xd + yd*yd;
+       if(td<dd){dd=td; selectData[1] = j;}
+     }
+   }
+}
+
+void svImage::Drag(int button, int state, int x, int y, int prex, int prey){
+   if(selectImage.size()>0){
+      if(selectImage.size()==1){
+          if(x>=region2d[0][0] && x<=region2d[1][0]
+             && y>=region2d[0][1] && y<=region2d[1][1]){
+             if(!(prex>=region2d[0][0] && prex<=region2d[1][0]
+                && prey>=region2d[0][1] && prey<=region2d[1][1])){
+                   prex= x ; prey=y;
+             }
+             Drag2D(x, y, prex, prey);
+          }
+          else if(x>=region3d[0][0] && x<=region3d[1][0]
+             && y>=region3d[0][1] && y<=region3d[1][1]){
+             //Drag3D(x, y, prex, prey);
+          }
+      }
+      else{
+         //Drag3D(x, y, prex, prey);
+      }
+   }
+   SetPosition();
+}
+
+void svImage::Release(){
+  //only for 2D drag now
+  for(int i=0;i<groupList.size();i++){
+    for(int j=0;j<groupList[i].size();j++){
+        if(groupList[i][j] == selectImage[0]){
+           groupList[i].erase(groupList[i].begin()+j);j--;
+        }
+        if(groupList[i][j] <0){
+           groupList[i][j] = selectImage[0];
+        }
+    }
+  } 
+  selectImage.clear();
+  ghostImagePos.free();
+}
+
+void svImage::Drag2D(int x, int y, int prex, int prey){
+  int index = selectImage[0];
+  svScalar cut[4];
+  int column, row;
+  image_pos[index][0] = image_pos[index][0] + (x - prex);
+  image_pos[index][1] = image_pos[index][1] + (y - prey);
+  if(image_pos[index][0]-sidex < tranx){
+    cut[0]=0;cut[1]=0;cut[2]=1;cut[3]=0;
+    column = -1;
+    row = 0;
+  }// layout = 0;//insert left
+  else if(image_pos[index][0] > tranx + groupList.size()*sidex){
+    cut[0]=0;cut[1]=0;cut[2]=0;cut[3]=1;
+    column = groupList.size();
+    row = 0;
+  } //layout = 1; //insert right
+  else{
+    column = (image_pos[index][0] - tranx)/sidex;
+    //svScalar cut[4];//left, right, up and down
+    if(column < 0){
+       cut[0] = (image_pos[index][0] - tranx)/sidex; 
+       cut[1] = 1-cut[0];
+    }
+    else{
+       cut[1] = (image_pos[index][0] - column * sidex)/sidex;
+       cut[0] = 1- cut[1];
+    }
+    row = (-image_pos[index][1] + trany)/sidey;
+    if(row < 0){
+       cut[2] = (image_pos[index][1] - trany)/sidey;
+       cut[3] = 1- cut[2];
+    }
+    else{
+       cut[3] = (trany - row * sidey - image_pos[index][1])/sidey;
+       cut[2] = 1- cut[3];
+    }
+  }
+  Drag2DLayout(cut, column, row);
+}
+
+void svImage::Drag2DLayout(svScalar *cut, int column, int row){
+  //cases:  
+  //new column or new row
+  if((cut[2] > cut[0] && cut[2] > cut[1])
+  || (cut[3] > cut[0] && cut[3] > cut[1])){
+  //new column
+    vector<int> tmpgroup;
+    tmpgroup.push_back(-1);
+    if(column < groupList.size())
+      groupList.insert(groupList.begin()+(column+1), tmpgroup);
+    else
+      groupList.push_back(tmpgroup);
+    tmpgroup.clear();
+  }
+  else{//new row
+    if(column >=0 && column < groupList.size()){
+      if(row < groupList[column].size()){
+         groupList[column].insert(groupList[column].begin() + (row+1), -1);
+      }
+      else{
+         groupList[column].push_back(-1);
+      }
+    } 
+  }
+}
+
+void svImage::Drag3D(int x, int y){
+  
+}
+
+void svImage::RenderBoundary(){
+   glLineWidth(2.);
+   for(int i=0;i<seed_num;i++){
+      glBegin(GL_LINE_LOOP);
+      glVertex2f(image_pos[i][0],image_pos[i][1]-sidey);
+      glVertex2f(image_pos[i][0]+sidex, image_pos[i][1]-sidey);
+      glVertex2f(image_pos[i][0]+sidex, image_pos[i][1]);
+      glVertex2f(image_pos[i][0], image_pos[i][1]);
+      glEnd(); 
+  }
+  glLineWidth(1.);
+}
+
+void svImage::SaveImage(char *dir, char *file){
+  char *str = new char[1024];
+  sprintf(str, "%s/%s", dir, file);
+  ofstream outfile(str);
+  outfile<<seed_num<<endl;
+  for(int i=0;i<seed_num;i++){
+    outfile<<myImagePlane[i].row<<" "<<myImagePlane[i].column<<endl;
+    for(int j=0;j<myImagePlane[i].rgb.size();j++){
+      outfile<<myImagePlane[i].rgb[j][0]<<" "
+             <<myImagePlane[i].rgb[j][1]<<" "   
+             <<myImagePlane[i].rgb[j][2]<<endl;
+    }
+  }
+  outfile.close(); 
+  delete []str;
+}
+void svImage::cleanup(){
+  for(int i=0;i<seed_num;i++){
+     myImage[i].clear();
+  }
+  delete [] myImage;
+  for(int i=0;i<seed_num;i++){
+     myImagePlane[i].rgb.free();
+  }
+  delete [] myImagePlane;
+  for(int i=0;i<groupList.size();i++) groupList[i].clear();
+  groupList.clear();
+  image_pos.free();
+  selectImage.clear();
+  ghostImagePos.free();
+}
+
+}
+

@@ -1,0 +1,527 @@
+
+/* rendering routine of a vector field using glyphs */
+
+#include "svMesh.h"
+
+#ifdef __APPLE__
+#include <GLUT/glut.h>
+#else
+#include <GL/glut.h>
+#endif
+
+#include <iostream>
+#include <fstream>
+#include "svException.h"
+#include "svUtil.h"
+#include "svColors.h"
+
+using namespace std;
+
+namespace __svl_lib {
+svMesh::svMesh(svMeshData *d){
+  nComponent = 0;
+  New(d);
+}
+
+void svMesh::New(svMeshData *d){
+  cleanup();
+
+  myData = d;
+//  vector<int> region = myData->GetUniqueRegion();
+  nComponent = myData->myQDOT->regionSize;//region.size()-1;
+
+  glyph_list = 15;
+  display_list=10;
+/*  mesh=new svVector3Array[nComponent];
+  dir = new svVector3Array[nComponent];
+  //colors = new svVector4Array[nComponent];
+  glyph = new svVector3Array[nComponent];
+  glyphDir = new svVector3Array[nComponent];
+  dirDiff = new svScalarArray[nComponent];
+  magDiff = new svScalarArray[nComponent];
+*/
+  maxMag = 0;
+  quadSize = 0.4; 
+  coneRadius = 0.1;
+  coneLength = quadSize/2.;
+}
+
+/*
+svMesh::svMesh(){
+// meshV = NULL;
+// meshN = NULL;
+// meshC = NULL;
+ meshSize = 0;
+}
+
+void svMesh::New(char *file, vector<int> index){
+ if(meshSize){
+  Clean();
+ }
+ for(int i=0;i<index.size();i++){
+  char *str = new char[400];
+  sprintf(str, "%s%d", file, index[i]);
+  ifstream infile(str);
+  int n;
+  infile>>n;
+  for(int j=0;j<n;){
+    svVector3 p[3];
+    for(int t=0;t<3;t++){
+     infile>>p[t][0]>>p[t][1]>>p[t][2];
+    }
+    svVector3 n[3];
+    n[0] = normalize(cross(p[1]-p[0], p[2]-p[0]));
+    n[1] = normalize(cross(p[2]-p[1], p[0]-p[1]));
+    n[2] = normalize(cross(p[0]-p[2], p[1]-p[2]));
+    for(int t=0;t<3;t++){
+        
+    }
+    j += 3;
+  }  
+  infile.close();
+  delete [] str; 
+ } 
+}
+*/
+void svMesh::New(vector<int> region)
+{
+    cleanup();
+
+    display_list = 1;
+    int size = region.size();
+    mesh = new svVector3Array[size];
+    dir = new svVector3Array[size]; 
+    colors = new svVector4Array[size];
+    meshregion.resize(size);
+    for(int i=0;i<region.size();i++)
+           meshregion[i] = region[i];
+}
+
+   
+void svMesh::SetData(char *file, int index)
+{
+   int n1; 
+//   cerr<<meshregion.size()<<" "<<index<<" ";
+   ifstream infile(file);
+   if(infile.is_open())
+   { infile>>n1;//>>n2;
+//    cerr<<n1<<endl;
+    for(int i=0;i<n1;i++)
+    { 
+         svVector3 p[3];
+         svVector3 n[3];
+         infile>>p[0][0]>>p[0][1]>>p[0][2];
+         infile>>n[0][0]>>n[0][1]>>n[0][2];
+         infile>>p[1][0]>>p[1][1]>>p[1][2];
+         infile>>n[1][0]>>n[1][1]>>n[1][2];
+         infile>>p[2][0]>>p[2][1]>>p[2][2];
+         infile>>n[2][0]>>n[2][1]>>n[2][2];
+
+    //     svVector3 n[3];
+    //     n[0] = normalize(cross(p[1]-p[0], p[2]-p[0]));
+    //     n[1] = normalize(cross(p[2]-p[1], p[0]-p[1]));
+    //     n[2] = normalize(cross(p[0]-p[2], p[1]-p[2]));
+         mesh[index].add(p[0]);mesh[index].add(p[1]);mesh[index].add(p[2]);
+         dir[index].add(n[0]);dir[index].add(n[1]);dir[index].add(n[2]);
+    }
+   }
+}
+
+void svMesh::GenerateGlyphs(){
+ double maxDir = 0;
+ for(int i=0;i<nComponent;i++){
+  svIntArray *index;
+  int size = myData->GetRegionSize(i);
+  index = new svIntArray[size];
+  svNear *near = new svNear();
+  near->ComputeNear(mesh[i],
+                    myData->GetInGlyph(i),
+                    index);
+  for(int j=0;j<size;j++){
+    svVector3 d (0,0,0);
+    for(int t=0;t<index[j].size();t++){
+      d = d + dir[i][index[j][t]];
+    }
+    glyph[i].add(mesh[i][index[j][0]]);
+    glyphDir[i].add(normalize(d));//dir[i][index[j]]);
+    dirDiff[i].add(myData->GetDirDiff(i,j));
+    magDiff[i].add(myData->GetMagDiff(i,j));
+    if(myData->GetMagDiff(i,j)>maxMag){
+       maxMag = myData->GetMagDiff(i,j);
+    } 
+    if(myData->GetDirDiff(i,j) > maxDir)maxDir=myData->GetDirDiff(i,j);
+  }
+  delete near;
+  for(int j=0;j<size;j++)
+  index[j].free();
+  delete [] index;
+ }//cout<<"maxDir "<<maxDir<<endl;
+}
+void svMesh::GenerateGlyphList(){
+ if(glIsList(glyph_list))
+     glDeleteLists(glyph_list, 1);
+ glNewList(glyph_list, GL_COMPILE);
+ for(int i=0;i<nComponent;i++){
+  for(int j=0;j<glyph[i].size();j++){
+    svVector3 v = svGetPerpendicularVector(glyphDir[i][j]); 
+    svScalar radius = magDiff[i][j]/maxMag * quadSize;
+    svVector3 head = glyph[i][j] + v * radius+glyphDir[i][j]*radius/5.;
+    glColor3f(1,0,0);
+    glBegin(GL_QUADS);
+    glNormal3f(glyphDir[i][j][0], glyphDir[i][j][1], glyphDir[i][j][2]);
+    for(int t=0;t<4;t++){
+      svVector3 p = svGetRotatePoint(head, glyph[i][j], 
+                          glyphDir[i][j], 90. * (float)t);
+      glVertex3f(p[0],p[1],p[2]);
+    }
+    glEnd();
+    glColor3f(0,1,0);
+    radius = tan(dirDiff[i][j]/4.) * coneLength;
+    svVector3 p = glyph[i][j] + glyphDir[i][j] * coneLength;
+    RenderCone(p, -glyphDir[i][j], radius, coneLength, 6);
+  }
+ }
+ glEndList();
+}
+void svMesh::GenerateGlyphList(ViewProperty &property){
+ glLineWidth(4.);
+ if(glIsList(glyph_list))
+     glDeleteLists(glyph_list, 1);
+ glNewList(glyph_list, GL_COMPILE);
+ for(int i=0;i<nComponent;i++){
+  for(int j=0;j<glyph[i].size();j++){
+    svVector3 v = svGetPerpendicularVector(glyphDir[i][j]);
+    svScalar radius = sqrt(magDiff[i][j]/maxMag * quadSize * quadSize);
+    svVector3 head = glyph[i][j] + v * radius+glyphDir[i][j]*radius/5.;
+    glColor3f(251./255.,184./255.,103./255.);//91./255.,168./255.,126./255.);
+    glBegin(GL_QUADS);
+    glNormal3f(glyphDir[i][j][0], glyphDir[i][j][1], glyphDir[i][j][2]);
+    for(int t=0;t<4;t++){
+      svVector3 p = svGetRotatePoint(head, glyph[i][j],
+                          glyphDir[i][j], 90. * (float)t);
+      glVertex3f(p[0],p[1],p[2]);
+    }
+    glEnd();
+    glColor3f(76./255.,28./255.,95./255.);
+    radius = tan(dirDiff[i][j]/2.) * coneLength;
+    svVector3 p = glyph[i][j] + glyphDir[i][j] * coneLength;
+    int segment;
+    float degree = dirDiff[i][j]/PI * 180.;
+    segment = degree/20;
+    float sdegree;
+    if(segment == 0){
+      segment = 2;
+    }
+    sdegree = degree/(float)segment;
+    RenderFan(property, glyph[i][j], glyphDir[i][j], radius, coneLength, segment, sdegree);
+  }
+ }
+ glEndList();
+ glLineWidth(1.);
+}
+void svMesh::SetColors()
+{
+     svColors *color = new svColors();
+     for(int i=0;i<meshregion.size();i++)
+     {
+         for(int j=0;j<mesh[i].size();j++)
+         {
+             colors[i].add(color->Get8Colors(meshregion[i]));
+         }
+     }
+     delete color;
+}
+
+void svMesh::GenerateWireframe(int region)
+{
+    if(glIsList(display_list))
+                glDeleteLists(display_list, 1);
+    glNewList(display_list, GL_COMPILE);
+
+   glDisable(GL_LIGHTING);
+   int index;
+   for(int i=0;i<meshregion.size();i++)
+   {
+         if(region == meshregion[i])
+         {
+              index = i;break;
+         }
+   }
+   glColor3f(166./255., 206./255., 227./255.); 
+   for(int i=0;i<mesh[index].size()-2;)
+   {
+      glBegin(GL_LINE_LOOP);
+      glVertex3f( mesh[index][i][0],mesh[index][i][1],mesh[index][i][2]);
+      glVertex3f( mesh[index][i+1][0],mesh[index][i+1][1],mesh[index][i+1][2]);
+      glVertex3f( mesh[index][i+2][0],mesh[index][i+2][1],mesh[index][i+2][2]);
+      glEnd();
+      i+=3;
+   }
+   glEnable(GL_LIGHTING);
+
+   glEndList();
+}
+
+void svMesh::GenerateWireframe()
+{
+    if(glIsList(display_list))
+                glDeleteLists(display_list, 1);
+    glNewList(display_list, GL_COMPILE);
+
+   glDisable(GL_LIGHTING);
+   glColor3f(166./255., 206./255., 227./255.);
+
+   for(int j=0;j< meshregion.size()-1;j++)
+   {
+   for(int i=0;i<mesh[j].size()-2;)
+   {
+      int index = j;
+      glBegin(GL_LINE_LOOP);
+      glVertex3f( mesh[index][i][0],mesh[index][i][1],mesh[index][i][2]);
+      glVertex3f( mesh[index][i+1][0],mesh[index][i+1][1],mesh[index][i+1][2]);
+      glVertex3f( mesh[index][i+2][0],mesh[index][i+2][1],mesh[index][i+2][2]);
+      glEnd();
+      i+=3;
+   }
+   }
+   glEnable(GL_LIGHTING);
+
+   glEndList();
+}
+
+
+void svMesh::GenerateSurface(int region)
+{
+    if(glIsList(display_list))
+                glDeleteLists(display_list, 1);
+    glNewList(display_list, GL_COMPILE);
+ 
+  int index;
+   for(int i=0;i<meshregion.size();i++)
+   {
+         if(region == meshregion[i])
+         {
+              index = i;break;
+         }
+   }
+
+   glColor3f(71./255., 171./255., 91./255.);//166./255., 206./255., 227./255.);
+
+      glBegin(GL_TRIANGLES);
+
+   for(int i=0;i<mesh[index].size()-2;)
+   {
+      glNormal3f( dir[index][i][0],dir[index][i][1],dir[index][i][2]);
+      glVertex3f( mesh[index][i][0],mesh[index][i][1],mesh[index][i][2]);
+      glNormal3f( dir[index][i+1][0],dir[index][i+1][1],dir[index][i+1][2]);
+      glVertex3f( mesh[index][i+1][0],mesh[index][i+1][1],mesh[index][i+1][2]);
+      glNormal3f( dir[index][i+2][0],dir[index][i+2][1],dir[index][i+2][2]);
+      glVertex3f( mesh[index][i+2][0],mesh[index][i+2][1],mesh[index][i+2][2]);
+      i+=3;
+   }
+      glEnd();
+  
+   glEndList();
+}
+
+void svMesh::GenerateSurfaces(int index)
+{
+    if(glIsList(display_list))
+                glDeleteLists(display_list, 1);
+    glNewList(display_list, GL_COMPILE);
+
+   glColor3f(166./255., 206./255., 227./255.);
+      glBegin(GL_TRIANGLES);
+  for(int j=0;j<meshregion.size()-index;j++)
+  {
+   for(int i=0;i<mesh[j].size()-2;)
+   {
+     int index = j;
+      glNormal3f( dir[index][i][0],dir[index][i][1],dir[index][i][2]);
+      glVertex3f( mesh[index][i][0],mesh[index][i][1],mesh[index][i][2]);
+      glNormal3f( dir[index][i+1][0],dir[index][i+1][1],dir[index][i+1][2]);
+      glVertex3f( mesh[index][i+1][0],mesh[index][i+1][1],mesh[index][i+1][2]);
+      glNormal3f( dir[index][i+2][0],dir[index][i+2][1],dir[index][i+2][2]);
+      glVertex3f( mesh[index][i+2][0],mesh[index][i+2][1],mesh[index][i+2][2]);
+      i+=3;
+   }
+ }   
+   glEnd();
+
+   glEndList();
+}
+
+
+
+void svMesh::GenerateWireframe(char *file)
+{
+    if(glIsList(display_list))
+                glDeleteLists(display_list, 1);
+    glNewList(display_list, GL_COMPILE);
+
+    glDisable(GL_LIGHTING);
+
+    ifstream infile(file);
+
+   if(infile.is_open())
+   {
+    int n1, n2;
+    infile>>n1;//>>n2;
+    for(int i=0;i<n1;i+=3)
+    {
+          svVector3 p[3];
+         infile>>p[0][0]>>p[0][1]>>p[0][2];
+         infile>>p[1][0]>>p[1][1]>>p[1][2];
+         infile>>p[2][0]>>p[2][1]>>p[2][2];
+
+         glBegin(GL_LINE_LOOP);
+         for(int j=0;j<3;j++)
+            glVertex3f(p[j][0], p[j][1], p[j][2]);
+         glEnd();
+    }
+    infile.close();
+    }
+    glEndList();
+}
+
+
+void svMesh::GenerateWiresolid(char *file)
+{
+    //cerr<<display_list<<endl;
+    if(glIsList(display_list))
+           glDeleteLists(display_list, 1);
+    glNewList(display_list, GL_COMPILE);
+    ifstream infile(file);
+    //cerr<<file<<" "<<infile.is_open()<<endl;
+    int n1, n2;
+    infile>>n1;
+    for(int i=0;i<n1;i+=3)
+    {
+         svVector3 p[3], n[3];
+         infile>>p[0][0]>>p[0][1]>>p[0][2];
+         infile>>n[0][0]>>n[0][1]>>n[0][2];
+         infile>>p[1][0]>>p[1][1]>>p[1][2];
+         infile>>n[1][0]>>n[1][1]>>n[1][2];
+         infile>>p[2][0]>>p[2][1]>>p[2][2];
+         infile>>n[2][0]>>n[2][1]>>n[2][2];
+        //if(p[0][2]<=0 || p[1][2]<=0 || p[2][2]<=0)continue;
+
+       // n[0] = normalize(cross(p[1]-p[0], p[2]-p[0]));
+       // n[1] = normalize(cross(p[2]-p[1], p[0]-p[1]));
+       /// n[2] = normalize(cross(p[0]-p[2], p[1]-p[2]));
+        //cerr<<p[0][0]<<" "<<p[0][1]<<" "<<p[0][2]<<endl;
+      // glColor3f(190/255., 186./255., 218./255.);//76./255.,28./266.,95./255.);
+         glColor3f(166./255., 206./255., 227./255.);
+
+         glBegin(GL_TRIANGLES);
+         for(int j=0;j<3;j++)
+         {
+                glNormal3f(n[j][0],n[j][1],n[j][2]);
+                glVertex3f(p[j][0], p[j][1], p[j][2]);
+         }
+         glEnd();
+     }
+    infile.close();
+    glEndList();
+}
+
+void svMesh::Render(char *file){
+    ifstream infile(file);
+    int n1, n2;
+    infile>>n1;
+    for(int i=0;i<n1;i+=3)
+    {
+         svVector3 p[3];
+         infile>>p[0][0]>>p[0][1]>>p[0][2];
+         infile>>p[1][0]>>p[1][1]>>p[1][2];
+         infile>>p[2][0]>>p[2][1]>>p[2][2];
+
+         svVector3 n[3];
+         n[0] = normalize(cross(p[1]-p[0], p[2]-p[0]));
+         n[1] = normalize(cross(p[2]-p[1], p[0]-p[1]));
+         n[2] = normalize(cross(p[0]-p[2], p[1]-p[2]));
+
+         glColor3f(190/255., 186./255., 218./255.);//76./255.,28./266.,95./255.);
+         glBegin(GL_TRIANGLES);
+         for(int j=0;j<3;j++)
+         {
+                glNormal3f(n[j][0],n[j][1],n[j][2]);
+                glVertex3f(p[j][0], p[j][1], p[j][2]);
+         }
+         glEnd();
+     }
+    infile.close();
+}
+
+void svMesh::Render()
+{
+    //glCallList(glyph_list);
+    glCallList(display_list);
+}
+
+void svMesh::GenerateSurfacesByColor()
+{
+    if(glIsList(display_list))
+                glDeleteLists(display_list, 1);
+    glNewList(display_list, GL_COMPILE);
+
+      glBegin(GL_TRIANGLES);
+  for(int j=0;j<meshregion.size();j++)
+  {
+   
+   for(int i=0;i<mesh[j].size()-2;)
+   {
+     int index = j;
+      glColor3f( colors[index][i][0],colors[index][i][1],colors[index][i][2]);
+      glNormal3f( dir[index][i][0],dir[index][i][1],dir[index][i][2]);
+      glVertex3f( mesh[index][i][0],mesh[index][i][1],mesh[index][i][2]);
+      glNormal3f( dir[index][i+1][0],dir[index][i+1][1],dir[index][i+1][2]);
+      glVertex3f( mesh[index][i+1][0],mesh[index][i+1][1],mesh[index][i+1][2]);
+      glNormal3f( dir[index][i+2][0],dir[index][i+2][1],dir[index][i+2][2]);
+      glVertex3f( mesh[index][i+2][0],mesh[index][i+2][1],mesh[index][i+2][2]);
+      i+=3;
+   }
+ }   
+   glEnd();
+
+   glEndList();
+}
+ 
+void svMesh::cleanup()
+{
+  if(nComponent > 0){
+    for(int i=0;i<nComponent;i++){
+      mesh[i].free();
+      dir[i].free();
+      glyph[i].free();
+      glyphDir[i].free();
+      dirDiff[i].free();
+      magDiff[i].free();
+    } 
+    delete [] mesh;
+    delete [] dir;
+    delete [] glyph;
+    delete [] glyphDir;
+    delete [] dirDiff;
+    delete [] magDiff;
+  }
+  
+/*
+    for(int i=0;i<meshregion.size();i++)  
+        mesh[i].free();
+    delete [] mesh;
+
+     for(int i=0;i<meshregion.size();i++)
+          dir[i].free();
+    delete []dir;
+    meshregion.clear();
+     
+     for(int i=0;i<meshregion.size();i++)
+         colors[i].free();
+    delete []colors;
+*/
+}
+
+}
+
+

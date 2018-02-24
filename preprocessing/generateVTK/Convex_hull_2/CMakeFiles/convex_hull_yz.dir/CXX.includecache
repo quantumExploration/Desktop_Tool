@@ -1,0 +1,20 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_2/convex_hull_yz.cpp
+iostream
+-
+iterator
+-
+CGAL/Exact_predicates_inexact_constructions_kernel.h
+-
+CGAL/Projection_traits_yz_3.h
+-
+CGAL/convex_hull_2.h
+-
+

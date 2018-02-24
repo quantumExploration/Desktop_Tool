@@ -1,0 +1,128 @@
+/*
+ *base function of image
+ *for raw qdot data
+ *assume the grid distributions on different iamges are the same 
+ * */
+#ifndef __SV_IMAGE_H
+#define __SV_IMAGE_H
+
+#include "svSlice.h"
+#include "svConfig.h"
+
+namespace __svl_lib {
+
+typedef struct imageData{
+  svVector3 ipos;//image pos
+  svInt torindex;//image -> raw index
+} imageData;
+
+typedef struct imagePlane{
+  int row;
+  int column;
+  svVector4Array rgb;
+}imagePlane;
+typedef MArray<imagePlane> svImageArray;
+
+class svImage 
+{
+ public:
+  svImage(){};
+  svImage(svRawQDOTData *d);
+  virtual ~svImage(){cleanup();}
+
+  virtual void New(svRawQDOTData *d);  
+  virtual void GenerateCoor();
+  virtual void GenerateImage();  
+
+  void SetRegion(svVector3 *r3d, svVector3 *r2d);
+  void Reshape(int segment, int rw, int rh, int rx, int ry);
+
+  virtual void RenderColors(){}
+  virtual void RenderBoundary();
+
+  virtual void Render3D(){}
+  virtual void Render(){}
+
+  virtual void SetPosition();
+  virtual void SetPosition(svImage *image);
+
+  virtual void SetColors(svColors *c){colors = c;}
+  virtual void GenerateGroupByColor(char *dir);
+
+  virtual void Release();
+  virtual void Rotate(Matrix4f &m){}
+  virtual void Select(int button, int state, int x, int y);
+  virtual void SelectData(int x, int y);
+  virtual void Drag(int button, int state, int x, int y, int prex, int prey);
+
+  /*virtual void SetMinD(svVector3 d){minD = d;}
+  virtual void SetSideX(float x);//{sidex = x;sidey=(rbbox[1]-lbbox[1])/(rbbox[0]-lbbox[0])*x;}
+  virtual void SetPosition();
+
+*/  virtual void SetMinD();
+  svVector3 GetMinD(){return minD;}
+  svScalar GetSideX(){return sidex;}
+  svScalar GetSideY(){return sidey;}
+  virtual void SetSide(svScalar x, svScalar y){sidex=x;sidey=y;}
+
+  virtual void SaveImage(char *dir, char *file);
+//  virtual void GenerateColors(char *inputfile1, char *inputfile2, float cutoff, char *output);
+//  virtual void SetColors(char *file);
+//  virtual void SaveColortoFile(char *file, svVector4Array *color);
+
+ // virtual void getImageSize(int &lbwidth, int &lbheight, int &rbwidth, int &rbheight);
+
+  svVector3Array GetImagePos(){return image_pos;}
+  svScalar GetTranX(){return tranx;}
+  svScalar GetTranY(){return trany;}
+  svScalar GetScale(){return scale;}
+  int GetSegment(){return segment;}
+  svVector3Array GetOrigin(){return myOrigin;}
+  svVector3 *GetCoor(){return myCoor;}
+  int GetSelectData(){return selectData[0];}
+  svScalar GetSelectValue(){return myData->GetMag(selectData[0], 
+                            myImage[selectData[0]][selectData[1]].torindex);}
+  
+protected:
+  virtual void Drag3D(int x, int y);//to 3D
+  virtual void Drag2D(int x, int y, int prex, int prey);//to 2D, rearrange
+  virtual void Drag2DLayout(svScalar *cut, int column, int row);
+
+  void cleanup();
+
+  int seed_num;
+
+  svRawQDOTData *myData;
+  svVector3Array myOrigin;//origin on the plane
+  vector<imageData> *myImage;//the index: original data -> image data;
+  imagePlane *myImagePlane;
+  
+  svVector3 myCoor[3];
+  svColors *colors;
+  vector< vector<int> > groupList;
+
+//lbbox and rbbox in image coordinates 
+  svVector3 ilbbox;
+  svVector3 irbbox;
+//regions to render 2d and 3d
+  svVector3 region3d[2];
+  svVector3 region2d[2];
+
+  svScalar sidex;
+  svScalar sidey;
+  svScalar tranx;
+  svScalar trany;
+  svScalar scale;
+  int segment;
+
+  svVector3Array image_pos;
+  svVector3 minD; 
+  svVector3Array ghostImagePos; 
+  vector<int> selectImage;
+  int selectData[2];//for selecting one data
+  vector<int> image3d;
+};
+
+}
+
+#endif // __SV_IMAGE_H

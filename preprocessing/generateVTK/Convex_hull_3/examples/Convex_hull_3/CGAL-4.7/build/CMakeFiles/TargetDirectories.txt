@@ -1,0 +1,6 @@
+/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/src/CGAL/CMakeFiles/CGAL.dir
+/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/src/CGAL_Core/CMakeFiles/CGAL_Core.dir
+/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/src/CGAL_ImageIO/CMakeFiles/CGAL_ImageIO.dir
+/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/demos.dir
+/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/examples.dir
+/home/davinci/Documents/henan/NIST/NIST_SPLIT/SPLIT_VIS2/preprocessing/generateVTK/Convex_hull_3/examples/Convex_hull_3/CGAL-4.7/build/CMakeFiles/install_FindCGAL.dir
