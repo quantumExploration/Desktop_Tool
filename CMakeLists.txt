@@ -272,6 +272,15 @@ ${PEELING_COMMON_INCLUDE_DIR}${PEELING_NVMODEL_INCLUDE_DIR}
 ${GLEW_INCLUDE_DIR})
 install(TARGETS testapp  RUNTIME DESTINATION bin)
 
+add_executable(testappnosymmetry SplitTool/testappnosymmetry.cpp)
+target_link_libraries(testappnosymmetry svl ${SOIL_LIBRARIES} ${GLUT_LIBRARIES}
+ ${OPENGL_LIBRARIES} ${GLUI_LIBRARIES} ${GLEW_LIBRARIES}
+)
+target_include_directories(testappnosymmetry PRIVATE ${SVL_INCLUDE_DIR}
+${SOIL_INCLUDE_DIR}   } ${JCUTIL_INCLUDE_DIR} ${GLUI_INCLUDE_DIR}
+${PEELING_COMMON_INCLUDE_DIR}${PEELING_NVMODEL_INCLUDE_DIR}
+${GLEW_INCLUDE_DIR})
+install(TARGETS testappnosymmetry  RUNTIME DESTINATION bin)
 
 #add_executable(splitToolkit SplitTool/splitToolkit.cpp SplitTool/parser.cpp)
 #target_link_libraries(splitToolkit svl ${SOIL_LIBRARIES} ${GLUT_LIBRARIES}
