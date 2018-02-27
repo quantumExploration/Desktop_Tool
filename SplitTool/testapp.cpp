@@ -15,104 +15,31 @@
 
 #pragma warning( disable : 4996 )
 
-//henan
-//#include <nvModel.h>
+#include "testapp.h"
 
-#include "GLSLProgramObject.h"
-#include <GL/glew.h>
-#include <GL/glut.h>
-#include <sstream>
-#include <stdio.h>
-#include <iostream>
-#include <fstream>
-#include <math.h>
-#include <assert.h>
-#include <string.h>
-#include "svConfig.h"
-#include "ivTrackball.h"
-#include "svQDOTData.h"
-#include "svMesh.h"
-#include "svLCArrow.h"
-#include "svLTArrow.h"
-#include "svImageList.h"
+glyphInfo glyphinfo;
+enableInfo enableinfo;
 
-#define MAX_DEPTH 1.0
-int g_numPasses = 4;
-int g_imageWidth = 1024;
-int g_imageHeight = 768;
-GLuint g_quadDisplayList;
-GLuint g_vboId;
-GLuint g_eboId;
-bool g_useOQ = false;
-GLuint g_queryId;
-GLSLProgramObject g_shaderDualInit;
-GLSLProgramObject g_shaderDualPeel;
-GLSLProgramObject g_shaderDualBlend;
-GLSLProgramObject g_shaderDualFinal;
-float g_opacity = 1;
-unsigned g_numGeoPasses = 0;
-float g_white[3] = {1.0,1.0,1.0};
-float g_black[3] = {0.0};
-float *g_backgroundColor = g_white;
-GLuint g_dualBackBlenderFboId;
-GLuint g_dualPeelingSingleFboId;
-GLuint g_dualDepthTexId[2];
-GLuint g_dualFrontBlenderTexId[2];
-GLuint g_dualBackTempTexId[2];
-GLuint g_dualBackBlenderTexId;
-GLenum g_drawBuffers[] = {GL_COLOR_ATTACHMENT0_EXT,
-						   GL_COLOR_ATTACHMENT1_EXT,
-						   GL_COLOR_ATTACHMENT2_EXT,
-						   GL_COLOR_ATTACHMENT3_EXT,
-						   GL_COLOR_ATTACHMENT4_EXT,
-						   GL_COLOR_ATTACHMENT5_EXT,
-						   GL_COLOR_ATTACHMENT6_EXT
-};
-#define CHECK_GL_ERRORS {}
-float alpha = 0.6;
-void MakeFullScreenQuad();
-void InitDualPeelingRenderTargets();
-void DeleteDualPeelingRenderTargets();
-void BuildShaders(string SHADER_PATH);
-void InitGL(string shader);
-void RenderDualPeeling();
+using namespace std;
 
-
-
-using namespace __svl_lib;
-svVector3 eye;//(0,0,100);
-GLfloat m[16];
-svMesh *meshRender;
-svLCArrow *lc;
-svLTArrow *lt;
-svColors *myColor;
-svImageList *mySlice;
-svQDOT *rawData;
-svRawSliceData *sliceData;
-svRawSymmetryData *symmetryData;
-svRawClusterData *clusterData;
-svContourData *contourData;
-svContourClusterData *contourClusterData;
-svMeshData *meshData;
-State *myState;
-ViewProperty viewproperty;
-Trackball trackball;
-bool encode_type = 0;
-int sample = 3;
-int contourstep = 0;
-bool contourratio = false;
-float arrowradius=0.06;
-float tuberadius=0.05;
-
-
-bool enableMesh = true;
-bool enableClusterBoundary = true;
-int zmin = 0;
-int zmax = 1000;
+void initParameters()
+{
+  glyphinfo.arrowradius = 0.06;
+  glyphinfo.tuberadius = 0.05;
+  glyphinfo.encodetype = 0;
+  glyphinfo.sample = 3;
+  glyphinfo.zmin = 0;
+  glyphinfo.zmax = 1000;
+  
+  enableinfo.enableMesh = true;
+  enableinfo.enableClusterBoundary = true;
+}
 
 void init(){
   rawData = new svQDOT();
   myState = new State();
+
+//---------------------This part will be replaced by Parser------------//
   vector<int> num;num.push_back(40); //num.push_back(15);
   vector<bool> split; split.push_back(false); split.push_back(false);
   double **weights = new double*[2];weights[0]=new double[7];weights[1]=new double[7];
@@ -142,6 +69,7 @@ void init(){
   svVector3 planepos(0,0,-10);
   svVector3 planedir(0,0,1);
   myState->NewSymmetryProperty(pos,dir,x,y,planepos, planedir, 0.25, angle,mag);
+//-------------------------------------------------------------------//
 }
 
 void setData(int type, char *filedir, char *tmpdir, char *file,
@@ -149,6 +77,7 @@ void setData(int type, char *filedir, char *tmpdir, char *file,
 cerr<<"Set Data"<<endl;
   char *str= new char[300];
   sprintf(str,"%s/%s/",tmpdir,file);
+
 cout<<"Read Data.."<<endl;
   rawData->SetData(type, filedir, str, file);
 
@@ -173,7 +102,7 @@ cout<<"Generate Symmetry ..."<<endl;
   sliceData->SetSymmetry(symmetryData);
   symmetryData->Init(str);
   myState->NewVisible(rawData);
-  sliceData->GenerateSampling(sample);
+  sliceData->GenerateSampling(glyphinfo.sample);
   sliceData->UpdateVisibleBySplit();
   myState->UpdateVisible(rawData);
 
@@ -184,14 +113,14 @@ cout<<"Generate Cluster ..."<<endl;
   clusterData->SetSymmetry(symmetryData);
   clusterData->state = myState;
   clusterData->Init(str);
-  if(enableClusterBoundary)clusterData->GenerateSampling(sample);
+  if(enableinfo.enableClusterBoundary)clusterData->GenerateSampling(glyphinfo.sample);
   sliceData->UpdateVisibleBySplit();
   myState->UpdateVisible(rawData);
 
 cout<<"Generate Contour..."<<endl;
   contourData = new svContourData(rawData, sliceData);
   contourData->GenerateContourTree(str);
-  contourData->GenerateContoursByContourTree(str, contourstep, contourratio);
+//  contourData->GenerateContoursByContourTree(str, contourstep, contourratio);
 //  contourData->GenerateSampling(sample);
 
 cout<<"Generate Contour Cluster..."<<endl;
@@ -214,9 +143,9 @@ cout<<"Generate Contour Cluster..."<<endl;
 
 cout<<"Generate Glyphs ..."<<endl;
   lc = new svLCArrow(sliceData);
-  lc->SetRadius(arrowradius);//0.1
-  lc->SetScale(tuberadius);
-  lc->SetTubeRadius(tuberadius);//0.05
+  lc->SetRadius(glyphinfo.arrowradius);//0.1
+  lc->SetScale(glyphinfo.tuberadius);
+  lc->SetTubeRadius(glyphinfo.tuberadius);//0.05
   lc->UpdateData();
   lc->UpdateIndex();
   lc->SetColors(myColor);
@@ -229,9 +158,9 @@ cout<<"Generate Glyphs ..."<<endl;
 
   myColor->SetColorType(c_texture_cluster);
   lt = new svLTArrow(sliceData);
-  lt->SetRadius(arrowradius);
-  lt->SetScale(tuberadius);
-  lt->SetTubeRadius(tuberadius);
+  lt->SetRadius(glyphinfo.arrowradius);
+  lt->SetScale(glyphinfo.tuberadius);
+  lt->SetTubeRadius(glyphinfo.tuberadius);
   lt->UpdateData();
   lt->UpdateIndex();
   lt->SetColors(myColor);
@@ -406,7 +335,9 @@ void InitLight()
 
   GLfloat mat_diffuse[] = { 0.8, 0.8, 0.8,1};
   GLfloat mat_specular[] = { 0.2,0.2,0.2,0.2 };
-  GLfloat light_position[] = {eye[0], eye[1], eye[2],1};//100,100,200, 0 };
+  GLfloat light_position[] = {viewproperty.eye[0], 
+                              viewproperty.eye[1], 
+                              viewproperty.eye[2],1};//100,100,200, 0 };
   GLfloat white_light[] = { 0.8, 0.8, 0.8, 1.0 };
   glLightfv(GL_LIGHT0, GL_POSITION, light_position);
   glLightfv(GL_LIGHT0, GL_DIFFUSE, white_light);
@@ -487,8 +418,8 @@ void RenderDualPeeling()
 
 	g_shaderDualInit.bind();
   glPushMatrix();
-  glMultMatrixf(m);
-  if(enableMesh) {
+  glMultMatrixf(viewproperty.tm);
+  if(enableinfo.enableMesh) {
     meshRender->RenderGlyphs();
     meshRender->RenderSurface();
   }
@@ -539,12 +470,12 @@ void RenderDualPeeling()
     g_shaderDualPeel.setUniform("Alpha", (float*)&g_opacity, 1);
     float g_twoSide = 1;
     glPushMatrix();
-    glMultMatrixf(m);
+    glMultMatrixf(viewproperty.tm);
     g_shaderDualPeel.setUniform("isTwoSide", (float*)&g_twoSide, 1);
-    if(enableMesh) meshRender->RenderGlyphs();
+    if(enableinfo.enableMesh) meshRender->RenderGlyphs();
     g_twoSide = 0;
     g_shaderDualPeel.setUniform("isTwoSide", (float*)&g_twoSide, 1);
-    if(enableMesh) meshRender->RenderSurface();
+    if(enableinfo.enableMesh) meshRender->RenderSurface();
     g_opacity = 0.75;
     g_shaderDualPeel.setUniform("Alpha", (float*)&g_opacity, 1);
     lt->RenderVBO();
@@ -607,10 +538,13 @@ void display()
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-  gluLookAt(eye[0], eye[1], eye[2], 0,0,0,0,1,0);
-  trackball.getMatrix().getValue(m);
-  for(int i=0;i<16;i++)viewproperty.tm[i]=m[i];
-	RenderDualPeeling();
+  gluLookAt(viewproperty.eye[0], 
+            viewproperty.eye[1], 
+            viewproperty.eye[2], 
+            0,0,0,0,1,0);
+  trackball.getMatrix().getValue(viewproperty.tm);
+  //for(int i=0;i<16;i++)viewproperty.tm[i]=m[i];
+   RenderDualPeeling();
 
    glGetDoublev (GL_MODELVIEW_MATRIX, viewproperty.mvmatrix);
    glGetDoublev (GL_PROJECTION_MATRIX, viewproperty.projmatrix);
@@ -682,7 +616,7 @@ void mouse(int button, int state, int x, int y){
         if (s & Trackball::BUTTON_UP){
           trackball.mouseUp(s, x, y);
           g_numPasses=4;
-          if(enableMesh)meshRender->GenerateGlyph(viewproperty);
+          if(enableinfo.enableMesh)meshRender->GenerateGlyph(viewproperty);
           glDisable(GL_CULL_FACE);
         }
         glutPostRedisplay();
@@ -704,17 +638,17 @@ void key(unsigned char key, int x, int y){
                trackball.reset();
                break;
         case 'm':
-              enableMesh = 1-enableMesh;
+              enableinfo.enableMesh = 1-enableinfo.enableMesh;
               break;
         case 's':{
                       cout<<"input frequency"<<endl;
-                      cin>>sample;
+                      cin>>glyphinfo.sample;
                       myState->NewVisible(rawData);
-                      if(enableClusterBoundary)
-                        clusterData->GenerateSampling(sample);
+                      if(enableinfo.enableClusterBoundary)
+                        clusterData->GenerateSampling(glyphinfo.sample);
                       else
-                        sliceData->GenerateSampling(sample);
-                      myState->UpdateSplitVisible(zmin, zmax);
+                        sliceData->GenerateSampling(glyphinfo.sample);
+                      myState->UpdateSplitVisible(glyphinfo.zmin, glyphinfo.zmax);
                       sliceData->UpdateVisibleBySplit();
                       myState->UpdateVisible(rawData);
                       lt->UpdateIndex();
@@ -724,12 +658,12 @@ void key(unsigned char key, int x, int y){
         case 'l':
     		{
     		  cout<<"input the min and max z layer index"<<endl;
-    		  cin>>zmin; cin>>zmax;
-          if(enableClusterBoundary)
-            clusterData->GenerateSampling(sample);
+    		  cin>>glyphinfo.zmin; cin>>glyphinfo.zmax;
+          if(enableinfo.enableClusterBoundary)
+            clusterData->GenerateSampling(glyphinfo.sample);
           else
-            sliceData->GenerateSampling(sample);
-          myState->UpdateSplitVisible(zmin, zmax);
+            sliceData->GenerateSampling(glyphinfo.sample);
+          myState->UpdateSplitVisible(glyphinfo.zmin, glyphinfo.zmax);
           sliceData->UpdateVisibleBySplit();
                       //clusterData->GenerateClusterSampling(sample);
                       //myState->UpdateSplitVisible(zmin, zmax);
@@ -752,15 +686,14 @@ void key(unsigned char key, int x, int y){
 //--------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
-  eye[0]=0;
-  eye[1]=0;
-  eye[2]=100;
   svVector3 center(0,0,0);
   svVector3 dir(0,0,1);
   svScalar distance = 0.25;
-  viewproperty.eye = eye;
-  trackball.getMatrix().getValue(m);
-  for(int i=0;i<16;i++)viewproperty.tm[i]=m[i];
+  viewproperty.eye[0] = 0;
+  viewproperty.eye[1] = 0;
+  viewproperty.eye[2] = 100;
+  trackball.getMatrix().getValue(viewproperty.tm);
+//  for(int i=0;i<16;i++)viewproperty.tm[i]=m[i];
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE);
 	glutInitWindowSize(g_imageWidth, g_imageHeight);
   glutInitWindowPosition(0,0);
