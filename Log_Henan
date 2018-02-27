@@ -1,8 +1,13 @@
 02/25/2018
 Fix depth peeling bug
+
 02/26/2018
 Fix a bug in re-assigning region labels
 Fix shader with two-slided lighting for surface
 Fix the reshape of 2d slices
 Fix the wrong main file in ContourTree
+Test two-dot data
+
+02/27/2018
 Fix VTK version bugs
+create testapp.h
