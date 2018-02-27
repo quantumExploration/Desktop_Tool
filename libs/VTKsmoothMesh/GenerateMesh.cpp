@@ -212,7 +212,11 @@ void meshConstruction(){
   cout<<"It will take 10 minutes to generate an initial surface ..."<<endl;
   vtkSmartPointer<vtkDelaunay3D> del3d =
      vtkSmartPointer<vtkDelaunay3D>::New();
+#if VTK_MAJOR_VERSION <= 5
+  del3d->SetInput(contourgrid);
+#else
   del3d->SetInputData(contourgrid);
+#endif
   del3d->SetTolerance(0.001);
   del3d->SetAlpha(0);
 
@@ -243,8 +247,11 @@ void sphereSmooth(){
 */
   vtkSmartPointer<vtkWindowedSincPolyDataFilter> smoothFilter =
   vtkSmartPointer<vtkWindowedSincPolyDataFilter>::New();
-
+#if VTK_MAJOR_VERSION <= 5
+  smoothFilter->SetInput(contourPolygon);
+#else
   smoothFilter->SetInputData(contourPolygon);//SetInputConnection(vtkReader->GetOutputPort());
+#endif
   smoothFilter->SetNumberOfIterations(75);
   smoothFilter->SetEdgeAngle(180);
   smoothFilter->SetFeatureAngle(180);
@@ -586,11 +593,19 @@ void mergeWhole(){
 */
   vtkSmartPointer<vtkAppendPolyData> appendFilter =
     vtkSmartPointer<vtkAppendPolyData>::New();
+#if VTK_MAJOR_VERSION <= 5
+  appendFilter->AddInput(contourPolygon);//read1->GetOutputPort());
+  appendFilter->AddInput(ctPolygon);//Connection(read2->GetOutputPort());
+  appendFilter->AddInput(topPolygon);//Connection(read3->GetOutputPort());
+  appendFilter->AddInput(tbPolygon);//Connection(read4->GetOutputPort());
+  appendFilter->AddInput(bottomPolygon);//Connection(read5->GetOutputPort());
+#else
   appendFilter->AddInputData(contourPolygon);//read1->GetOutputPort());
   appendFilter->AddInputData(ctPolygon);//Connection(read2->GetOutputPort());
   appendFilter->AddInputData(topPolygon);//Connection(read3->GetOutputPort());
   appendFilter->AddInputData(tbPolygon);//Connection(read4->GetOutputPort());
   appendFilter->AddInputData(bottomPolygon);//Connection(read5->GetOutputPort());
+#endif
 /*
   appendFilter->AddInputConnection(read1->GetOutputPort());
   appendFilter->AddInputConnection(read2->GetOutputPort());
