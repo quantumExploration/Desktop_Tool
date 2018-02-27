@@ -1,3 +1,5 @@
+CGAL is required. 
+
 Compile it
 	VTK_DIR=${YOUR_VTK_DIR} cmake -H. -Bbuild
 	cd build
