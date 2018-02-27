@@ -19,6 +19,7 @@ namespace __svl_lib {
 struct svRawClusterData;
 struct svRawSliceData;
 struct svRawSymmetryData;
+struct svRawSummaryData;
 struct svContourData;
 struct svContourClusterData;
 
@@ -36,9 +37,12 @@ typedef struct svSliceData{
 
 //===============Implementation=========================//
 typedef struct svQDOTData{ //interface
- svQDOTData(){state = new State();}
+ svQDOTData(){
+   state = new State();
+ }
  virtual ~svQDOTData(){cleandata();}
  virtual void UpdateVisibleBySplit();
+ virtual void GenerateAverage();
  void cleandata();
 
  vector< vector<Spin *> > splitData;
@@ -61,6 +65,10 @@ typedef struct svQDOTData{ //interface
  map<Spin *, int> *clusterList;
  vector< map<Spin *, vector<Spin *> > > *symmetryList;
  map<Spin *, int> *sliceList;
+ vector<svVector3> averageDir;
+ vector<svScalar> averageMag;
+ vector<svVector3> averagePos;
+ list< vector<svScalar> > distributeExp; //percentage
 } svQDOTData;
 
 //====================Implement mesh data=============//
@@ -89,6 +97,7 @@ typedef struct svMeshData{
  svMeshData(svQDOT *d){myQDOT=d;}
  ~svMeshData(){};
  void SetData(char *dir);
+ void SetOBJ(char *dir);
  void GenerateMeshGlyphs(char *dir);
  void ProcessBoundary();
  void ReadGlyphsFile(int region, char *file);
@@ -145,6 +154,16 @@ struct svRawClusterData : svQDOTData{
  map<Spin *, int> sampleLabel;
  svRawSliceData *mySlice;
  svRawSymmetryData *mySymmetry;
+};
+
+struct svRawSummaryData : svQDOTData{
+  svRawSummaryData(svQDOT *data);
+  virtual ~svRawSummaryData();
+  //===================API=========================//
+  virtual void GenerateClusterSummary(svRawClusterData *cluster);
+  //==================API end======================//
+  //list < vector<int> > label;
+  void cleanup();
 };
 
 struct svRawSliceData : svQDOTData{
@@ -206,6 +225,14 @@ typedef struct svContourClusterData : svQDOTData{
   svContourData *myData;
 } svContourClusterData;
 
+typedef struct svContourSummaryData : svQDOTData{ //no symmetry detection now
+  svContourSummaryData(){}
+  ~svContourSummaryData(){cleanup();}
+  void GenerateClusterSummary(svContourClusterData *cluster);
+  void cleanup(){}
+  //svContourData *myData;
+  //list< vector<int> > label;
+} svContourSummaryData;
 
 //TODO
 //need an interface to add or delete contours

@@ -40,7 +40,7 @@ svPeeling::svPeeling()
      g_drawBuffers[4] = GL_COLOR_ATTACHMENT4_EXT;
      g_drawBuffers[5] = GL_COLOR_ATTACHMENT5_EXT;
      g_drawBuffers[6] = GL_COLOR_ATTACHMENT6_EXT;
-g_backgroundColor = g_white; 
+     g_backgroundColor = g_white;
 }
 
 void svPeeling::SetOpacity(vector<float> opacity)
@@ -196,14 +196,14 @@ void svPeeling::ReloadShaders()
 void svPeeling::InitGL(string shader)
 {
 
-//cout<<"svPeeling"<<shader<<endl; 
+//cout<<"svPeeling"<<shader<<endl;
 	// Allocate render targets first
 	InitDualPeelingRenderTargets();
 //cout<<"InitDualPeelingRenderTargets"<<endl;
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 //cout<<"glBindFramebufferEXT("<<endl;
 	BuildShaders(shader);
-        MakeFullScreenQuad();
+  MakeFullScreenQuad();
 
 	glDisable(GL_CULL_FACE);
 	glDisable(GL_LIGHTING);
@@ -286,7 +286,7 @@ void svPeeling::RenderDualPeeling()
 		currId = pass % 2;
 		int prevId = 1 - currId;
 		int bufId = currId * 3;
-		
+
 		//glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, g_dualPeelingFboId[currId]);
 
 		glDrawBuffers(2, &g_drawBuffers[bufId+1]);
@@ -361,7 +361,7 @@ void svPeeling::RenderDualPeeling()
         glCallList(g_quadDisplayList);
 	g_shaderDualFinal.unbind();
 
-        
+
 	CHECK_GL_ERRORS;
         //glBindTexture(GL_TEXTURE_RECTANGLE_ARB,0);
         //glEnable(GL_BLEND);

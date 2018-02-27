@@ -24,6 +24,59 @@ namespace __svl_lib {
       numPower = 0;
 }
 */
+
+svSummaryGlyph::svSummaryGlyph(svQDOTData *d)
+{
+  myData = d;
+  seed_num = (myData->splitData).size();
+
+  svVector4 white(1,1,1,1);
+  glyphColors = new svVector4Array[seed_num];
+  for(int i=0;i<splitData.size();i++)
+  {
+    glyphColors[i].add(white);
+  }
+}
+
+void svSummaryGlyph::SetColors(svColors *color)
+{
+  svVector4Array *tmpcolor = new svVector4Array[seed_num];
+  svVector4 white(1,1,1,1);
+  for(int i=0;i<seed_num;i++){
+     for(int j=0;j<myData->splitData[i].size();j++){
+        tmpcolor[i].add(white);
+     }
+  }
+  color->GetColors(myData, tmpcolor, NULL);
+  for(int i=0;i<seed_num;i++)
+  {
+    glyphColors[i][0] = tmpcolor[i][0];
+    tmpcolor[i].free();
+  }
+  delete tmpcolor;
+}
+
+void svSummaryGlyph::GenerateList()
+{
+  /*
+  vector<svVector3> averageDir;
+  vector<svScalar> averageMag;
+  vector<svVector3> averagePos;
+  list< vector<svScalar> > distributeExp; //percentage
+  */
+  if(glIsList(summary_list))
+          glDeleteLists(summary_list, 1);
+  glNewList(summary_list, GL_COMPILE);
+
+  glEndList(summary_list);
+}
+
+void svSummaryGlyph::Render()
+{
+
+}
+
+
 svSummaryGlyph::svSummaryGlyph(svVectorField *f):svArrowGlyph(f)
 {
       denDistribute = NULL;
@@ -37,7 +90,7 @@ void svSummaryGlyph::RenderAnnulus(svVector3 pos, svVector3 vel,
         double d1 = x/degree;
         double d2 = (360-x-left)/degree;
         double d3 = left/degree;
-        int times1;// = x/degree;  
+        int times1;// = x/degree;
         int times2;// = (360-x-left)/degree;
         int times3;// = left/degree;
 
@@ -118,9 +171,9 @@ void svSummaryGlyph::RenderAnnulus(svVector3 pos, svVector3 vel,
 
 void svSummaryGlyph::Generate(float alpha)
 {
-  cleanup(); 
+  cleanup();
 
-//cerr<<"cleanup"<<endl; 
+//cerr<<"cleanup"<<endl;
   denDistribute = new svScalarArray[maxClusterLabel+2];//+1: size; +1: clusterLabel = -1
   visibleDistribute = new svScalarArray[maxClusterLabel+2];
 //cerr<<maxClusterLabel<<endl;
@@ -151,10 +204,10 @@ void svSummaryGlyph::Generate(float alpha)
      //  {
 
          int in = clusterLabel[i][j]+1;
-         
-         summaryPos[in][0] = summaryPos[in][0] + glyph[i][j][0];  
+
+         summaryPos[in][0] = summaryPos[in][0] + glyph[i][j][0];
          summaryPos[in][1] = summaryPos[in][1] + glyph[i][j][1];
-         summaryPos[in][2] = summaryPos[in][2] + glyph[i][j][2];  
+         summaryPos[in][2] = summaryPos[in][2] + glyph[i][j][2];
          summaryDir[in][0] = summaryDir[in][0] + dir[i][j][0];
          summaryDir[in][1] = summaryDir[in][1] + dir[i][j][1];
          summaryDir[in][2] = summaryDir[in][2] + dir[i][j][2];
@@ -165,7 +218,7 @@ void svSummaryGlyph::Generate(float alpha)
          {
                  denDistribute[in][numPower-num-scaling-1]++;
 //         if(numPower-num-scaling-1<0)cerr<<numPower<<" "<<num<<" "<<scaling<<endl;
-               if(num > summaryMaxDen[in]) 
+               if(num > summaryMaxDen[in])
                  summaryMaxDen[in] = num;
          }
          summaryCount[in] ++;
@@ -175,8 +228,8 @@ void svSummaryGlyph::Generate(float alpha)
            if(numPower-num-scaling-1>=0)
              visibleDistribute[in][numPower-num-scaling-1]++;
          }
-     } 
-  } 
+     }
+  }
    //cerr<<summaryPos.size()<<endl;
 
   for(int i=0;i<summaryPos.size();i++)
@@ -265,7 +318,7 @@ void svSummaryGlyph::Generate(float alpha)
                         {
                                 rotate_z = - rotate_z;
                         }
-                } 
+                }
 
                glColor4f(summaryColor[i][0],
                          summaryColor[i][1],
@@ -385,7 +438,7 @@ void svSummaryGlyph::Generate(float alpha)
                   }
                   glEnd();
                 }
-               
+
 
                 glColor3f(0,0,0);
 
@@ -419,7 +472,7 @@ void svSummaryGlyph::Generate(float alpha)
                 }
                 glEnd();
                 glPointSize(1.);
- 
+
                 glPopMatrix();
                 glLineWidth(1.);
                 glDisable(GL_POLYGON_OFFSET_FILL);
@@ -432,12 +485,12 @@ void svSummaryGlyph::Generate(float alpha)
 
    glEndList();
 
-   //count.free(); 
+   //count.free();
 }
 void svSummaryGlyph::RenderFont()
 {
     glEnable(GL_DEPTH_TEST);
-    glDisable(GL_LIGHTING); 
+    glDisable(GL_LIGHTING);
     glDisable(GL_LIGHT0);
     glDisable(GL_TEXTURE_2D);
     for(int i=0;i<summaryPos.size();i++)
@@ -582,7 +635,7 @@ void svSummaryGlyph::Render()
   glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
   glDisable( GL_TEXTURE_2D);
   glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
    glCallList(display_list);
 }
@@ -624,13 +677,13 @@ void svSummaryGlyph::cleanup()
    summaryDen.free();
    summaryLabel.free();
    summaryColor.free();
-   summaryDenColor.free();  
+   summaryDenColor.free();
    summaryMaxDen.free();
    summaryCount.free();
 
 
   if(denDistribute!=NULL)
-  { 
+  {
    for(int i=0;i<numDisc;i++)
    {
       denDistribute[i].free();

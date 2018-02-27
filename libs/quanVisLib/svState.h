@@ -206,7 +206,6 @@ struct State{
                        svScalar maxX, svScalar maxY, svScalar maxZ,
                        svScalar minX, svScalar minY, svScalar minZ,
                        vector<bool> splitVisible);
-
    void NewROIProperty(svScalar maxMag, svScalar minMag,
                        svScalar maxX, svScalar maxY, svScalar maxZ,
                        svScalar minX, svScalar minY, svScalar minZ,

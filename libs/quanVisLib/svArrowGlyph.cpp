@@ -23,10 +23,10 @@ svArrowGlyph::svArrowGlyph(svQDOTData *d)//svQDOTData *d):svGlyph(d) //svVectorF
   seed_num = (myData->splitData).size();
 
   glyphColors = new svVector4Array[seed_num];
-  svVector4 black(0,0,0,1);
+  svVector4 white(1,1,1,1);
   for(int i=0;i<seed_num;i++){
      for(int j=0;j<myData->splitData[i].size();j++){
-        glyphColors[i].add(black);
+        glyphColors[i].add(white);
      }
   }
 
@@ -73,7 +73,7 @@ void svArrowGlyph::Update()
 void svArrowGlyph::UpdateData()
 {
      //arrow_indices_size = dataSize*3*ARROWSLICE;
-     //tube_indices_size = dataSize * 4 * CYLINDERSLICE; 
+     //tube_indices_size = dataSize * 4 * CYLINDERSLICE;
 
      CleanData();
     int dataSize = 0;
@@ -115,7 +115,7 @@ void svArrowGlyph::UpdateIndex()
           {
               if(myData->state->qdotVisible.at(myData->splitData[i][j]))//j%sample==0)
                     count++;
-          } 
+          }
      }
 
      //cerr<<count<<endl;
@@ -140,7 +140,7 @@ void svArrowGlyph::UpdateIndex(int region)
           {
                    if(myData->GetVisibleLabel(i,j) && myData->GetRegion(i,j)==region)
                           count++;
-          } 
+          }
      }
      cerr<<"updateindex "<<count<<endl;
      arrow_indices_size = count*3*ARROWSLICE;
@@ -174,7 +174,7 @@ void svArrowGlyph::UpdateIndexVBO()
 
 
    if(glIsBuffer(TUBE_IVBO))
-           glDeleteBuffers(1, &TUBE_IVBO); 
+           glDeleteBuffers(1, &TUBE_IVBO);
    glGenBuffers(1, &TUBE_IVBO);
    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, TUBE_IVBO);
    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint)*tube_indices_size,
@@ -356,7 +356,7 @@ void svArrowGlyph::Generate()
 
 void svArrowGlyph::Render()
 {
-    
+
 }
 /*
 svScalar svArrowGlyph::Mouse(int x, int y, GLfloat *tm, svScalar currentDistance)
@@ -378,14 +378,14 @@ cerr<<"start selection"<<endl;
                   svVector3 newArrow = getTransform(arrow, tm);
                   svVector3 projectGlyph = getProject(newGlyph);
                   svVector3 projectArrow = getProject(newArrow);
-                  svVector3 projectV = svGetPerpendicularVector2D(projectArrow-projectGlyph); 
+                  svVector3 projectV = svGetPerpendicularVector2D(projectArrow-projectGlyph);
                   svVector3 newV = getUnProject(projectV);
                   svVector3 newP1 = newGlyph + newV * glyphRadius;
-                  
+
                   count++;
-            }  
+            }
        }
-   } 
+   }
 cerr<<"end"<<endl;
    return minDistance;
 }
@@ -409,7 +409,7 @@ cerr<<"========selection==========="<<endl;
     svVector3 *intersectionP = new svVector3[2];
 //    getLineBox(newRayPos, newRayDir, newLb, newRb, intersectionP);
 //  cerr<<intersectionP[0][0]<<" "<<intersectionP[0][1]<<" "<<intersectionP[0][2]<<endl;
-//  cerr<<intersectionP[1][0]<<" "<<intersectionP[1][1]<<" "<<intersectionP[1][2]<<endl; 
+//  cerr<<intersectionP[1][0]<<" "<<intersectionP[1][1]<<" "<<intersectionP[1][2]<<endl;
     vector<int> layerIndex;
     vector<int> dataIndex;
     vector<svScalar> distance;
@@ -432,12 +432,12 @@ cerr<<"========selection==========="<<endl;
                   svVector3 p = myData->GetGlyph(i,j);// * scale;
                   svVector3 e = arrow;// * scale;
                   svVector3 v = svGetPerpendicularVector(myData->GetDir(i,j));
-                  
+
 //                  svVector3 newP = getProject(p);
-//                  svVector3 tmpDir = svGetPerpendicularVector2D(newP); 
+//                  svVector3 tmpDir = svGetPerpendicularVector2D(newP);
 //                  svVector3 v = getUnProject(tmpDir);
 
-                  inside = rayBoxIntersect(newRayPos, newRayDir, p, e, myData->GetDir(i,j), v, glyphRadius); 
+                  inside = rayBoxIntersect(newRayPos, newRayDir, p, e, myData->GetDir(i,j), v, glyphRadius);
 
 //                  svVector3 *pp = new svVector3[4];
 //                  pp[0] = p - v * glyphRadius;
@@ -458,14 +458,14 @@ cerr<<"========selection==========="<<endl;
 
 //                  delete [] pp;
               }
-              
+
            }
            count++;
         }
-    } 
+    }
     int minIndex = -1;
     svScalar minD = 9e+9;
-   
+
     for(int i=0;i<layerIndex.size();i++)
     {
          int ii = layerIndex[i];
@@ -475,7 +475,7 @@ cerr<<"========selection==========="<<endl;
          svVector3 v = svGetPerpendicularVector(myData->GetDir(ii,jj));
 
          svScalar d;
-         rayBoxIntersectD(newRayPos, newRayDir, p, e, myData->GetDir(ii,jj), 
+         rayBoxIntersectD(newRayPos, newRayDir, p, e, myData->GetDir(ii,jj),
                                   v, glyphRadius, d);
 
        if(d < minD)
@@ -489,7 +489,7 @@ cerr<<"========selection==========="<<endl;
     {
          layer = layerIndex[minIndex];
          data = dataIndex[minIndex];
-    }  
+    }
     else
     {
          layer = -1;
@@ -501,7 +501,7 @@ cerr<<"========selection==========="<<endl;
     layerIndex.clear();
     dataIndex.clear();
     distance.clear();
-    delete [] intersectionP; 
+    delete [] intersectionP;
 }
 */
 /*
@@ -528,7 +528,7 @@ cerr<<file<<endl;        ofstream outfile(file);
         outfile<<"                      {"<<endl;
         for(int i=0;i<arrow_indices_size;i+=3)
         {
-              outfile<<"                              "<<arrow_indices[i]<<" "<<arrow_indices[i+1]<<" "<<arrow_indices[i+2]<<endl;       
+              outfile<<"                              "<<arrow_indices[i]<<" "<<arrow_indices[i+1]<<" "<<arrow_indices[i+2]<<endl;
         }
         outfile<<"                      }"<<endl;
         outfile<<"              }"<<endl;
@@ -603,7 +603,7 @@ void svArrowGlyph::SaveTubetoOSG(char *file){
 cerr<<tube_indices_size<<endl;
         for(int i=0;i<tube_indices_size;i+=4)
         {
-              outfile<<"                              "<<tube_indices[i]<<" "<<tube_indices[i+1]<<" "<<tube_indices[i+2]<<" "<<tube_indices[i+3]<<endl;       
+              outfile<<"                              "<<tube_indices[i]<<" "<<tube_indices[i+1]<<" "<<tube_indices[i+2]<<" "<<tube_indices[i+3]<<endl;
         }
         outfile<<"                      }"<<endl;
         outfile<<"              }"<<endl;
@@ -658,7 +658,7 @@ cerr<<tube_vertices_size<<endl;
 */
 void svArrowGlyph::SaveArrowtoOSG(char *file){
         //int size = glyphPos[0].size();
-//cerr<<file<<endl;        
+//cerr<<file<<endl;
 	ofstream outfile(file);
 
         outfile<<"Geode{"<<endl;
@@ -821,7 +821,7 @@ void svArrowGlyph::SaveTubetoOSG(char *file){
     	for(int i =0;i<seed_num;i++){
                 for(int j=0;j<myData->splitData[i].size();j++){
                         bool visible=myData->state->qdotVisible.at(myData->splitData[i][j]);
-			if(visible){ 
+			if(visible){
                         	for(int t=0;t<(CYLINDERSLICE+1)*2;t++){
                             		if(t%2==0&&t<CYLINDERSLICE*2){
                                  		outfile<<"                              "<<
@@ -846,7 +846,7 @@ void svArrowGlyph::SaveTubetoOSG(char *file){
                         bool visible=myData->state->qdotVisible.at(myData->splitData[i][j]);
                         for(int t=0;t<(CYLINDERSLICE+1)*2;t++){
                                  if(visible)//myData->GetVisibleLabel(i,j))//visibleLabel[i][j])
-                                 { 
+                                 {
 					outfile<<"                      "
                         			<<tube_vertices[count1].pos[0]<<" "
                         			<<tube_vertices[count1].pos[1]<<" "
@@ -869,7 +869,7 @@ void svArrowGlyph::SaveTubetoOSG(char *file){
                         bool visible=myData->state->qdotVisible.at(myData->splitData[i][j]);
                         for(int t=0;t<(CYLINDERSLICE+1)*2;t++){
                                  if(visible)//myData->GetVisibleLabel(i,j))//visibleLabel[i][j])
-                                 { 
+                                 {
 					outfile<<"                      "
                         			<<tube_vertices[count1].norm[0]<<" "
                         			<<tube_vertices[count1].norm[1]<<" "
@@ -891,7 +891,7 @@ void svArrowGlyph::SaveTubetoOSG(char *file){
                         bool visible=myData->state->qdotVisible.at(myData->splitData[i][j]);
                         for(int t=0;t<(CYLINDERSLICE+1)*2;t++){
                                  if(visible)//myData->GetVisibleLabel(i,j))//visibleLabel[i][j])
-                                 { 
+                                 {
 					outfile<<"                      "
                         			<<tube_vertices[count1].color[0]<<" "
                         			<<tube_vertices[count1].color[1]<<" "

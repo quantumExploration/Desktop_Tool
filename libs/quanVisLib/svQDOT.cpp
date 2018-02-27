@@ -26,7 +26,7 @@ void svQDOT::SetData(int type, char *dir, char *tmpdir, char *file){
   rbbox[0]=-9e+9;rbbox[1]=-9e+9;rbbox[2]=-9e+9;
   sprintf(str, "%s/%s", dir, file);
   switch(type) {
-    case 1: 
+    case 1:
         ReadData1(str);break;
     case 2:
         ReadData2(str);break;
@@ -41,22 +41,28 @@ void svQDOT::SetData(int type, char *dir, char *tmpdir, char *file){
   sort(qdotData.begin(), qdotData.end(), Sort_Spin_Z);
   ProcessData();
   ProcessFormat();
-//cerr<<"============region======================"<<endl;
+cerr<<"============region======================"<<endl;
   ProcessRegion();
+  cerr<<"============region======================"<<endl;
   char *name = new char[20];
   sprintf(name,"region");
   SaveRegiontoVTK(tmpdir, name);
+  cerr<<"============region======================"<<endl;
+
   char *name2 = new char[20];
   sprintf(name2,"mesh");
-  //GenerateMesh(tmpdir, name, name2);
-  //GenerateBoundaryPoints(tmpdir);
-//==============region done===============
+  GenerateMesh(tmpdir, name, name2);
+  cerr<<"============region======================"<<endl;
+
+  GenerateBoundaryPoints(tmpdir);
+cerr<<"==============region done==============="<<endl;
   delete [] name;
-  delete [] name2; 
+  delete [] name2;
   delete [] str;
 }
 
 void svQDOT::ProcessData(){
+  cout<<qdotData.size()<<endl;
   for(int i=0;i<qdotData.size()-1;i++){
     if(qdotData[i+1].pos[2]>qdotData[i].pos[2]){
        minZDistance = qdotData[i+1].pos[2] - qdotData[i].pos[2];
@@ -107,30 +113,37 @@ void svQDOT::ProcessRegion(){
   int regionIndex = 0;
   bool newRegion = false;
   bool newSphere = false;
+  cerr<<maxRegion<<endl;
 //ignore the first z layer
+//assuming the first z layer are outside the surface
   for(int i=0;i<qdotData.size()-1;i++){
+  //  cerr<<i<<" "<<maxRegion<<endl;
+    //if(isEqual(qdotData[0].pos[2], qdotData[i].pos[2], false))
+    //  continue;
     if(qdotData[i+1].pos[2] > qdotData[i].pos[2]){
-      if(!fabs(qdotData[i].region - maxRegion)<1e-8){
+      if(!isEqual(qdotData[i].region,maxRegion, false)){
+         qdotData[i].region = regionIndex;
          regionCount[regionIndex-1]++;
       }
       else{
          qdotData[i].region =0;
       }
-      if(fabs(qdotData[i+1].region - maxRegion)<1e-8){
+      if(isEqual(qdotData[i+1].region,maxRegion,false)){
         if(newRegion && !newSphere){
           newRegion = false; newSphere = true;
           regionZ[1].push_back(qdotData[i].pos[2]);
         }
-        qdotData[i+1].region = 0;    
+        qdotData[i+1].region = 0;
       }
       else{
          if(!newRegion){
           newRegion = true;regionIndex++;newSphere=false;
-          qdotData[i+1].region = regionIndex; 
+          qdotData[i+1].region = regionIndex;
           regionZ[0].push_back(qdotData[i+1].pos[2]);
           regionCount.push_back(1);
          }
          else{
+          qdotData[i+1].region = regionIndex;
           regionCount[regionIndex-1]++;//for i+1;
          }
       }
@@ -143,7 +156,7 @@ void svQDOT::ProcessRegion(){
       else{
         qdotData[i].region = regionIndex;
         regionCount[regionIndex-1]++;
-      } 
+      }
     }
   }
   regionSize = regionIndex;
@@ -179,7 +192,7 @@ void svQDOT::SaveRegiontoVTK(char *dir, char *file){
     int count =0;
     float minz = 9e+9; float maxz=  -9e+9;
     for(int j=0;j<qdotData.size();j++){
-       if(qdotData[j].region == i){     
+       if(qdotData[j].region == i){
          if(qdotData[j].pos[2]>maxz){maxz = qdotData[j].pos[2];}
          if(qdotData[j].pos[2]<minz){minz = qdotData[j].pos[2];}
        }
@@ -194,7 +207,7 @@ void svQDOT::SaveRegiontoVTK(char *dir, char *file){
     sprintf(str, "%s/%s%d.vtk", dir, file,i);
     ifstream infile(str);
     if(infile.is_open()){infile.close();delete [] str; continue;}
-    
+
     ofstream outfile(str);
     outfile<<"# vtk DataFile Version 2.0"<<endl;
     outfile<<str<<endl;
@@ -239,18 +252,33 @@ void svQDOT::GenerateMesh(char *dir, char *ifname, char *ofname){
 void svQDOT::ReadData1(char *file){
   ifstream infile(file);
   Spin tmpspin;
+  if(infile.fail())
+  {
+    cerr << file<< "not found.\n";
+        cerr << "Load QDOT data failed. prog exit\n" <<endl;
+        exit(-1);
+  }
+  else
+  {
+        cerr << "Loading data: " << file << endl;
+  }
   maxRegion = -1;
   while(infile>>tmpspin.pos[0]>>tmpspin.pos[1]>>tmpspin.pos[2]
              >>tmpspin.region>>tmpspin.atom
              >>tmpspin.dir[0]>>tmpspin.dir[1]>>tmpspin.dir[2]){
-     if(tmpspin.atom > maxRegion) maxRegion = tmpspin.atom;
+     if(tmpspin.region > maxRegion) maxRegion = tmpspin.region;
      tmpspin.den = tmpspin.dir[0]*tmpspin.dir[0]
                  + tmpspin.dir[1]*tmpspin.dir[1]
                  + tmpspin.dir[2]*tmpspin.dir[2];
      tmpspin.den = sqrt(tmpspin.den);
-     if(tmpspin.den>0) tmpspin.dir = normalize(tmpspin.dir);
-     tmpspin.exp = getNumOfIntegerDigits(tmpspin.den); 
-     tmpspin.coe = tmpspin.den/pow(10., tmpspin.exp);
+     if(tmpspin.den>0){
+       tmpspin.dir[0] = tmpspin.dir[0]/tmpspin.den;
+       tmpspin.dir[1] = tmpspin.dir[1]/tmpspin.den;
+       tmpspin.dir[2] = tmpspin.dir[2]/tmpspin.den;
+     } //tmpspin.dir = normalize(tmpspin.dir);
+     tmpspin.exp = getNumOfIntegerDigits(tmpspin.den);
+     if(tmpspin.den>0)tmpspin.coe = tmpspin.den/pow(10., tmpspin.exp);
+     else tmpspin.coe = 0;
      tmpspin.xangle = acos(tmpspin.dir[0])*180./PI;
      tmpspin.yangle = acos(tmpspin.dir[1])*180./PI;
      tmpspin.zangle = acos(tmpspin.dir[2])*180./PI;
@@ -265,7 +293,7 @@ void svQDOT::ReadData1(char *file){
      if(maxMag < tmpspin.den) maxMag = tmpspin.den;
      if(minMagNonzero > tmpspin.den && tmpspin.den>0) minMagNonzero = tmpspin.den;
   }
-  infile.close(); 
+  infile.close();
 }
 
 void svQDOT::ReadData2(char *file){
@@ -281,12 +309,12 @@ void svQDOT::ReadData2(char *file){
   {
         cerr << "Loading data: " << file << endl;
   }
-
+  maxRegion = -1;
   while(infile>>tmpspin.pos[0]>>tmpspin.pos[1]>>tmpspin.pos[2]
              >>tmpspin.region>>tmpspin.atom
              >>tmpspin.dir[0]>>tmpspin.dir[1]>>tmpspin.dir[2]
              >>tmpspin.den){
-     if(tmpspin.atom > maxRegion) maxRegion = tmpspin.atom;
+     if(tmpspin.region > maxRegion) maxRegion = tmpspin.region;
      tmpspin.den = sqrt(tmpspin.dir[0]*tmpspin.dir[0]
                  + tmpspin.dir[1]*tmpspin.dir[1]
                  + tmpspin.dir[2]*tmpspin.dir[2]) * tmpspin.den;
@@ -314,11 +342,12 @@ void svQDOT::ReadData3(char *file){
   ifstream infile(file);
   Spin tmpspin;
   svInt tmpr;
+  maxRegion =-1;
   while(infile>>tmpspin.pos[0]>>tmpspin.pos[1]>>tmpspin.pos[2]
              >>tmpr>>tmpspin.atom
              >>tmpspin.dir[0]>>tmpspin.dir[1]>>tmpspin.dir[2]
              >>tmpspin.region){
-     if(tmpspin.atom > maxRegion) maxRegion = tmpspin.atom;
+     if(tmpspin.region> maxRegion) maxRegion = tmpspin.region;
      tmpspin.den = tmpspin.dir[0]*tmpspin.dir[0]
                  + tmpspin.dir[1]*tmpspin.dir[1]
                  + tmpspin.dir[2]*tmpspin.dir[2];
@@ -347,11 +376,12 @@ void svQDOT::ReadData4(char *file){
   ifstream infile(file);
   Spin tmpspin;
   svInt tmpr;
+  maxRegion = -1;
   while(infile>>tmpspin.pos[0]>>tmpspin.pos[1]>>tmpspin.pos[2]
              >>tmpr>>tmpspin.atom
              >>tmpspin.dir[0]>>tmpspin.dir[1]>>tmpspin.dir[2]
              >>tmpspin.den>>tmpspin.region){
-     if(tmpspin.atom > maxRegion) maxRegion = tmpspin.atom;
+     if(tmpspin.region> maxRegion) maxRegion = tmpspin.region;
      tmpspin.den = sqrt(tmpspin.dir[0]*tmpspin.dir[0]
                  + tmpspin.dir[1]*tmpspin.dir[1]
                  + tmpspin.dir[2]*tmpspin.dir[2]) * tmpspin.den;

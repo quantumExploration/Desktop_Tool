@@ -41,7 +41,7 @@ void svMesh::New(svMeshData *d){
   magDiff = new svScalarArray[nComponent];
 */
   maxMag = 0;
-  quadSize = 0.4; 
+  quadSize = 0.4;
   coneRadius = 0.1;
   coneLength = quadSize/2.;
 
@@ -50,7 +50,7 @@ void svMesh::New(svMeshData *d){
              if(myData->glyphs[i][j].denDiff > maxMag)
                 maxMag = myData->glyphs[i][j].denDiff;
       }
-  } 
+  }
 }
 void svMesh::GenerateGlyph(ViewProperty &property){
  glLineWidth(4.);
@@ -61,11 +61,11 @@ void svMesh::GenerateGlyph(ViewProperty &property){
   for(int j=0;j<myData->glyphs[i].size();j++){
     svVector3 v = svGetPerpendicularVector(-myData->glyphs[i][j].dir);
     svScalar radius = sqrt(myData->glyphs[i][j].denDiff/maxMag * quadSize * quadSize);
-    svVector3 head = myData->glyphs[i][j].pos 
+    svVector3 head = myData->glyphs[i][j].pos
                     + v * radius-myData->glyphs[i][j].dir*radius/5.;
     glColor3f(251./255.,184./255.,103./255.);//91./255.,168./255.,126./255.);
     glBegin(GL_QUADS);
-    svVector3 glyphDir = -myData->glyphs[i][j].dir;
+    svVector3 glyphDir = myData->glyphs[i][j].dir;//-myData->glyphs[i][j].dir;
     svVector3 glyph = myData->glyphs[i][j].pos;
     glNormal3f(glyphDir[0], glyphDir[1], glyphDir[2]);
     for(int t=0;t<4;t++){
@@ -109,18 +109,20 @@ void svMesh::GenerateSurface(){
                         myData->facets[i][j].pos[v][1],
                         myData->facets[i][j].pos[v][2]);
            }
-           glEnd(); 
+           glEnd();
        }
     }
     glEndList();
 }
 
-void svMesh::Render()
+void svMesh::RenderSurface()
+{
+  glCallList(display_list);
+}
+
+void svMesh::RenderGlyphs()
 {
     glCallList(glyph_list);
-    glCallList(display_list);
 }
 
 }
-
-

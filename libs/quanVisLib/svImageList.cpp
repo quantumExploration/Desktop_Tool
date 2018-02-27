@@ -50,6 +50,7 @@ namespace __svl_lib{
     this->left = left;
     this->top = top;
     this->width = width;
+    SetLocations();
   }
   void svImageList::AddHybridImage(svContourData *myContour,string dir, float cutoff){
     //cerr<<"myslice "<<imageList.size()<<endl;

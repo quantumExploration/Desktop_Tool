@@ -21,7 +21,7 @@ using namespace std;
 namespace __svl_lib {
 svLTArrow::svLTArrow(svQDOTData * d):svArrowGlyph(d)//svVectorField* f, int numPlane)
 {
- 
+
   //field = f;
   // only handle internal format
   //ENABLE_COLOR=false;
@@ -43,14 +43,14 @@ svLTArrow::svLTArrow(svQDOTData * d):svArrowGlyph(d)//svVectorField* f, int numP
         if(maxExp <exp && (*myData->splitData[i][j]).coe>1e-8) maxExp = exp;
         if(minExp >exp && (*myData->splitData[i][j]).coe>1e-8) minExp = exp;
      }
-  }*/ 
+  }*/
   expScale = fabs(myData->minExp);
   numPower = myData->maxExp - myData->minExp + 1;
 
   //cerr<<expScale<<" "<<numPower<<" "<<myData->myQDOT->maxExp<<" "<<myData->myQDOT->minExp<<endl;
 
   secondColors = new svVector4Array[seed_num];
-  svVector4 black(1,1,1,1);
+  svVector4 black(0,0,0,1);
   for(int i=0;i<seed_num;i++){
      for(int j=0;j<myData->splitData[i].size();j++){
         secondColors[i].add(black);
@@ -98,7 +98,7 @@ void svLTArrow::UpdateData(){
     arrow_base_vertices_size = dataSize*(arrow_segment*2+1);
     arrow_vertices = new VBOVertex[arrow_vertices_size];
     arrow_base_vertices = new VBOVertex[arrow_base_vertices_size];
- 
+
     tube_vertices_size = dataSize*(cylinder_segment) * 2 * 2;
     tube_base_vertices_size = dataSize*((cylinder_segment)*2+1);
     tube_vertices = new VBOVertex[tube_vertices_size];//svVector3Array[seed_num];
@@ -186,7 +186,7 @@ void svLTArrow::GenerateTubes(){
                            ratio = 1;//exp[i][j]+expScale;
                        }//cerr<<myData->GetExp(i,j)<<" "<<expScale<<" "<<numPower<<endl;
                        //ratio = (d.exp + expScale)/(13.-1.);
-                       GetCylinderTexture(d.pos,d.dir, 
+                       GetCylinderTexture(d.pos,d.dir,
                                  radius,
                                  scale,   ratio,
                                   SUB_SEGMENT, REPEAT_CYLINDER_TEXTURE,
@@ -267,7 +267,7 @@ void svLTArrow::SaveTubetoOSG(char *file){
         cerr<<tube_indices_size<<endl;
         for(int i=0;i<tube_indices_size;i+=4)
         {
-              outfile<<"                              "<<i<<" "<<i+2<<" "<<i+3<<" "<<i+1<<endl;       
+              outfile<<"                              "<<i<<" "<<i+2<<" "<<i+3<<" "<<i+1<<endl;
         }
         outfile<<"                      }"<<endl;
         outfile<<"              }"<<endl;
@@ -366,7 +366,7 @@ void svLTArrow::SaveArrowtoOSG(char *file){
         outfile<<"                      {"<<endl;
         for(int i=0;i<arrow_indices_size;i+=3)
         {
-              outfile<<"                              "<<i<<" "<<i+1<<" "<<i+2<<endl;       
+              outfile<<"                              "<<i<<" "<<i+1<<" "<<i+2<<endl;
         }
         outfile<<"                      }"<<endl;
         outfile<<"              }"<<endl;
@@ -545,6 +545,7 @@ void svLTArrow::GenerateIndex(){
                                     tube_indices[index1+3]=count1+2;
                                     index1+=4;
                                   }
+                                //  else    cout<<i<<" "<<j<<endl;
                             }
                             count1+=4;
                       }
@@ -691,7 +692,7 @@ void svLTArrow::GenerateArrows()
                         svVector3 cone_seg_norm[cylinder_segment*3];
                         svVector3  cone_seg_pos[cylinder_segment*3];
                         svVector4 cone_seg_col[cylinder_segment*3];
-                        GetConeTexture(end, dir, radius, 
+                        GetConeTexture(end, dir, radius,
                                  radius*3., ratio, SUB_SEGMENT, REPEAT_CYLINDER_TEXTURE,
                                   cone_seg_norm, cone_seg_pos, cone_seg_col,
                                   secondColors[i][j], glyphColors[i][j]);
@@ -715,7 +716,7 @@ void svLTArrow::GenerateArrows()
                           arrow_vertices[count1].pos[2]=cone_seg_pos[t][2];
                           arrow_vertices[count1].norm[0]=cone_seg_norm[t][0];
                           arrow_vertices[count1].norm[1]=cone_seg_norm[t][1];
-                          arrow_vertices[count1].norm[2]=cone_seg_norm[t][2]; 
+                          arrow_vertices[count1].norm[2]=cone_seg_norm[t][2];
                           arrow_vertices[count1].color[0]=cone_seg_col[t][0];
                           arrow_vertices[count1].color[1]=cone_seg_col[t][1];
                           arrow_vertices[count1].color[2]=cone_seg_col[t][2];
@@ -743,7 +744,7 @@ void svLTArrow::GenerateArrows()
 void svSplitArrow::GenerateVBO()
 {
    arrow_indices_size = dataSize*3*ARROWSLICE;
-   int num =dataSize*(ARROWSLICE+1); 
+   int num =dataSize*(ARROWSLICE+1);
 
    glGenBuffers(1, &ARROW_VBO);
    glBindBuffer(GL_ARRAY_BUFFER, ARROW_VBO);
@@ -835,22 +836,22 @@ void svSplitArrow::RenderVBO()
            svVector3 dir = myData->GetDir(layer, index);
 
            svScalar length = coe * glyphScale;
-           svVector3 end = glyph 
+           svVector3 end = glyph
                        + dir * length;
            glColor4f(glyphColors[layer][index][0],glyphColors[layer][index][1],
                      glyphColors[layer][index][2],glyphColors[layer][index][3]);
-           RenderCone(end, dir, glyphRadius, 
+           RenderCone(end, dir, glyphRadius,
                        glyphRadius*3, ARROWSLICE);
-           RenderCylinder(glyph, dir, 
+           RenderCylinder(glyph, dir,
                        glyphTubeRadius,
-                       length, CYLINDERSLICE);  
+                       length, CYLINDERSLICE);
            i+=2;
-    }	
+    }
 }*/
 /*
 void svSplitArrow::Render()
 {
-   
+
   //if(display_mode == SV_IMMEDIATE) {
     //Generate();
   //}
@@ -868,13 +869,13 @@ void svSplitArrow::Render()
 
 void svSplitArrow::RenderStore() const
 {
-  if(svPrimitive::STILL_UPDATE ) 
+  if(svPrimitive::STILL_UPDATE )
   {
     return;
   }
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);     
+    glEnable(GL_LIGHT0);
     glEnable(GL_COLOR_MATERIAL);
     glEnable(GL_NORMALIZE);
 
@@ -883,7 +884,7 @@ void svSplitArrow::RenderStore() const
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
-    
+
   for(int i=0; i<seed_num; i++)
   {
      glEnable(GL_LIGHTING);
@@ -900,7 +901,7 @@ void svSplitArrow::RenderStore() const
        glTranslatef(vel[0],vel[1],vel[2]);
 //       glutSolidSphere(glyphSize,10,10);
        glPopMatrix();
-     }; 
+     };
      glDisable(GL_LIGHTING);
   };
 }

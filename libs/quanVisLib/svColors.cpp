@@ -295,7 +295,10 @@ void svColors::GetColors(svQDOTData * data, svVector4Array *color,
     break;
    }
    case c_texture_cluster:{
-    GetDiscreteColors(blind_safe, data, color, secondColor);
+     if(secondColor!=NULL)
+      GetDiscreteColors(blind_safe, data, color, secondColor);
+     else
+      GetDiscreteColors(blind_safe, data, color);
     break;
    }
  }
@@ -412,7 +415,7 @@ void svColors::GetDiscreteColors(bool blind_safe, svQDOTData *data,
                         (double)firstColor[i][j][1],
                         (double)firstColor[i][j][2],
                         l, a, b);
-                l = 85;//(l+10)>99?90:(l+20);
+                l = 95;//(l+10)>99?90:(l+20);
                 double R,G,B;
                 LAB2RGB(l,a,b,R,G,B);
                 secondColor[i][j][0] = R;

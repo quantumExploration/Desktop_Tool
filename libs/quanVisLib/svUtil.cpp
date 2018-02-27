@@ -3,7 +3,7 @@
 #include <SOIL.h>
 #define TEXTURE_LOAD_ERROR 0
 
-#define hepisode 1e-18
+#define hepisode 1e-20
 #define lepisode 1e-3
 
 namespace __svl_lib {
@@ -46,7 +46,7 @@ svVector3 svGetPerpendicularVector(const svVector3 & v)
 	return normalize(cross(v, r));
 }
 
-svVector3 svGetRotatePoint(const svVector3& start, const svVector3& org, 
+svVector3 svGetRotatePoint(const svVector3& start, const svVector3& org,
 			const svVector3& axis, svScalar rotate_degree)
 {
    svVector3 p, q, r;
@@ -107,7 +107,7 @@ svVector3 GetRotateVector(svVector3 v, GLfloat *m)
   newp[0] = m[12];
   newp[1] = m[13];
   newp[2] = m[14];
- 
+
   newv[0]  = v[0] * m[0] +
              v[1] * m[4] +
              v[2] * m[8] +
@@ -257,7 +257,7 @@ svScalar GetEntropy(svVector3Array vec)
         x = vec[i][0]/xy;
         y = vec[i][1]/xy;
         phi = acos(x/xy);
-       if(y<0) phi = 2.*SV_PI-phi; 
+       if(y<0) phi = 2.*SV_PI-phi;
        }
 
        theta = fmod(theta, SV_PI);
@@ -267,7 +267,7 @@ svScalar GetEntropy(svVector3Array vec)
        int slice = phi/seg;
        int stack = theta/seg;
        int index = stack*whole_slice + slice;
-//cerr<<theta<<" "<<phi<<" "<<whole_slice<<" "<<whole_stack<<" "<<stack<<" "<<slice<<" "<<index<<" "<<count<<endl; 
+//cerr<<theta<<" "<<phi<<" "<<whole_slice<<" "<<whole_stack<<" "<<stack<<" "<<slice<<" "<<index<<" "<<count<<endl;
        prob[index]++;
    }
 //cerr<<count<<endl;
@@ -291,7 +291,7 @@ bool getInsideBox(svVector3 p, svVector3 lb, svVector3 rb)
     &&(p[2]>lb[2]||fabs(p[2]-lb[2])<1e-9)
     &&(p[0]<rb[0]||fabs(p[0]-rb[0])<1e-9)
     &&(p[1]<rb[1]||fabs(p[1]-rb[1])<1e-9)
-    &&(p[2]<rb[2]||fabs(p[2]-rb[2])<1e-9)) 
+    &&(p[2]<rb[2]||fabs(p[2]-rb[2])<1e-9))
     {
             return true;
     }
@@ -324,7 +324,7 @@ void getLineBox(svVector3 p1, svVector3 v, svVector3 lb, svVector3 rb, svVector3
    {
       box[0] = lb;
       box[1] = rb;
-   }  
+   }
    else if(fabs(v[0])<1e-9 && fabs(v[1]-1)<1e-9 && fabs(v[2])<1e-9)
    {
       box[0] = lb;
@@ -416,7 +416,7 @@ svVector3 getProject(svVector3 p)
    pP[0] = winX;
    pP[1] = winY;
    pP[2] = winZ;
-  
+
    return pP;
 }
 
@@ -461,14 +461,14 @@ void getRay(int x, int y, svVector3 eye, svVector3 &rayDir)
    winX = (float)x;
    winY = (float)viewport[3] - (float)y;
    glReadPixels( x, int(winY), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &winZ );
- 
+
    winZ = 0.999;
    gluUnProject( winX, winY, winZ, mvmatrix, projmatrix, viewport, &posX, &posY, &posZ);
 
    rayDir[0] = posX - eye[0];
    rayDir[1] = posY - eye[1];
    rayDir[2] = posZ - eye[2];
-   rayDir.normalize(); 
+   rayDir.normalize();
 }
 void getNewRay(svVector3 rayPos, svVector3 rayDir, GLfloat *tm, svVector3 &newRayPos, svVector3 &newRayDir)
 {
@@ -581,7 +581,7 @@ cerr<<winx1<<" "<<winy1<<" "<<winx2<<" "<<winy2<<endl;;
 cerr<<vx<<" "<<vy<<endl;
              vx = vx + winx1;
              vy = vy + winy1;
-             glReadPixels((int)vx, (int)vy, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT,&winz1); 
+             glReadPixels((int)vx, (int)vy, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT,&winz1);
              gluUnProject( vx, vy, winz1, property.mvmatrix, property.projmatrix, property.viewport,
                         &objx, &objy, &objz);
 
@@ -620,8 +620,8 @@ cerr<<vx<<" "<<vy<<endl;
 }
 svVector3 GetVerticalByeye(svVector3 pos, svVector3 v, ViewProperty &property)
 //svVector3 eye,
-//                     svVector3 pos, 
-//                     svVector3 v, 
+//                     svVector3 pos,
+//                     svVector3 v,
 //                     GLfloat *tm)
 {
 /*    GLfloat tm[16];
@@ -756,7 +756,7 @@ float PointtoLine(svVector3 p1, svVector3 p2, svVector3 p)
 	svVector3 d = ap - apn;
 
 	float distance = sqrt(d[0]*d[0]+d[1]*d[1]
-				+d[2]*d[2]);	
+				+d[2]*d[2]);
 
 	return distance;
 }
@@ -772,7 +772,7 @@ float PointtoLine2(svVector3 p1, svVector3 n, svVector3 p){
 	svVector3 d = ap - apn;
 
 	float distance = sqrt(d[0]*d[0]+d[1]*d[1]
-				+d[2]*d[2]);	
+				+d[2]*d[2]);
 
 	return distance;
 }
@@ -797,9 +797,9 @@ bool LessAngle(svVector3 p1, svVector3 p2, svVector3 p)
 {
   svVector3 n1 = p - p1;
   svVector3 n2 = p2 - p1;
-  
+
   double dot = n1[0] * n2[0] + n1[1] * n2[1] + n1[2] * n2[2];
-  
+
   if(dot >0)
     return true;
   else
@@ -868,9 +868,9 @@ bool rayBoxIntersect(svVector3 rPos, svVector3 rDir, svVector3 start, svVector3 
     p[6] = end + v2;
     p[7] = end - v2;
     bool inside = false;
-    inside = rayPlaneIntersect(rPos, rDir, p[1], p[4], p[6], p[3]); 
+    inside = rayPlaneIntersect(rPos, rDir, p[1], p[4], p[6], p[3]);
     if(inside) return inside;
-    inside = rayPlaneIntersect(rPos, rDir, p[4], p[0], p[2], p[6]); 
+    inside = rayPlaneIntersect(rPos, rDir, p[4], p[0], p[2], p[6]);
     if(inside) return inside;
     inside = rayPlaneIntersect(rPos, rDir, p[0], p[5], p[7], p[2]);
     if(inside) return inside;
@@ -901,7 +901,7 @@ bool rayBoxIntersectD(svVector3 rPos, svVector3 rDir, svVector3 start, svVector3
     bool inside = false;
     svVector3 inter;
     vector<svScalar> d;
-    inside = rayPlaneIntersect(rPos, rDir, p[1], p[4], p[6], p[3], inter); 
+    inside = rayPlaneIntersect(rPos, rDir, p[1], p[4], p[6], p[3], inter);
     if(!flag) flag = inside;
     if(inside)
     {
@@ -910,7 +910,7 @@ bool rayBoxIntersectD(svVector3 rPos, svVector3 rDir, svVector3 start, svVector3
                    + (rPos[1]-inter[1])*(rPos[1]-inter[1])
                    + (rPos[2]-inter[2])*(rPos[2]-inter[2]));
     }
-    inside = rayPlaneIntersect(rPos, rDir, p[4], p[0], p[2], p[6], inter); 
+    inside = rayPlaneIntersect(rPos, rDir, p[4], p[0], p[2], p[6], inter);
     if(!flag) flag = inside;
     if(inside)
     {
@@ -982,7 +982,7 @@ svVector3 pDir, svScalar &distance, svVector3 &pos)
     if (GetDot(cross(b-a, x-a), pDir) < 0) return false;
     if (GetDot(cross(c-b, x-b), pDir) < 0) return false;
     if (GetDot(cross(d-c, x-c), pDir) < 0) return false;
-    if (GetDot(cross(a-d, x-d), pDir) < 0) return false;    
+    if (GetDot(cross(a-d, x-d), pDir) < 0) return false;
 
     distance = sqrt((x[0] - rPos[0])*(x[0] - rPos[0])
                 +  (x[1] - rPos[1])*(x[1] - rPos[1])
@@ -1020,11 +1020,11 @@ bool rayPlaneIntersect(svVector3 rPos, svVector3 rDir, svVector3 eye, float near
  //   pos = x;
 
     return true;
- 
+
 }
-bool rayTriangleIntersect(svVector3 rPos, svVector3 rDir, 
+bool rayTriangleIntersect(svVector3 rPos, svVector3 rDir,
 			svVector3 pPos0, svVector3 pPos1, svVector3 pPos2,
-			svVector3 pDir, svScalar &distance, svVector3 &pos) 
+			svVector3 pDir, svScalar &distance, svVector3 &pos)
 {
     float nDotD = GetDot(pDir, rDir);
 
@@ -1049,20 +1049,20 @@ bool rayTriangleIntersect(svVector3 rPos, svVector3 rDir,
 
     return true;
 }
-bool raySphereIntersect(svVector3 rPos, svVector3 rDir, 
+bool raySphereIntersect(svVector3 rPos, svVector3 rDir,
 				svVector3 sPos, svScalar sRadius,
-				svScalar &distance) 
+				svScalar &distance)
 {
 /* svVector3 pMinusC = rPos - sPos;
  float a = GetDot(rDir, rDir);
  float b = 2 * GetDot(rDir, pMinusC);
  float c = GetDot(pMinusC, pMinusC) - sRadius * sRadius;
  float disc = b * b - 4 * a * c;
- 
+
  // no solution if discriminant is negative
  if (disc < 0)
  return false;
- 
+
  svScalar t;
  if (disc == 0) {
         // one solution, barely touches side
@@ -1072,7 +1072,7 @@ bool raySphereIntersect(svVector3 rPos, svVector3 rDir,
     distance = sqrt((x[0] - rPos[0])*(x[0] - rPos[0])
 		+  (x[1] - rPos[1])*(x[1] - rPos[1])
 		+  (x[2] - rPos[2])*(x[2] - rPos[2]));
-    } 
+    }
  else {
  // two solutions: the smallest t is the closest intersection
         svScalar temp = sqrt(disc) / (2 * a);
@@ -1089,11 +1089,11 @@ bool raySphereIntersect(svVector3 rPos, svVector3 rDir,
  float a = pMinusC[0] * pMinusC[0] + pMinusC[1] * pMinusC[1] + pMinusC[2] * pMinusC[2];
  float b = GetDot(rDir, pMinusC);
  float disc = b * b - a + sRadius * sRadius;
- 
+
  // no solution if discriminant is negative
  if (disc < 0)
  return false;
- 
+
  svScalar t;
  if (disc == 0) {
         // one solution, barely touches side
@@ -1103,7 +1103,7 @@ bool raySphereIntersect(svVector3 rPos, svVector3 rDir,
     distance = sqrt((x[0] - rPos[0])*(x[0] - rPos[0])
 		+  (x[1] - rPos[1])*(x[1] - rPos[1])
 		+  (x[2] - rPos[2])*(x[2] - rPos[2]));
-    } 
+    }
  else {
  // two solutions: the smallest t is the closest intersection
         svScalar temp = sqrt(disc);
@@ -1116,7 +1116,7 @@ bool raySphereIntersect(svVector3 rPos, svVector3 rDir,
 		+  (x[1] - rPos[1])*(x[1] - rPos[1])
 		+  (x[2] - rPos[2])*(x[2] - rPos[2]));
  }
- 
+
 
 
  return true;
@@ -1283,12 +1283,12 @@ bool linePlane(svVector3 a, svVector3 b, svVector3 p, svVector3 n)
 {
 	bool flag = false;
 	svVector3 AP = p - a;
-	svVector3 BP = p - b;	
+	svVector3 BP = p - b;
 	double dd1 = GetDot(AP, n);
 	double dd2 = GetDot(BP, n);
 	if(dd1 * dd2 <= 0 ) flag = true;
 
-	return flag;	
+	return flag;
 }
 bool planeBox(svVector3 lb, svVector3 rb, svVector3 p, svVector3 n)
 {
@@ -1299,65 +1299,65 @@ bool planeBox(svVector3 lb, svVector3 rb, svVector3 p, svVector3 n)
 	b[0] = lb[0];b[1] = lb[1]; b[2] = rb[2];
 	flag = linePlane(a, b, p, n);
 
-	if(flag) 	return flag;	
+	if(flag) 	return flag;
 
 	a[0] = rb[0];a[1] = lb[1]; a[2] = lb[2];
 	b[0] = rb[0];b[1] = lb[1]; b[2] = rb[2];
 	flag = linePlane(a, b, p, n);
 
-	if(flag) 	return flag;	
+	if(flag) 	return flag;
 
 	a[0] = rb[0];a[1] = rb[1]; a[2] = lb[2];
 	b[0] = rb[0];b[1] = rb[1]; b[2] = rb[2];
 	flag = linePlane(a, b, p, n);
 
-	if(flag) 	return flag;	
+	if(flag) 	return flag;
 
 	a[0] = lb[0];a[1] = rb[1]; a[2] = lb[2];
 	b[0] = lb[0];b[1] = rb[1]; b[2] = rb[2];
 	flag = linePlane(a, b, p, n);
 
-	if(flag) 	return flag;	
+	if(flag) 	return flag;
 
 	a[0] = lb[0];a[1] = lb[1]; a[2] = lb[2];
 	b[0] = rb[0];b[1] = lb[1]; b[2] = lb[2];
 	flag = linePlane(a, b, p, n);
 
-	if(flag) 	return flag;	
+	if(flag) 	return flag;
 	a[0] = rb[0];a[1] = lb[1]; a[2] = lb[2];
 	b[0] = rb[0];b[1] = rb[1]; b[2] = lb[2];
 	flag = linePlane(a, b, p, n);
 
-	if(flag) 	return flag;	
+	if(flag) 	return flag;
 
 	a[0] = rb[0];a[1] = rb[1]; a[2] = lb[2];
 	b[0] = lb[0];b[1] = rb[1]; b[2] = lb[2];
 	flag = linePlane(a, b, p, n);
 
-	if(flag) 	return flag;	
+	if(flag) 	return flag;
 
 	a[0] = lb[0];a[1] = rb[1]; a[2] = lb[2];
 	b[0] = lb[0];b[1] = lb[1]; b[2] = lb[2];
 	flag = linePlane(a, b, p, n);
 
-	if(flag) 	return flag;	
+	if(flag) 	return flag;
 	a[0] = lb[0];a[1] = lb[1]; a[2] = rb[2];
 	b[0] = rb[0];b[1] = lb[1]; b[2] = rb[2];
 	flag = linePlane(a, b, p, n);
-	if(flag) 	return flag;	
+	if(flag) 	return flag;
 	a[0] = rb[0];a[1] = lb[1]; a[2] = rb[2];
 	b[0] = rb[0];b[1] = rb[1]; b[2] = rb[2];
 	flag = linePlane(a, b, p, n);
-	if(flag) 	return flag;	
+	if(flag) 	return flag;
 	a[0] = rb[0];a[1] = rb[1]; a[2] = rb[2];
 	b[0] = lb[0];b[1] = rb[1]; b[2] = rb[2];
 	flag = linePlane(a, b, p, n);
-	if(flag) 	return flag;	
+	if(flag) 	return flag;
 	a[0] = lb[0];a[1] = rb[1]; a[2] = rb[2];
 	b[0] = lb[0];b[1] = lb[1]; b[2] = rb[2];
 	flag = linePlane(a, b, p, n);
 
-	return flag;	
+	return flag;
 }
 
 svInt  getNumOfIntegerDigits(svScalar num)
@@ -1400,7 +1400,7 @@ void RenderSphere(svVector3 glyph, svScalar radius, svVector3 dir,
    svVector3 sphere_seg_pos[segment1+1][segment2+1];
    svVector3 sphere_seg_norm[segment1+1][segment2+1];
    svVector3 center;
-  
+
    center[0]=0;center[1]=0;center[2]=0;
    svVector3 pos;pos[0]=0;pos[1]=0;pos[2]=-1;
    svVector3 head;
@@ -1414,7 +1414,7 @@ void RenderSphere(svVector3 glyph, svScalar radius, svVector3 dir,
         c[0]=0;c[1]=0;c[2]=head[2];
         for(int j=0;j<segment2+1;j++)//0-360
         {
-             sphere_seg_pos[i][j]=svGetRotatePoint(head, c, z, (svScalar)j * (svScalar)(360./segment2)); 
+             sphere_seg_pos[i][j]=svGetRotatePoint(head, c, z, (svScalar)j * (svScalar)(360./segment2));
         }
    }
 
@@ -1427,7 +1427,7 @@ void RenderSphere(svVector3 glyph, svScalar radius, svVector3 dir,
              sphere_seg_norm[i][j]=sphere_seg_pos[i][j]-(glyph + radius * dir);
              sphere_seg_norm[i][j]=normalize(sphere_seg_norm[i][j]);
         }
-   } 
+   }
 
    for(int i=0;i<segment1;i++)//0-180
    {
@@ -1439,8 +1439,8 @@ void RenderSphere(svVector3 glyph, svScalar radius, svVector3 dir,
             glNormal3f(sphere_seg_norm[i+1][j][0],sphere_seg_norm[i+1][j][1],sphere_seg_norm[i+1][j][2]);
             glVertex3f(sphere_seg_pos[i+1][j][0],sphere_seg_pos[i+1][j][1],sphere_seg_pos[i+1][j][2]);
         }
-        glEnd(); 
-   } 
+        glEnd();
+   }
 }
 void RenderCylinderTexture(svVector3 glyph, svVector3 dir,
                 svScalar radius, svScalar height,svVector4 col,
@@ -1476,7 +1476,7 @@ void RenderCylinderTexture(svVector3 glyph, svVector3 dir,
                 glBegin(GL_QUAD_STRIP);
                 for(int j=0;j<=white_segment;j++)
                 {
-                        rotate_base = svGetRotatePoint(head, glyph,dir, 
+                        rotate_base = svGetRotatePoint(head, glyph,dir,
                                (svScalar)j * white_degree/(svScalar)white_segment);
                         rotate_top = rotate_base + height*dir;
                         rotate_normal = normalize(rotate_base - glyph);
@@ -1493,7 +1493,7 @@ void RenderCylinderTexture(svVector3 glyph, svVector3 dir,
                 glBegin(GL_QUAD_STRIP);
                 for(int j=0;j<=bar_segment;j++)
                 {
-                        rotate_base = svGetRotatePoint(head, glyph,dir, 
+                        rotate_base = svGetRotatePoint(head, glyph,dir,
                        (svScalar)j * bar_degree/(svScalar)bar_segment + white_degree);
 
                         rotate_normal = normalize(rotate_base - glyph);
@@ -1548,11 +1548,11 @@ void RenderCylinder(svVector3 glyph, svVector3 dir,
            cylinder_seg_norm[i*2+1] = normalize(cylinder_seg_pos[i*2] - glyph);
         }
     }
- 
+
     glBegin(GL_QUAD_STRIP);
     for(int i=0;i<=segment;i++)
     {
-          glNormal3f(cylinder_seg_norm[2*i+1][0], 
+          glNormal3f(cylinder_seg_norm[2*i+1][0],
                     cylinder_seg_norm[2*i+1][1],
                     cylinder_seg_norm[2*i+1][2]);
           glVertex3f(cylinder_seg_pos[2*i+1][0],
@@ -1566,13 +1566,13 @@ void RenderCylinder(svVector3 glyph, svVector3 dir,
                     cylinder_seg_pos[2*i][1],
                     cylinder_seg_pos[2*i][2]);
 
-    } 
+    }
     glEnd();
 
   /*
    glDisable(GL_LIGHTING);
 
-   glBegin(GL_LINES);  
+   glBegin(GL_LINES);
    for(int i=0;i<=segment;i++)
     {
           glVertex3f(cylinder_seg_pos[2*i+1][0],
@@ -1587,7 +1587,7 @@ void RenderCylinder(svVector3 glyph, svVector3 dir,
 
    glEnable(GL_LIGHTING);
 */
- 
+
 
     if(height >1e-3)
     {
@@ -1631,7 +1631,7 @@ void RenderCylinder(svVector3 glyph, svVector3 dir,
 }
 void GetCylinderTexture(svVector3 glyph, svVector3 dir,
                 svScalar radius, svScalar height,
-                svScalar ratio, int sub_segment, int texture_num, 
+                svScalar ratio, int sub_segment, int texture_num,
                 svVector3 *cylinder_seg_norm,
                 svVector3 *cylinder_seg_pos)
 {
@@ -1646,7 +1646,7 @@ void GetCylinderTexture(svVector3 glyph, svVector3 dir,
         bar_segment = sub_segment/2;//segment * ratio;// (segment/num) * ratio;
         white_segment = sub_segment-bar_segment;//segment - bar_segment;//segment/num - bar_segment;
 /*
-        if(white_degree<1.) 
+        if(white_degree<1.)
         {
            white_degree = 0;
            bar_degree = whole_degree - white_degree;
@@ -1670,7 +1670,7 @@ void GetCylinderTexture(svVector3 glyph, svVector3 dir,
 //                glBegin(GL_QUAD_STRIP);
                 for(int j=0;j<=white_segment;j++)
                 {
-                        rotate_base = svGetRotatePoint(head, glyph,dir, 
+                        rotate_base = svGetRotatePoint(head, glyph,dir,
                                (svScalar)j * white_degree/(svScalar)white_segment);
                         rotate_top = rotate_base + height*dir;
                         rotate_normal = normalize(rotate_base - glyph);
@@ -1681,7 +1681,7 @@ void GetCylinderTexture(svVector3 glyph, svVector3 dir,
                         cylinder_seg_pos[count] = rotate_top;
                         cylinder_seg_norm[count] = rotate_normal;
                         count++;
-     
+
 //cerr<<head[0]<<" "<<head[1]<<" "<<head[2]<<" "<<white_degree<<" "<<white_segment<<" "<<rotate_base[0]<<" "<<rotate_base[1]<<" "<<rotate_base[2]<<endl;
 
                    if(j>0 && j<white_segment)// && j%2==1)
@@ -1698,7 +1698,7 @@ void GetCylinderTexture(svVector3 glyph, svVector3 dir,
 //                        glNormal3f(rotate_normal[0], rotate_normal[1], rotate_normal[2]);
 //                        glVertex3f(rotate_top[0], rotate_top[1], rotate_top[2]);
                         base.push_back(rotate_base);
-                        
+
                 }
 //                glEnd();
 
@@ -1706,7 +1706,7 @@ void GetCylinderTexture(svVector3 glyph, svVector3 dir,
 //                glBegin(GL_QUAD_STRIP);
                 for(int j=0;j<=bar_segment;j++)
                 {
-                        rotate_base = svGetRotatePoint(head, glyph,dir, 
+                        rotate_base = svGetRotatePoint(head, glyph,dir,
                        (svScalar)j * bar_degree/(svScalar)bar_segment + white_degree);
 
                         rotate_normal = normalize(rotate_base - glyph);
@@ -1741,7 +1741,7 @@ void GetCylinderTexture(svVector3 glyph, svVector3 dir,
 }
 void GetCylinderTexture(svVector3 glyph, svVector3 dir,
                 svScalar radius, svScalar height,
-                svScalar ratio, int sub_segment, int texture_num, 
+                svScalar ratio, int sub_segment, int texture_num,
                 svVector3 *cylinder_seg_norm,
                 svVector3 *cylinder_seg_pos,
                 svVector4 *cylinder_seg_col,
@@ -1758,7 +1758,7 @@ void GetCylinderTexture(svVector3 glyph, svVector3 dir,
         bar_segment = sub_segment/2;//segment * ratio;// (segment/num) * ratio;
         white_segment = sub_segment-bar_segment;//segment - bar_segment;//segment/num - bar_segment;
 /*
-        if(white_degree<1.) 
+        if(white_degree<1.)
         {
            white_degree = 0;
            bar_degree = whole_degree - white_degree;
@@ -1783,7 +1783,7 @@ void GetCylinderTexture(svVector3 glyph, svVector3 dir,
 //                glBegin(GL_QUAD_STRIP);
                 for(int j=0;j<=white_segment;j++)
                 {
-                        rotate_base = svGetRotatePoint(head, glyph,dir, 
+                        rotate_base = svGetRotatePoint(head, glyph,dir,
                                (svScalar)j * white_degree/(svScalar)white_segment);
                         rotate_top = rotate_base + height*dir;
                         rotate_normal = normalize(rotate_base - glyph);
@@ -1796,7 +1796,7 @@ void GetCylinderTexture(svVector3 glyph, svVector3 dir,
                         cylinder_seg_norm[count] = rotate_normal;
                         cylinder_seg_col[count] = col1;
                         count++;
-     
+
 //cerr<<head[0]<<" "<<head[1]<<" "<<head[2]<<" "<<white_degree<<" "<<white_segment<<" "<<rotate_base[0]<<" "<<rotate_base[1]<<" "<<rotate_base[2]<<endl;
 
                    if(j>0 && j<white_segment)// && j%2==1)
@@ -1815,7 +1815,7 @@ void GetCylinderTexture(svVector3 glyph, svVector3 dir,
 //                        glNormal3f(rotate_normal[0], rotate_normal[1], rotate_normal[2]);
 //                        glVertex3f(rotate_top[0], rotate_top[1], rotate_top[2]);
                         base.push_back(rotate_base);
-                        
+
                 }
 //                glEnd();
 
@@ -1823,7 +1823,7 @@ void GetCylinderTexture(svVector3 glyph, svVector3 dir,
 //                glBegin(GL_QUAD_STRIP);
                 for(int j=0;j<=bar_segment;j++)
                 {
-                        rotate_base = svGetRotatePoint(head, glyph,dir, 
+                        rotate_base = svGetRotatePoint(head, glyph,dir,
                        (svScalar)j * bar_degree/(svScalar)bar_segment + white_degree);
 
                         rotate_normal = normalize(rotate_base - glyph);
@@ -1895,7 +1895,7 @@ void GetCylinderTexture(svVector3 glyph, svVector3 dir,
 //                glBegin(GL_QUAD_STRIP);
                 for(int j=0;j<=white_segment;j++)
                 {
-                        rotate_base = svGetRotatePoint(head, glyph,dir, 
+                        rotate_base = svGetRotatePoint(head, glyph,dir,
                                (svScalar)j * white_degree/(svScalar)white_segment);
                         rotate_top = rotate_base + height*dir;
                         rotate_normal = normalize(rotate_base - glyph);
@@ -1917,7 +1917,7 @@ void GetCylinderTexture(svVector3 glyph, svVector3 dir,
 //                glBegin(GL_QUAD_STRIP);
                 for(int j=0;j<=bar_segment;j++)
                 {
-                        rotate_base = svGetRotatePoint(head, glyph,dir, 
+                        rotate_base = svGetRotatePoint(head, glyph,dir,
                        (svScalar)j * bar_degree/(svScalar)bar_segment + white_degree);
 
                         rotate_normal = normalize(rotate_base - glyph);
@@ -2003,7 +2003,7 @@ void GetConeTexture(svVector3 glyph, svVector3 dir,
 //                glBegin(GL_QUAD_STRIP);
                 for(int j=0;j<=white_segment;j++)
                 {
-                        rotate_base = svGetRotatePoint(head, glyph,dir, 
+                        rotate_base = svGetRotatePoint(head, glyph,dir,
                                (svScalar)j * white_degree/(svScalar)white_segment);
                         rotate_normal = normalize(rotate_base - glyph);
 
@@ -2011,7 +2011,7 @@ void GetConeTexture(svVector3 glyph, svVector3 dir,
                         cone_seg_norm[count] = rotate_normal;
                         cone_seg_col[count] = col1;
                        count++;
-     
+
 //cerr<<head[0]<<" "<<head[1]<<" "<<head[2]<<" "<<white_degree<<" "<<white_segment<<" "<<rotate_base[0]<<" "<<rotate_base[1]<<" "<<rotate_base[2]<<endl;
                     if(j>0){
                         cone_seg_pos[count] = top;
@@ -2035,7 +2035,7 @@ void GetConeTexture(svVector3 glyph, svVector3 dir,
 //                glBegin(GL_QUAD_STRIP);
                 for(int j=0;j<=bar_segment;j++)
                 {
-                        rotate_base = svGetRotatePoint(head, glyph,dir, 
+                        rotate_base = svGetRotatePoint(head, glyph,dir,
                        (svScalar)j * bar_degree/(svScalar)bar_segment + white_degree);
 
                         rotate_normal = normalize(rotate_base - glyph);
@@ -2140,18 +2140,18 @@ void GetCone(svVector3 glyph, svVector3 dir,
 }
 void RenderSpring(svVector3 glyph, svScalar den, svScalar height, svScalar increment)
 {
-	GLfloat dir[3] = {1,0,0}; 
+	GLfloat dir[3] = {1,0,0};
 //	GLint height = 100;
 //	GLfloat glyph[3] = {-100,0,0};
 	double radius_spr[13]={1,2,3,4,5,6,7,8,9,10,11,12, 13};
 	double density_list[13]={0.05,0.06,0.075,0.095,0.12,0.15,0.185,0.225,0.27,0.32,0.375,0.435,0.5};
 	int mag = (int)den;//
- 
+
         for(int i=0;i<13;i++)
         {
           radius_spr[i] = radius_spr[i]/13.;
-        }        
- 
+        }
+
 
 	GLfloat x,y,z;
 	z = glyph[2];
@@ -2241,9 +2241,10 @@ void RenderFan(ViewProperty &property, svVector3 glyph, svVector3 dir,
   for(int i=0;i<=segment;i++){
    svVector3 p = svGetRotatePoint(head, glyph,
                     newn, (float)i*degree);
+  glNormal3f(newn[0], newn[1], newn[2]);
    glVertex3f(p[0],p[1],p[2]);
   }
-  glEnd();   
+  glEnd();
 
   /*glDisable(GL_LIGHTING);
   glColor3f(1,1,1);
@@ -2366,8 +2367,8 @@ void RenderButtonUp(svScalar width, svScalar height,
          double degree = (i * 2*SV_PI)/segment;
          boundary_pos[i][0] = cos(degree) * radius;
          boundary_pos[i][1] = sin(degree) * radius;
-         boundary_pos[i][2] = 0;      
-    } 
+         boundary_pos[i][2] = 0;
+    }
 }
 
 void RenderButtonDown(svScalar width, svScalar height,
@@ -2376,7 +2377,7 @@ void RenderButtonDown(svScalar width, svScalar height,
 
 }
 /*
-GLuint loadTexture(GLuint texture, const string filename, int &width, int &height) 
+GLuint loadTexture(GLuint texture, const string filename, int &width, int &height)
 {
    png_byte header[8];
    FILE *fp = fopen(filename.c_str(), "rb");
@@ -2464,7 +2465,7 @@ GLuint loadTexture(GLuint texture, const string filename, int &width, int &heigh
    delete[] image_data;
    delete[] row_pointers;
    fclose(fp);
- 
+
    return texture1;
 }
 
@@ -2584,7 +2585,7 @@ static GLubyte checkImage[checkImageHeight][checkImageWidth][4];
 void makeCheckImage(void)
 {
    int i, j, c;
-    
+
    for (i = 0; i < checkImageHeight; i++) {
       for (j = 0; j < checkImageWidth; j++) {
          c = ((((i&0x8)==0)^((j&0x8))==0))*255;
@@ -2603,12 +2604,12 @@ static GLuint texName;
 
   // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
   // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, 
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
                    GL_NEAREST);
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, 
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
                    GL_NEAREST);
-   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, checkImageWidth, 
-                checkImageHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, 
+   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, checkImageWidth,
+                checkImageHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE,
                 checkImage);
 }
 */

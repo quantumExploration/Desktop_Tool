@@ -305,7 +305,6 @@ void State::NewROIProperty(svScalar maxMag, svScalar minMag,
   rP->minY = minY;
   rP->maxZ = maxZ;
   rP->minZ = minZ;
-
   rP->splitVisible.clear();
   for(int i=0;i<splitSize;i++)
     rP->splitVisible.push_back(true);//splitVisible[i]);
@@ -330,6 +329,7 @@ void State::NewROIProperty(svScalar maxMag, svScalar minMag,
   rP->minPY = minPY;
   rP->maxPZ = maxPZ;
   rP->minPZ = minPZ;
+  if(rP->splitVisible.size()>0)
   rP->splitVisible.clear();
   for(int i=0;i<splitSize;i++)
     rP->splitVisible.push_back(true);//splitVisible[i]);
@@ -363,7 +363,7 @@ void State::NewROIProperty(svScalar maxMag, svScalar minMag,
 void State::NewROIProperty(svScalar maxMag, svScalar minMag,
                            svScalar maxX, svScalar maxY, svScalar maxZ,
                            svScalar minX, svScalar minY, svScalar minZ,
-                          
+
                            vector<bool> splitVisible){
   rP->maxMag = maxMag;
   rP->minMag = minMag;
@@ -445,6 +445,7 @@ void State::UpdateVisible(svQDOT *myData){//svQDOT *myQDOT){
       qdotVisible.at(&(myData->qdotData[i]))=true;//data->splitData[i][j])= true;
     }
     else{
+      //cout<<i<<endl;
       qdotVisible.at(&(myData->qdotData[i]))=false;//(data->splitData[i][j])= false;
     }
  }

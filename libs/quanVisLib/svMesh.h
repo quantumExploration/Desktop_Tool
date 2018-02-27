@@ -19,15 +19,15 @@ class svMesh {
     virtual void New(svMeshData *d);
     //virtual void New(vector<int> region);
 
-    //virtual void SetData(char *file, int index);	
+    //virtual void SetData(char *file, int index);
     virtual ~svMesh(){};
 
     virtual void GenerateGlyph(ViewProperty &property);
     virtual void GenerateSurface();
 
-    virtual void Render();
+    virtual void RenderSurface();
+    virtual void RenderGlyphs();
 
-    
      void SetDisplayList(svInt list){display_list = list;}
   protected:
      void cleanup();
@@ -41,7 +41,7 @@ class svMesh {
      //svScalarArray *magDiff;
 
     // int nComponent;//number of components
- 
+
     // vector<float *> meshV;
     // vector<float *> meshN;
     // vector<float *> meshC;

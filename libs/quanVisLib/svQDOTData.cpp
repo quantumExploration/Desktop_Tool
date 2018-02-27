@@ -15,6 +15,13 @@ void svQDOTData::cleandata(){
   isVisible.clear();
   isSelected.clear();
   isHighlighted.clear();
+  averageDir.clear();
+  averageMag.clear();
+  averagePos.clear();
+  for(list< vector<svScalar> >::iterator it=distributeExp.begin();
+      it!=distributeExp.end();++it)
+    (*it).clear();
+  distributeExp.clear();
 }
 void svQDOTData::UpdateVisibleBySplit(){
   for(int i=0;i<splitData.size();i++){
@@ -26,6 +33,59 @@ void svQDOTData::UpdateVisibleBySplit(){
    }
   }
 }
+void svQDOTData::GenerateAverage()
+{
+  averageDir.clear();
+  averageMag.clear();
+  averagePos.clear();
+  for(list< vector<svScalar> >::iterator it=distributeExp.begin();
+      it!=distributeExp.end();++it)
+      (*it).clear();
+  distributeExp.clear();
+  averageDir.resize(splitData.size());
+  averagePos.resize(splitData.size());
+  averageMag.resize(splitData.size());
+  distributeExp.resize(splitData.size());
+  int numOfPower = maxExp - minExp + 1;
+  int i =0;
+  for(list< vector<svScalar> >::iterator it=distributeExp.begin();
+      it!=distributeExp.end();++it)
+  {
+    averageDir[i][0]=0;averageDir[i][1]=0;averageDir[i][2]=0;
+    averagePos[i][0]=0;averagePos[i][1]=0;averagePos[i][2]=0;
+    averageMag[i]=0;
+    for(int j=0;j<numOfPower;j++) (*it).push_back(0);
+    for(int j=0;j<splitData[i].size();j++)
+    {
+      averageDir[i][0] += (*splitData[i][j]).dir[0];
+      averageDir[i][1] += (*splitData[i][j]).dir[1];
+      averageDir[i][2] += (*splitData[i][j]).dir[2];
+      averagePos[i][0] += (*splitData[i][j]).pos[0];
+      averagePos[i][1] += (*splitData[i][j]).pos[1];
+      averagePos[i][2] += (*splitData[i][j]).pos[2];
+      averageMag[i] += (*splitData[i][j]).den;
+      if(!isEqual((*splitData[i][j]).coe,0,false))
+      {
+        int exp = (*splitData[i][j]).exp + myQDOT->minExp;
+        (*it)[exp]+=1;
+      }
+    }
+    svScalar size = splitData[i].size();
+    averageDir[i][0] /=  size;
+    averageDir[i][1] /=  size;
+    averageDir[i][2] /=  size;
+    averagePos[i][0] /=  size;
+    averagePos[i][1] /=  size;
+    averagePos[i][2] /=  size;
+    averageMag[i] /=  size;
+    for(int j=0;j<numOfPower;j++)
+    {
+      (*it)[j] /= size;
+    }
+    i++;
+  }
+}
+
 //==============================================================//
 
 //======================mesh data===============================//
@@ -81,6 +141,11 @@ void svMeshData::SetData(char *dir){
   ProcessBoundary();
 //cerr<<"boundary points"<<endl;
   GenerateMeshGlyphs(dir);
+}
+
+void svMeshData::SetOBJ(char *dir)
+{
+
 }
 
 void svMeshData::ProcessBoundary(){
@@ -164,6 +229,10 @@ void svMeshData::GenerateMeshGlyphs(char *dir){
      else if(fabs(tmpglyph.pos[2]-myQDOT->regionZ[1][i])<1e-8){
          tmpglyph.dir[0]=0;tmpglyph.dir[1]=0;tmpglyph.dir[2]=1;
      }
+     else
+     {
+       tmpglyph.dir = - tmpglyph.dir;
+     }
      glyphs[i].push_back(tmpglyph);
      inData.push_back(pos);
      inNorm.push_back(facets[i][findex].norm);
@@ -243,6 +312,7 @@ svRawSliceData::svRawSliceData(svQDOT *data){
   myQDOT = NULL;
   mySymmetry = NULL;
   myCluster = NULL;
+  histovalues = NULL;
   sliceList = new map<Spin *, int>();
   data_structure_type = d_slice;
   New(data);
@@ -436,11 +506,15 @@ void svRawSliceData::GenerateOrigins(){
 
 void svRawSliceData::GenerateHistogram()
 {
-  for(int i=0;i<NUM_TOP_MAG;i++)
+  if(histovalues!=NULL)
   {
-    histovalues[i].free();
+    for(int i=0;i<NUM_TOP_MAG;i++)
+    {
+      histovalues[i].free();
+    }
+    delete [] histovalues;
   }
-  delete [] histovalues;
+
   histovalues = new svScalarArray[NUM_TOP_MAG];
 
   svScalar max = myQDOT->maxExp;
@@ -1020,21 +1094,30 @@ void svRawClusterData::GenerateSampling(int frequency){
           state->sampleVisible.insert(std::pair<Spin *, bool>(splitData[i][j], false));
      }
   }
-  if(mySymmetry == NULL) return;
-  for(int i=0;i<SYMMETRY_TYPE;i++){
-     if(mySymmetry->splitData[i].size()<=0) continue;
-     for(int j=0;j<myQDOT->qdotData.size();j++){
-        if((*(mySymmetry->symmetryList))[i].count(&myQDOT->qdotData[j])<=0)
-             continue;
-        vector<Spin *> value = (*(mySymmetry->symmetryList))[i].at(&myQDOT->qdotData[j]);
-        if(value.size()>0){
-            if(state->sampleVisible.at(&myQDOT->qdotData[j])==true){
-              for(int v=0;v<value.size();v++){
-                 state->sampleVisible.at(value[v]) = true;
+  if(mySymmetry != NULL){
+    for(int i=0;i<SYMMETRY_TYPE;i++){
+       if(mySymmetry->splitData[i].size()<=0) continue;
+       for(int j=0;j<myQDOT->qdotData.size();j++){
+          if((*(mySymmetry->symmetryList))[i].count(&myQDOT->qdotData[j])<=0)
+               continue;
+          vector<Spin *> value = (*(mySymmetry->symmetryList))[i].at(&myQDOT->qdotData[j]);
+          if(value.size()>0){
+              if(state->sampleVisible.at(&myQDOT->qdotData[j])==true){
+                for(int v=0;v<value.size();v++){
+                   state->sampleVisible.at(value[v]) = true;
+                }
               }
-            }
-        }
-     }
+          }
+       }
+    }
+  }
+  int i = 0;
+  for(std::list< vector<int> >::iterator it=boundaryIndex.begin();
+        it!=boundaryIndex.end();++it){
+    for(int j=0;j<(*it).size();j++){
+        state->sampleVisible.at(splitData[i][(*it)[j]]) = true;
+    }
+    i++;
   }
 }
 
@@ -1196,6 +1279,109 @@ cerr<<"done"<<endl;
   //
 }
 */
+
+//=====================svRawSummaryData==================================//
+
+svRawSummaryData::svRawSummaryData(svQDOT *data)
+{
+  myQDOT = data;
+}
+svRawSummaryData::~svRawSummaryData()
+{
+  cleanup();
+}
+void svRawSummaryData::cleanup()
+{
+  /*for(list< vector<int> >::iterator it=label.begin();
+    it!=label.end();++it)
+  {
+    (*it).clear();
+  }
+  label.clear();*/
+}
+void svRawSummaryData::GenerateClusterSummary(svRawClusterData *cluster)
+{
+  cleandata();
+  //cleanup();
+  (*clusterList).clear();
+  /*
+  for(int i=0;i<splitData.size();i++)
+  {
+    splitData[i].clear();
+  }
+  for(list< vector<int> >::iterator it=label.begin();
+    it!=label.end();++it)
+  {
+    (*it).clear();
+  }
+  label.clear();
+  splitData.clear();
+  */
+  svVector3 pos = state->symP->pos;//mySymmetry->property->pos;
+  svVector3 dir = state->symP->dir;//mySymmetry->property->dir;
+  bool isSymmetry = false;
+  svRawSymmetryData *symmetry = cluster->mySymmetry;
+  list< vector<int> > tmpcluster;
+  tmpcluster.resize(cluster->splitData.size());
+  int i=0;
+  int size = cluster->splitData.size();
+  int minc=9000;
+  int maxc=-minc;
+  int current_cluster = size;
+  for(list< vector<int> >::iterator it=tmpcluster.begin();
+      it!=tmpcluster.end();++it)
+  {
+      for(int j=0;j<cluster->splitData[i].size();j++)
+      {
+        for(int s = 0;s<SYMMETRY_TYPE;s++)
+        {
+          if(!((*(symmetry->symmetryList))[s].count(cluster->splitData[i][j])))
+          {
+            svVector3 p = (*cluster->splitData[i][j]).pos - pos;
+            svScalar d = dot(p,dir);
+            int c = (*cluster->clusterList).at(cluster->splitData[i][j]);
+            if(!d>0 && c>=0){
+              c=current_cluster;
+              current_cluster++;
+            }
+            else if(!d>0 && c<0){
+              c-=1;
+            }
+            (*it).push_back(c);
+            if(maxc < c) maxc = c;
+            if(minc > c) minc = c;
+            break;
+          }
+        }
+      }
+      i++;
+  }
+  int csize = maxc - minc + 1;
+  splitData.resize(csize);
+  i=0;
+  for(list< vector<int> >::iterator it=tmpcluster.begin();
+      it!=tmpcluster.end();++it)
+  {
+      for(int j=0;j<cluster->splitData[i].size();j++)
+      {
+        int index = (*it)[j] - minc;
+        splitData[index].push_back(cluster->splitData[i][j]);
+        (*clusterList).insert(std::pair<Spin *, int>(splitData[i][j],
+                      (*cluster->clusterList).at(cluster->splitData[i][j])));
+      }
+      i++;
+  }
+  for(list< vector<int> >::iterator it=tmpcluster.begin();
+      it!=tmpcluster.end();++it)
+  {
+    (*it).clear();
+  }
+  tmpcluster.clear();
+  GenerateAverage();
+}
+
+//====================svRawSummaryData End===============================//
+
 //========================================================================
 svContourData::svContourData(svQDOT *qdot, svRawSliceData *data){
   myCluster = NULL;
@@ -1709,6 +1895,83 @@ void svContourClusterData::SetClusterLabel(int **tmplist){
     //cerr<<i<<" "<<index<<endl;
     splitData[index+1].push_back(&myData->contourData[i]);
   }*/
+}
+void svContourSummaryData::GenerateClusterSummary(svContourClusterData *cluster)
+{
+  cleandata();
+  //cleanup();
+  (*clusterList).clear();
+  /*
+  for(int i=0;i<splitData.size();i++)
+  {
+    splitData[i].clear();
+  }
+  for(list< vector<int> >::iterator it=label.begin();
+    it!=label.end();++it)
+  {
+    (*it).clear();
+  }
+  label.clear();
+  splitData.clear();
+  */
+  svVector3 pos = state->symP->pos;//mySymmetry->property->pos;
+  svVector3 dir = state->symP->dir;//mySymmetry->property->dir;
+  //bool isSymmetry = false;
+  //svRawSymmetryData *symmetry = cluster->mySymmetry;
+  //list< vector<int> > tmpcluster;
+  //tmpcluster.resize(cluster->splitData.size());
+  int i=0;
+  int size = cluster->splitData.size();
+  //int minc=9000;
+//  int maxc=-minc;
+  //int current_cluster = size;
+  /*for(list< vector<int> >::iterator it=tmpcluster.begin();
+      it!=tmpcluster.end();++it)
+  {
+      for(int j=0;j<cluster->splitData[i].size();j++)
+      {
+        for(int s = 0;s<SYMMETRY_TYPE;s++)
+        {
+          if(!((*(symmetry->symmetryList))[s].count(cluster->splitData[i][j])))
+          {
+            svVector3 p = (*cluster->splitData[i][j]).pos - pos;
+            svScalar d = dot(p,dir);
+            int c = (*cluster->clusterList).at(cluster->splitData[i][j]);
+            if(!d>0 && c>=0){
+              c=current_cluster;
+              current_cluster++;
+            }
+            else if(!d>0 && c<0){
+              c-=1;
+            }
+            (*it).push_back(c);
+            if(maxc < c) maxc = c;
+            if(minc > c) minc = c;
+            break;
+          }
+        }
+      }
+      i++;
+  }*/
+  int csize = size;//maxc - minc + 1;
+  splitData.resize(csize);
+  for(int i=0;i<cluster->splitData.size();i++)
+  {
+      for(int j=0;j<cluster->splitData[i].size();j++)
+      {
+        int index = i;//(*it)[j] - minc;
+        splitData[index].push_back(cluster->splitData[i][j]);
+        (*clusterList).insert(std::pair<Spin *, int>(splitData[i][j],
+                      (*cluster->clusterList).at(cluster->splitData[i][j])));
+      }
+  }
+/*  for(list< vector<int> >::iterator it=tmpcluster.begin();
+      it!=tmpcluster.end();++it)
+  {
+    (*it).clear();
+  }
+  tmpcluster.clear();*/
+  GenerateAverage();
 }
 /*
 void svContourClusterData::SetClusterLabel(char *file){

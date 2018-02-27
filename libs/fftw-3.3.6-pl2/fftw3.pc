@@ -1,4 +1,4 @@
-prefix=/home/henan/Documents/NIST/NIST_SPLIT/NIST_SPLIT_VIS/libs/fftw-3.3.6-pl2/install
+prefix=/home/henan/Documents/NIST/NIST_SPLIT/Desktop_Tool/libs/fftw-3.3.6-pl2/install
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
 includedir=${prefix}/include
