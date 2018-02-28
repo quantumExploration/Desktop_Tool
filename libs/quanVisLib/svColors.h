@@ -31,7 +31,7 @@ public:
         void SetColorType(int type){color_type = type;}
         void GetColors(svQDOTData * data, svVector4Array *color,
                        svVector4Array *secondColor=NULL);
-				void GetDivergingColors(int level, bool blind_safe,svVector4Array *color);
+	void GetDivergingColors(int level, bool blind_safe,svVector4 *color);
         //void GetColors(svQDOTData * data, svVector4Array *color){}
         void RenderDivergingLegend(vector<string> text){}
 

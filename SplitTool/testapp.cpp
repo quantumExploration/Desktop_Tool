@@ -19,6 +19,7 @@
 
 glyphInfo glyphinfo;
 enableInfo enableinfo;
+guiInfo guiinfo;
 
 using namespace std;
 
@@ -31,11 +32,14 @@ void initParameters()
   glyphinfo.zmin = 0;
   glyphinfo.zmax = 1000;
   
-  enableinfo.enableMesh = true;
+  guiinfo.left = g_imageWidth/6.;
+
+  enableinfo.enableMesh = false;
   enableinfo.enableClusterBoundary = true;
 }
 
 void init(){
+  initParameters();
   rawData = new svQDOT();
   myState = new State();
 
@@ -95,13 +99,14 @@ cout<<"Generate Slices ..."<<endl;
   sliceData->SaveSliceDensitytoFile(str);
   sliceData->state = myState;
   myState->NewROIProperty(1.,0.,180.,180.,180.,0.,0.,0.,sliceData->splitData.size());
+  myState->NewVisible(rawData);
 
 cout<<"Generate Symmetry ..."<<endl;
   symmetryData = new svRawSymmetryData(rawData);
   symmetryData->state = myState;
   sliceData->SetSymmetry(symmetryData);
   symmetryData->Init(str);
-  myState->NewVisible(rawData);
+
   sliceData->GenerateSampling(glyphinfo.sample);
   sliceData->UpdateVisibleBySplit();
   myState->UpdateVisible(rawData);
@@ -120,14 +125,14 @@ cout<<"Generate Cluster ..."<<endl;
 cout<<"Generate Contour..."<<endl;
   contourData = new svContourData(rawData, sliceData);
   contourData->GenerateContourTree(str);
-//  contourData->GenerateContoursByContourTree(str, contourstep, contourratio);
+///  contourData->GenerateContoursByContourTree(str, contourstep, contourratio);
 //  contourData->GenerateSampling(sample);
 
 cout<<"Generate Contour Cluster..."<<endl;
   contourClusterData = new svContourClusterData(rawData, contourData);
-  contourData->SetCluster(contourClusterData);
-  contourClusterData->state = myState;
-  contourClusterData->Init(str);
+//  contourData->SetCluster(contourClusterData);
+//  contourClusterData->state = myState;
+//  contourClusterData->Init(str);
 
   myColor = new svColors();
   myColor->SetAlpha(1.);
@@ -155,7 +160,7 @@ cout<<"Generate Glyphs ..."<<endl;
   lc->UpdateArrowVBO();
   lc->UpdateTubeVBO();
   lc->UpdateIndexVBO();
-
+/*
   myColor->SetColorType(c_texture_cluster);
   lt = new svLTArrow(sliceData);
   lt->SetRadius(glyphinfo.arrowradius);
@@ -168,6 +173,12 @@ cout<<"Generate Glyphs ..."<<endl;
   lt->GenerateTubes();
   lt->GenerateIndex();
   lt->GenerateVBO();
+*/
+  cerr<<"Generate widgets"<<endl;
+  widget = new svWidget(sliceData);
+  widget->state = myState;
+  widget->Repeat(false);
+  widget->SetIndex(0, 108, 108);
 
   cerr<<"processing done...."<<endl;
 // lt->UpdateArrowVBO();
@@ -423,7 +434,7 @@ void RenderDualPeeling()
     meshRender->RenderGlyphs();
     meshRender->RenderSurface();
   }
-  lt->RenderVBO();
+  lc->RenderVBO();
   glPopMatrix();
   g_shaderDualInit.unbind();
 
@@ -478,7 +489,7 @@ void RenderDualPeeling()
     if(enableinfo.enableMesh) meshRender->RenderSurface();
     g_opacity = 0.75;
     g_shaderDualPeel.setUniform("Alpha", (float*)&g_opacity, 1);
-    lt->RenderVBO();
+    lc->RenderVBO();
     glPopMatrix();
 		g_shaderDualPeel.unbind();
 
@@ -534,6 +545,7 @@ void RenderDualPeeling()
 //--------------------------------------------------------------------------
 void display()
 {
+  glClearColor(0.5,0.5,0.5,1);
 	g_numGeoPasses = 0;
 
 	glMatrixMode(GL_MODELVIEW);
@@ -546,6 +558,7 @@ void display()
   //for(int i=0;i<16;i++)viewproperty.tm[i]=m[i];
    RenderDualPeeling();
 
+   glDisable(GL_LIGHTING);
    glGetDoublev (GL_MODELVIEW_MATRIX, viewproperty.mvmatrix);
    glGetDoublev (GL_PROJECTION_MATRIX, viewproperty.projmatrix);
    glGetIntegerv( GL_VIEWPORT, viewproperty.viewport );
@@ -557,14 +570,15 @@ void display()
    glLoadIdentity();
    glDisable(GL_LIGHTING);
 
-   mySlice->Render2D();
+   //mySlice->Render2D();
+   widget->Render(myColor);
 
    glMatrixMode(GL_PROJECTION);
    glLoadMatrixd(viewproperty.projmatrix);
    glMatrixMode(GL_MODELVIEW);
    glLoadMatrixd(viewproperty.mvmatrix);
 
-	glutSwapBuffers();
+   glutSwapBuffers();
 }
 
 //--------------------------------------------------------------------------
@@ -579,7 +593,9 @@ void reshape(int w, int h)
 		InitDualPeelingRenderTargets();
 
 	}
-  mySlice->Reshape(g_imageWidth/6.,g_imageHeight,g_imageWidth*5./6.);
+
+  widget->Reshape(guiinfo.left,h-50,5,10, w, h);
+  //mySlice->Reshape(g_imageWidth/6.,g_imageHeight,g_imageWidth*5./6.);
 
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
@@ -616,7 +632,7 @@ void mouse(int button, int state, int x, int y){
         if (s & Trackball::BUTTON_UP){
           trackball.mouseUp(s, x, y);
           g_numPasses=4;
-          if(enableinfo.enableMesh)meshRender->GenerateGlyph(viewproperty);
+      //    if(enableinfo.enableMesh)meshRender->GenerateGlyph(viewproperty);
           glDisable(GL_CULL_FACE);
         }
         glutPostRedisplay();
@@ -651,9 +667,9 @@ void key(unsigned char key, int x, int y){
                       myState->UpdateSplitVisible(glyphinfo.zmin, glyphinfo.zmax);
                       sliceData->UpdateVisibleBySplit();
                       myState->UpdateVisible(rawData);
-                      lt->UpdateIndex();
-                      lt->GenerateIndex();
-                      lt->UpdateIndexVBO();
+                      lc->UpdateIndex();
+                      lc->GenerateIndex();
+                      lc->UpdateIndexVBO();
                       break;}
         case 'l':
     		{
@@ -668,9 +684,9 @@ void key(unsigned char key, int x, int y){
                       //clusterData->GenerateClusterSampling(sample);
                       //myState->UpdateSplitVisible(zmin, zmax);
           myState->UpdateVisible(rawData);
-          lt->UpdateIndex();
-          lt->GenerateIndex();
-          lt->UpdateIndexVBO();
+          lc->UpdateIndex();
+          lc->GenerateIndex();
+          lc->UpdateIndexVBO();
           break;
     		}
       }
@@ -723,8 +739,8 @@ int main(int argc, char *argv[])
         exit(1);
     }
   char *str = new char[200];
-  sprintf(str,"%s/libs/dual_depth_peeling/shaders/",SRC_DIR);
-	InitGL(string(str));
+  sprintf(str,"%s/libs/dual_depth_peeling/shaders/",SRC_DIR); 
+  InitGL(string(str));
   init();
   setData(atoi(argv[1]), strdup(argv[2]), strdup(argv[3]), strdup(argv[4]),
          center, dir, distance);

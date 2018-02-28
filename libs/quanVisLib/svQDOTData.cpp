@@ -519,7 +519,7 @@ void svRawSliceData::GenerateHistogram()
 
   svScalar max = myQDOT->maxExp;
   svScalar level = max - NUM_TOP_MAG;
-  int *count = new int[splitData.size()];
+  /*int *count = new int[splitData.size()];
   for(int i=0;i<splitData.size();i++)
   {
     count[i] = 0;
@@ -527,7 +527,7 @@ void svRawSliceData::GenerateHistogram()
     {
           count[i]++;
     }
-  }
+  }*/
   for(int i=0;i<splitData.size();i++)
   {
     for(int h=0;h<NUM_TOP_MAG;h++)
@@ -537,10 +537,10 @@ void svRawSliceData::GenerateHistogram()
        svScalar exp = (*splitData[i][j]).exp;
        svScalar coe = (*splitData[i][j]).coe;
         if(exp > level&&coe>0)
-        {
+        {//if(i==40 && j == 500) cerr<<exp<<" "<<coe<<endl;
           for(int h=0;h<NUM_TOP_MAG;h++)
           {
-            if(isEqual(exp, level+h+1, false))
+            if(isEqual(exp, level+(svScalar)h+1., false))
               histovalues[h][i] += 1.;
           }
           /* if(fabs(exp[i][j]-level-1)<1e-3)
@@ -553,6 +553,9 @@ void svRawSliceData::GenerateHistogram()
                 prob[0][i] = prob[0][i]+1;*/
         }
      }
+
+   // for(int h=0;h<NUM_TOP_MAG;h++) cerr<<max<<" "<<level<<" "<<histovalues[h][i]<<" ";
+    //cerr<<endl;
      //prob[i] = prob[i]/ (svScalar)count[i];//cerr<<prob[i]<<endl;
   }//cerr<<c<<endl;
 }

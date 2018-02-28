@@ -19,15 +19,27 @@ class svWidget {
     svWidget(svRawSliceData *data);
     ~svWidget(){cleanup();}
     void Reshape(float tranx, float trany,
-              float scalex, float scaley);
+              float scalex, float scaley,
+              int w, int h)
+    {
+      this->tranx = tranx;
+      this->trany = trany;
+      this->scalex = scalex;
+      this->scaley = scaley;
+      float left = w - tranx;
+      float size = left/(boxside*4+boxside * myData->splitData.size());
+      this->scalex = scalex > size ? size : scalex;  
+      cerr<<size<<" "<<scalex<<endl;
+    }
     void Init(svRawSliceData *data);
+    void Init(svContourData *myContour){};
     void Render(svColors *myColor)
     {
       glPushMatrix();
       glTranslatef(tranx, trany, 0);
       glScalef(scalex, scaley, 1);
       RenderWidgets();
-      RenderMagHistogram(myColor);
+      if(myData!=NULL)RenderMagHistogram(myColor);
       glPopMatrix();
     }
     void RenderWidgets();
@@ -102,6 +114,7 @@ class svWidget {
     float scalex;
     float scaley;
 
+     State *state;
   protected:
     virtual void UpdateState();
     virtual void SetHistoValues();
@@ -126,7 +139,7 @@ class svWidget {
      //svScalarArray contourexp;
      svScalar tophisto;
      svRawSliceData *myData;
-     State *state;
+     svContourData *myContour;
 };
 
 }

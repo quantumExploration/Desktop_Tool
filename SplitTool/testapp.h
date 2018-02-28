@@ -35,13 +35,14 @@
 #include "svLCArrow.h"
 #include "svLTArrow.h"
 #include "svImageList.h"
+#include "svWidget.h"
 
 using namespace __svl_lib;
 
 #define MAX_DEPTH 1.0
 int g_numPasses = 4;
-int g_imageWidth = 1800;//1024;
-int g_imageHeight = 1000;//768;
+int g_imageWidth = 500;//1024;
+int g_imageHeight = 500;//768;
 GLuint g_quadDisplayList;
 GLuint g_vboId;
 GLuint g_eboId;
@@ -53,7 +54,7 @@ GLSLProgramObject g_shaderDualBlend;
 GLSLProgramObject g_shaderDualFinal;
 float g_opacity = 1;
 unsigned g_numGeoPasses = 0;
-float g_white[3] = {1.0,1.0,1.0};
+float g_white[3] = {0.75,0.75,0.75};
 float g_black[3] = {0.0};
 float *g_backgroundColor = g_white;
 GLuint g_dualBackBlenderFboId;
@@ -96,6 +97,7 @@ svRawClusterData *clusterData;
 svContourData *contourData;
 svContourClusterData *contourClusterData;
 svMeshData *meshData;
+svWidget *widget;
 State *myState;
 
 //only for adding contours in contour tree;
@@ -121,3 +123,8 @@ typedef struct enableInfo
   bool enableClusterBoundary;
 } enableInfo;
 
+
+typedef struct guiInfo
+{
+  int left;
+} guiInfo;

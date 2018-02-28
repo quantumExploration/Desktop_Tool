@@ -8,16 +8,19 @@ namespace __svl_lib {
 
 svWidget::svWidget(svRawSliceData *data)
 {
+  myData = NULL;
   histovalues = new svScalarArray[NUM_TOP_MAG];
   Init(data);
 }
 
 void svWidget::Init(svRawSliceData *data)
 {
+    for(int i=0;i<3;i++)tselect[i]=false;
+    bselect  =false;
     //cleanup();
     layer.clear();
     myData = data;
-    level = data->splitData.size()
+    level = data->splitData.size();
     for(int i=0;i<data->splitData.size();i++)
     {
       layer.push_back(false);
@@ -73,8 +76,8 @@ void svWidget::Init(svRawSliceData *data)
    triangle[2][2][0] = t[2][0] + pos[0];
    triangle[2][2][1] = t[2][1] + pos[1];
 
-   SetHistoValues();
-   UpdateState();
+   if(myData!=NULL)SetHistoValues();
+   //UpdateState();
 }
 
 void svWidget::SetHistoValues()
@@ -271,7 +274,7 @@ void svWidget::Move(int x, int y)
 }
 */
 
-void svWidget::RenderWidgets()
+void svWidget::   RenderWidgets()
 {
   svScalar maglevel = myData->myQDOT->maxExp-NUM_TOP_MAG+1;
 
@@ -304,7 +307,7 @@ void svWidget::RenderWidgets()
       if(tselect[i])
         glColor4f(253./255., 174./255., 97./255.,0.5);
       else
-        glColor4f(0.,0.,0.,0.5);
+        glColor4f(1.,1.,1.,0.5);
 
       glBegin(GL_TRIANGLES);
       for(int j=0;j<3;j++)
@@ -419,7 +422,6 @@ void svWidget::RenderWidgets()
      glVertex2f(line[0][0]+boxside + boxside*(float)i,line[0][1]);
      glEnd();
   }
-
 }
 
 //void svWidget::RenderEntropy()
@@ -470,11 +472,11 @@ void svWidget::RenderWidgets()
 void svWidget::RenderMagHistogram(svColors *myColor)//svScalar maglevel)
 {
 //=============================================================
-  svVector4Array colors[NUM_TOP_MAG];
+  svVector4 colors[NUM_TOP_MAG];
   for(int i=0;i<NUM_TOP_MAG;i++)
   {
     svVector4 white(1,1,1,1);
-    colors[i].add(white);
+    colors[i] = white;
   }
   myColor->GetDivergingColors(NUM_TOP_MAG, false, colors);
 //  colors[0][0]=215.;colors[0][1]=25.; colors[0][2]=28.;
@@ -487,7 +489,7 @@ void svWidget::RenderMagHistogram(svColors *myColor)//svScalar maglevel)
     svScalar height;
     svScalar preheight = 0;
     svScalar y = line[0][1] - boxside*NUM_TOP_MAG;
-    for(int j=0;j<NUM_TOP_MAG-1;j++)//j>=0;j--)
+    for(int j=0;j<=NUM_TOP_MAG-1;j++)//j>=0;j--)
     {
       int cindex = j;//NUM_TOP_MAG - j -1;
       glColor3f(colors[cindex][0], colors[cindex][1], colors[cindex][2]);
@@ -514,11 +516,13 @@ void svWidget::RenderMagHistogram(svColors *myColor)//svScalar maglevel)
      glEnd();
      ly =ly + boxside/2.;
   }
-  glColor3f(0,0,0);
+  glColor3f(1,1,1);
   lx = line[1][0];
   ly = line[0][1] - boxside*NUM_TOP_MAG;
+  svScalar maglevel = myData->myQDOT->maxExp-NUM_TOP_MAG+1;
   for(int i=0;i<NUM_TOP_MAG;i++)
   {
+    char str[20];
     int v = maglevel+i;//hard code!!!!!!
     sprintf(str, "1e%d",v);
     glRasterPos2f(line[1][0]+boxside*0.5,ly);
@@ -551,13 +555,13 @@ void svWidget::SetValues()
 {
   values[0] = myData->sliceOrigin[layerindex[0]];
   values[1] = myData->sliceOrigin[layerindex[1]];
-  values[2] = myData->silceOrigin[layerindex[2]];
+  values[2] = myData->sliceOrigin[layerindex[2]];
 }
 
 void svWidget::SetIndex( int zmin, int zmax, int notshowz)
 {
-     if(notshowz >= 0) showbox =true;
-     else showbox= false;
+     //if(notshowz >= 0) showbox =true;
+     //else showbox= false;
 //cerr<<zmin<<" "<<zmax<<endl;
    if(showbox)
    {
@@ -616,7 +620,6 @@ void svWidget::SetIndex( int zmin, int zmax, int notshowz)
    triangle[2][2][1] = t[2][1] + pos[1];
 
    UpdateState();
-   //SetVisible();
 }
 void svWidget::Repeat(bool showbox)
 {
@@ -636,7 +639,7 @@ void svWidget::Repeat(bool showbox)
    {
    //box[0][0]= line[0][0] + 0.5 * boxside; box[0][1] = 0;
    //box[1][0]= line[1][0] - 0.5 * boxside; box[1][1] = 0;
-   box[2][0]= box[1][0]; box[2][1] = 0;
+      box[2][0]= box[1][0]; box[2][1] = 0;
    }
 
    svScalar value1=sqrt(3);
@@ -741,8 +744,8 @@ void svWidget::UpdateState()
 
         l.free();
     }
-
-    state->UpdateVisible(layer);
+    SetValues();
+    state->UpdateSplitVisible(layer);
 }
 
 void svWidget::cleanup()

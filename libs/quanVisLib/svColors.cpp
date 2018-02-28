@@ -309,7 +309,7 @@ void svColors::SetAlpha(float alpha){
 }
 
 void svColors::GetDivergingColors(int level,
-                    bool blind_safe, svVector4Array *color)
+                    bool blind_safe, svVector4 *color)
 {
   int divergingIndex = level;//maxExp - minExp+1;
   if(!blind_safe){
