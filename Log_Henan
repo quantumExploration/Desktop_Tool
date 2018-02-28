@@ -10,4 +10,11 @@ Test two-dot data
 
 02/27/2018
 Fix VTK version bugs
-create testapp.h
+Create testapp.h
+Modulize parameters
+Add widgets back (static. no interaction)
+
+02/28/2018
+Todo: 
+Add panel and buttons back 
+Add widgets interaction back
