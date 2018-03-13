@@ -20,15 +20,12 @@
 glyphInfo glyphinfo;
 enableInfo enableinfo;
 guiInfo guiinfo;
-<<<<<<< HEAD
 imageInfo imageinfo;
 dataInfo datainfo;
 sliceInfo sliceinfo;
 symInfo syminfo;
 clusterInfo clusterinfo;
 contourInfo contourinfo;
-=======
->>>>>>> ea039c21ca0b32ea98b4e3b805c2ea44c57c3120
 
 using namespace std;
 
@@ -41,7 +38,6 @@ void initParameters()
   glyphinfo.color = c_magnitude;
   glyphinfo.arrowradius = 0.05 *1.2;
   glyphinfo.tuberadius = 0.05;
-<<<<<<< HEAD
   glyphinfo.length = 0.05;
 //  glyphinfo.encodetype = 0;
   glyphinfo.sample = 1;
@@ -61,20 +57,11 @@ void initParameters()
   imageinfo.imageMouseType = one_layer;//layer; 
 
   clusterinfo.roicluster = 0;
-=======
-  glyphinfo.encodetype = 0;
-  glyphinfo.sample = 3;
-  glyphinfo.zmin = 0;
-  glyphinfo.zmax = 1000;
-  
-  guiinfo.left = g_imageWidth/6.;
->>>>>>> ea039c21ca0b32ea98b4e3b805c2ea44c57c3120
 
   enableinfo.enableMesh = false;
   enableinfo.enableClusterBoundary = true;
 }
 
-<<<<<<< HEAD
 void readInput(char *file)
 {
   string tmp;
@@ -125,11 +112,6 @@ void readInput(char *file)
 void init()
 {
   cerr<<"set data"<<endl;
-=======
-void init(){
-  initParameters();
-  rawData = new svQDOT();
->>>>>>> ea039c21ca0b32ea98b4e3b805c2ea44c57c3120
   myState = new State();
   roip1 = new ROIProperty();
   roip2 = new ROIProperty();
@@ -496,7 +478,6 @@ void UpdateGlyphs()
   lt->SetScale(glyphinfo.length);
   lt->SetTubeRadius(glyphinfo.arrowradius);
 
-<<<<<<< HEAD
   lc_contour->SetRadius(glyphinfo.arrowradius*1.2);//0.1
   lc_contour->SetScale(glyphinfo.length);
   lc_contour->SetTubeRadius(glyphinfo.arrowradius);//0.05
@@ -656,23 +637,6 @@ void UpdateRender()
 
 void UpdateVisible()
 {
-=======
-cout<<"Generate Slices ..."<<endl;
-  sliceData = new svRawSliceData(rawData);
-  sliceData->Init(center, dir, distance);
-  sliceData->SaveSlicetoVTK(tmpdir, file);
-  sliceData->SaveSliceDensitytoFile(str);
-  sliceData->state = myState;
-  myState->NewROIProperty(1.,0.,180.,180.,180.,0.,0.,0.,sliceData->splitData.size());
-  myState->NewVisible(rawData);
-
-cout<<"Generate Symmetry ..."<<endl;
-  symmetryData = new svRawSymmetryData(rawData);
-  symmetryData->state = myState;
-  sliceData->SetSymmetry(symmetryData);
-  symmetryData->Init(str);
-
->>>>>>> ea039c21ca0b32ea98b4e3b805c2ea44c57c3120
   sliceData->GenerateSampling(glyphinfo.sample);
   contourData->GenerateSampling(glyphinfo.sample);
   sliceData->UpdateVisible();
@@ -747,7 +711,6 @@ void  getTime(char *buffer)
                         time_t rawtime;
                         struct tm * timeinfo;
 
-<<<<<<< HEAD
                         time (&rawtime);
                         timeinfo = localtime (&rawtime);
 
@@ -847,16 +810,6 @@ void setData(int type, char *filedir, char *tmpdir, char *file,
 
 //cout<<"Generate Contour Cluster..."<<endl;
 //  contourClusterData = new svContourClusterData(rawData, contourData);
-=======
-cout<<"Generate Contour..."<<endl;
-  contourData = new svContourData(rawData, sliceData);
-  contourData->GenerateContourTree(str);
-///  contourData->GenerateContoursByContourTree(str, contourstep, contourratio);
-//  contourData->GenerateSampling(sample);
-
-cout<<"Generate Contour Cluster..."<<endl;
-  contourClusterData = new svContourClusterData(rawData, contourData);
->>>>>>> ea039c21ca0b32ea98b4e3b805c2ea44c57c3120
 //  contourData->SetCluster(contourClusterData);
 //  contourClusterData->state = myState;
 //  contourClusterData->Init(str);
@@ -883,7 +836,6 @@ cout<<"Generate Glyphs ..."<<endl;
   lc->UpdateArrowVBO();
   lc->UpdateTubeVBO();
   lc->UpdateIndexVBO();
-<<<<<<< HEAD
 */
 //  myColor->SetColorType(c_cluster);
 /*  linear = new svLinearArrow(sliceData);
@@ -899,9 +851,6 @@ cout<<"Generate Glyphs ..."<<endl;
   linear->GenerateVBO();
 */
 
-=======
-/*
->>>>>>> ea039c21ca0b32ea98b4e3b805c2ea44c57c3120
   myColor->SetColorType(c_texture_cluster);
 /*  lt = new svLTArrow(sliceData);
   lt->SetRadius(glyphinfo.arrowradius);
@@ -915,7 +864,6 @@ cout<<"Generate Glyphs ..."<<endl;
   lt->GenerateIndex();
   lt->GenerateVBO();
 */
-<<<<<<< HEAD
 //  cerr<<"Generate widgets"<<endl;
 //  widget = new svWidget(sliceData);
 //  widget->state = myState;
@@ -942,13 +890,6 @@ cout<<"Generate Glyphs ..."<<endl;
 
   mouseHandle = new svMouseInteraction();
   mouseHandle->group = mouseGroup;
-=======
-  cerr<<"Generate widgets"<<endl;
-  widget = new svWidget(sliceData);
-  widget->state = myState;
-  widget->Repeat(false);
-  widget->SetIndex(0, 108, 108);
->>>>>>> ea039c21ca0b32ea98b4e3b805c2ea44c57c3120
 
   cout<<mouseGroup->currentMouse<<endl;
   cerr<<"processing done...."<<endl;
@@ -1281,18 +1222,7 @@ void RenderDualPeeling()
 	glBlendEquationEXT(GL_MAX_EXT);
 
 	g_shaderDualInit.bind();
-<<<<<<< HEAD
   Render3D();
-=======
-  glPushMatrix();
-  glMultMatrixf(viewproperty.tm);
-  if(enableinfo.enableMesh) {
-    meshRender->RenderGlyphs();
-    meshRender->RenderSurface();
-  }
-  lc->RenderVBO();
-  glPopMatrix();
->>>>>>> ea039c21ca0b32ea98b4e3b805c2ea44c57c3120
   g_shaderDualInit.unbind();
 
 	CHECK_GL_ERRORS;
@@ -1334,24 +1264,7 @@ void RenderDualPeeling()
 		g_shaderDualPeel.bind();
 		g_shaderDualPeel.bindTextureRECT("DepthBlenderTex", g_dualDepthTexId[prevId], 0);
 		g_shaderDualPeel.bindTextureRECT("FrontBlenderTex", g_dualFrontBlenderTexId[prevId], 1);
-<<<<<<< HEAD
                 Render3D();
-=======
-    g_opacity = 0.75;
-    g_shaderDualPeel.setUniform("Alpha", (float*)&g_opacity, 1);
-    float g_twoSide = 1;
-    glPushMatrix();
-    glMultMatrixf(viewproperty.tm);
-    g_shaderDualPeel.setUniform("isTwoSide", (float*)&g_twoSide, 1);
-    if(enableinfo.enableMesh) meshRender->RenderGlyphs();
-    g_twoSide = 0;
-    g_shaderDualPeel.setUniform("isTwoSide", (float*)&g_twoSide, 1);
-    if(enableinfo.enableMesh) meshRender->RenderSurface();
-    g_opacity = 0.75;
-    g_shaderDualPeel.setUniform("Alpha", (float*)&g_opacity, 1);
-    lc->RenderVBO();
-    glPopMatrix();
->>>>>>> ea039c21ca0b32ea98b4e3b805c2ea44c57c3120
 		g_shaderDualPeel.unbind();
 
 		CHECK_GL_ERRORS;
@@ -1407,16 +1320,9 @@ void RenderDualPeeling()
 void display()
 {
   glClearColor(0.5,0.5,0.5,1);
-<<<<<<< HEAD
   g_numGeoPasses = 0;
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
-=======
-	g_numGeoPasses = 0;
-
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
->>>>>>> ea039c21ca0b32ea98b4e3b805c2ea44c57c3120
   gluLookAt(viewproperty.eye[0], 
             viewproperty.eye[1], 
             viewproperty.eye[2], 
@@ -1424,10 +1330,7 @@ void display()
   trackball.getMatrix().getValue(viewproperty.tm);
   RenderDualPeeling();
 
-<<<<<<< HEAD
 //=======================2D=========================//
-=======
->>>>>>> ea039c21ca0b32ea98b4e3b805c2ea44c57c3120
    glDisable(GL_LIGHTING);
    glGetDoublev (GL_MODELVIEW_MATRIX, viewproperty.mvmatrix);
    glGetDoublev (GL_PROJECTION_MATRIX, viewproperty.projmatrix);
@@ -1440,7 +1343,6 @@ void display()
    glLoadIdentity();
    glEnable(GL_BLEND);
 
-<<<<<<< HEAD
    //cout<<guiinfo.guitype<<endl;
    switch (guiinfo.guitype)
    {
@@ -1459,10 +1361,6 @@ void display()
       myColor->RenderDivergingLegend(sliceData);
       glPopMatrix();
    }
-=======
-   //mySlice->Render2D();
-   widget->Render(myColor);
->>>>>>> ea039c21ca0b32ea98b4e3b805c2ea44c57c3120
 
    glMatrixMode(GL_PROJECTION);
    glLoadMatrixd(viewproperty.projmatrix);
@@ -1484,18 +1382,12 @@ void reshape(int w, int h)
 		InitDualPeelingRenderTargets();
 
 	}
-<<<<<<< HEAD
   guiinfo.left = g_imageWidth/4.;
 
   button->Reshape(guiinfo.left,g_imageHeight);
   widget->Reshape(guiinfo.left,h-50,5,10, w, h);
   mySlice->Reshape(guiinfo.left,g_imageHeight,g_imageWidth - guiinfo.left);//*5./6.);
   slider->Reshape(guiinfo.left,g_imageHeight, 1920);//g_imageWidth); 
-=======
-
-  widget->Reshape(guiinfo.left,h-50,5,10, w, h);
-  //mySlice->Reshape(g_imageWidth/6.,g_imageHeight,g_imageWidth*5./6.);
->>>>>>> ea039c21ca0b32ea98b4e3b805c2ea44c57c3120
 
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
@@ -1605,15 +1497,9 @@ void key(unsigned char key, int x, int y){
                       myState->UpdateSplitVisible(glyphinfo.zmin, glyphinfo.zmax);
                       sliceData->UpdateVisibleBySplit();
                       myState->UpdateVisible(rawData);
-<<<<<<< HEAD
                       linear->UpdateIndex();
                       linear->GenerateIndex();
                       linear->UpdateIndexVBO();
-=======
-                      lc->UpdateIndex();
-                      lc->GenerateIndex();
-                      lc->UpdateIndexVBO();
->>>>>>> ea039c21ca0b32ea98b4e3b805c2ea44c57c3120
                       break;}
         case 'l':
     		{
@@ -1628,9 +1514,9 @@ void key(unsigned char key, int x, int y){
                       //clusterData->GenerateClusterSampling(sample);
                       //myState->UpdateSplitVisible(zmin, zmax);
           myState->UpdateVisible(rawData);
-          lc->UpdateIndex();
-          lc->GenerateIndex();
-          lc->UpdateIndexVBO();
+          lt->UpdateIndex();
+          lt->GenerateIndex();
+          lt->UpdateIndexVBO();
           break;
     		}
       }
@@ -2290,7 +2176,6 @@ int main(int argc, char *argv[])
 		printf("Exiting...\n");
         exit(1);
     }
-<<<<<<< HEAD
   
   //datainfo.dir = string(strdup(argv[2]));
   //datainfo.tmpdir = string(strdup(argv[3]));
@@ -2303,11 +2188,6 @@ int main(int argc, char *argv[])
   GLUI_Master.set_glutReshapeFunc(reshape);
   //setData(atoi(argv[1]), strdup(argv[2]), strdup(argv[3]), strdup(argv[4]),
   //       sliceinfo.pos, sliceinfo.dir, sliceinfo.distance);
-=======
-  char *str = new char[200];
-  sprintf(str,"%s/libs/dual_depth_peeling/shaders/",SRC_DIR); 
-  InitGL(string(str));
->>>>>>> ea039c21ca0b32ea98b4e3b805c2ea44c57c3120
   init();
   GLUI_Master.set_glutDisplayFunc(display);
   GLUI_Master.set_glutMouseFunc(mouse);

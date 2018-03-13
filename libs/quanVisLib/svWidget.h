@@ -26,16 +26,9 @@ class svWidget {
       this->trany = trany;
       this->scalex = scalex;
       this->scaley = scaley;
-<<<<<<< HEAD
       float left = w - tranx*3./2.;
       float size = left/(boxside*4+boxside * myData->splitData.size());
       this->scalex = scalex > size ? size : scalex;  
-=======
-      float left = w - tranx;
-      float size = left/(boxside*4+boxside * myData->splitData.size());
-      this->scalex = scalex > size ? size : scalex;  
-      cerr<<size<<" "<<scalex<<endl;
->>>>>>> ea039c21ca0b32ea98b4e3b805c2ea44c57c3120
     }
     void Init(svRawSliceData *data);
     void Init(svContourData *myContour){};
@@ -119,17 +112,6 @@ class svWidget {
     float trany;
     float scalex;
     float scaley;
-<<<<<<< HEAD
-=======
-
-     State *state;
-  protected:
-    virtual void UpdateState();
-    virtual void SetHistoValues();
-    virtual void cleanup();
-  private:
-     svScalar boxside;
->>>>>>> ea039c21ca0b32ea98b4e3b805c2ea44c57c3120
      svVector3 box[3];
      svVector3 line[2];
      svScalar boxside;
