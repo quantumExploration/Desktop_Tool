@@ -38,15 +38,11 @@
 #include "svLinearArrow.h"
 #include "svLTArrow.h"
 #include "svImageList.h"
-<<<<<<< HEAD
 #include "svSymmetryButtons.h"
 #include "svMouseInteraction.h"
 #include "svOutline.h"
 
 #include <GL/glui.h>
-=======
-#include "svWidget.h"
->>>>>>> ea039c21ca0b32ea98b4e3b805c2ea44c57c3120
 
 using namespace __svl_lib;
 
@@ -54,13 +50,8 @@ using namespace __svl_lib;
 
 #define MAX_DEPTH 1.0
 int g_numPasses = 4;
-<<<<<<< HEAD
 int g_imageWidth = 1920;//500;//1024;
 int g_imageHeight = 1080;//500;//768;
-=======
-int g_imageWidth = 500;//1024;
-int g_imageHeight = 500;//768;
->>>>>>> ea039c21ca0b32ea98b4e3b805c2ea44c57c3120
 GLuint g_quadDisplayList;
 GLuint g_vboId;
 GLuint g_eboId;
@@ -119,7 +110,6 @@ svRawClusterData *clusterData;
 svContourData *contourData;
 svContourClusterData *contourClusterData;
 svMeshData *meshData;
-<<<<<<< HEAD
 svMeshData *meshCluster;
 svMesh *meshClusterRender;
 svWidget *widget;
@@ -127,9 +117,6 @@ svSlice *slice;
 svROISlider *slider;
 svOutline *outline;
 svSymmetryButtons *button;
-=======
-svWidget *widget;
->>>>>>> ea039c21ca0b32ea98b4e3b805c2ea44c57c3120
 State *myState;
 svMouseInteraction *mouseHandle;
 svMouseGroup *mouseGroup;
@@ -313,7 +300,6 @@ typedef struct enableInfo
   bool enableClusterBoundary;
 } enableInfo;
 
-<<<<<<< HEAD
 enum GUITYPE
 {
   gui_widget,
@@ -322,13 +308,10 @@ enum GUITYPE
   gui_slider,
   gui_none
 };
-=======
->>>>>>> ea039c21ca0b32ea98b4e3b805c2ea44c57c3120
 
 typedef struct guiInfo
 {
   int left;
-<<<<<<< HEAD
   int guitype;
   int slice;
   int slider;
@@ -415,6 +398,3 @@ void ResetROI();
 void Update();
 void control_cb(int control);
 void glui_display();
-=======
-} guiInfo;
->>>>>>> ea039c21ca0b32ea98b4e3b805c2ea44c57c3120
