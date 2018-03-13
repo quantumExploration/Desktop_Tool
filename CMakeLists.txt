@@ -159,6 +159,14 @@ ExternalProject_Add(SmoothMesh
     INSTALL_COMMAND ${CMAKE_COMMAND} -E copy <SOURCE_DIR>/GenerateMesh
         ${CMAKE_CURRENT_BINARY_DIR}/../bin/)
 
+ExternalProject_Add(SmoothMesh2
+    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libs/VTKsmoothClusterMesh
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND cmake . && make
+    BUILD_IN_SOURCE 1
+    INSTALL_COMMAND ${CMAKE_COMMAND} -E copy <SOURCE_DIR>/SmoothMesh
+        ${CMAKE_CURRENT_BINARY_DIR}/../bin/)
+
 ExternalProject_Add(ex_alpha_shape_3
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libs/Alpha_shapes_3/
     CONFIGURE_COMMAND ""
@@ -190,6 +198,7 @@ ExternalProject_Get_Property(hybridImage  SOURCE_DIR)
 
 
 set(svl_SOURCES
+    libs/quanVisLib/readfiles.cpp
     libs/quanVisLib/svUtil.cpp
     libs/quanVisLib/svLut.cpp
     libs/quanVisLib/svParticle.cpp
@@ -208,15 +217,28 @@ set(svl_SOURCES
     libs/quanVisLib/svLTArrow.cpp
     libs/quanVisLib/svImage.cpp
     libs/quanVisLib/svHybridImage.cpp
+    libs/quanVisLib/svImageMouse.cpp
     libs/quanVisLib/svImageList.cpp
+    libs/quanVisLib/svWidgetMouse.cpp
+    libs/quanVisLib/svROISliderMouse.cpp
+    libs/quanVisLib/svButtonMouse.cpp
+    libs/quanVisLib/svMouseGroup.cpp
+    libs/quanVisLib/svMouseInteraction.cpp
     libs/quanVisLib/svMesh.cpp
+    libs/quanVisLib/svWidget.cpp
+    libs/quanVisLib/svSlider.cpp
+    libs/quanVisLib/svSlice.cpp
+    libs/quanVisLib/svROISlider.cpp
     libs/quanVisLib/svPrimitive.cpp
+    libs/quanVisLib/svIcons.cpp
+    libs/quanVisLib/svSymmetryButtons.cpp
     libs/quanVisLib/svContourTree.cpp
     libs/quanVisLib/GLSLProgramObject.cpp
     libs/quanVisLib/dual_depth_peeling.cpp
     libs/quanVisLib/svList.cpp
     libs/quanVisLib/svUtil.h
     libs/quanVisLib/svLut.h
+    libs/quanVisLib/readfiles.h
     libs/quanVisLib/svParticle.h
     libs/quanVisLib/ivview.h
     libs/quanVisLib/ivTrackball.h
@@ -233,9 +255,22 @@ set(svl_SOURCES
     libs/quanVisLib/svLTArrow.h
     libs/quanVisLib/svImage.h
     libs/quanVisLib/svHybridImage.h
+    libs/quanVisLib/svMouseEvent.h
+    libs/quanVisLib/svImageMouse.h
+    libs/quanVisLib/svROISliderMouse.h
+    libs/quanVisLib/svWidgetMouse.h
+    libs/quanVisLib/svButtonMouse.h
+    libs/quanVisLib/svMouseGroup.h
+    libs/quanVisLib/svMouseInteraction.h
     libs/quanVisLib/svImageList.h
     libs/quanVisLib/svMesh.h
+    libs/quanVisLib/svWidget.h
+    libs/quanVisLib/svSlider.h
+    libs/quanVisLib/svSlice.h
+    libs/quanVisLib/svROISlider.h
     libs/quanVisLib/svPrimitive.h
+    libs/quanVisLib/svIcons.h
+    libs/quanVisLib/svSymmetryButtons.h
     libs/quanVisLib/svContourTree.h
     libs/quanVisLib/GLSLProgramObject.h
     libs/quanVisLib/dual_depth_peeling.h
