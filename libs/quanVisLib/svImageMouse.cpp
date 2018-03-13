@@ -1,33 +1,59 @@
 #include "svImageMouse.h"
+#include <algorithm>
+using namespace std;
 
 namespace __svl_lib{
 
-void svImageSelect:Reset()
+void svImageSelect::Reset()
 {
   for(int i=0;i<imageList->imageList.size();i++)
   {
     imageList->imageList[i]->isSelectable = true;
     imageList->imageList[i]->isSelected = false;
     imageList->imageList[i]->isHighlighted = false;
+  }
+  boundary2D[0][0]=9e+9;
+  boundary2D[0][1]=9e+9;
+  boundary2D[1][0]=-9e+9;
+  boundary2D[1][1]=-9e+9;
 
+  for(int i=0;i<imageList->imageList.size();i++)
+  {
+    float tranx = imageList->imageList[i]->tranx;
+    float sidex = imageList->imageList[i]->sidex;
+    float trany = imageList->imageList[i]->trany;
+    float sidey = imageList->imageList[i]->sidey;
+    if(boundary2D[0][0]>tranx)
+        boundary2D[0][0] = tranx;
+    if(boundary2D[1][0]<sidex + tranx)
+        boundary2D[1][0] = sidex + tranx;
+    if(boundary2D[0][1]>trany)
+        boundary2D[0][1] = trany;
+    if(boundary2D[1][1]<sidey + trany)
+        boundary2D[1][1] = sidey + trany;
   }
   selectpixel[0]=-1;
   selectpixel[1]=-1;
+  selectpixel[2]=-1;
   selectlayer.clear();
-  selectlable = -1;
+  selectlabel = -1;
   selectedlayer.clear();
+//  for(int i=0;i<imageList->myData->splitData.size();i++)
+//     selectedlayer.push_back(i);
   selectedlabel.clear();
+//  for(int i=-100;i<100;i++) selectedlabel.push_back(i);
+  selectedcolor.clear();
 }
 
 void svImageSelect::Select(){
-  if(state == GLUT_DOWN && button == GLUT_LEFT_BUTTON)
+  if(mouse_state == GLUT_DOWN && button == GLUT_LEFT_BUTTON)
   {
     success = false;
     bool local_success=false;
     switch (selecttype){
-      case ImageSelection::one_layer:
+      case one_layer://ImageSelection::one_layer:
       {
-        selectlayer.clear();
+        //selectlayer.clear();
         /*for(int i=0;i<imageList->imageList.size();i++)
         {
           local_success=SelectLayer(imageList->imageList[i])?true:local_success;
@@ -42,21 +68,41 @@ void svImageSelect::Select(){
             }
           }
         }*/
+        boundary2D[0][0]=9e+9;
+        boundary2D[0][1]=9e+9;
+        boundary2D[1][0]=-9e+9;
+        boundary2D[1][1]=-9e+9;
+        for(int i=0;i<imageList->imageList.size();i++)
+        {
+          float tranx = imageList->imageList[i]->tranx;
+          float sidex = imageList->imageList[i]->sidex;
+          float trany = imageList->imageList[i]->trany;
+          float sidey = imageList->imageList[i]->sidey;
+          if(boundary2D[0][0]>tranx)
+              boundary2D[0][0] = tranx;
+          if(boundary2D[1][0]<sidex + tranx)
+             boundary2D[1][0] = sidex + tranx;
+          if(boundary2D[0][1]>trany)
+              boundary2D[0][1] = trany;
+          if(boundary2D[1][1]<sidey + trany)
+              boundary2D[1][1] = sidey + trany;
+        }
         local_success = SelectLayer(false);
         //if(local_success) isMove = true;
         break;
       }
-      case ImageSelection::one_3d:
+      case one_3d://ImageSelection::one_3d:
       {
         selectlayer.clear();
         local_success = SelectLayer(true);
         isMove = false;
         break;
       }
-      case ImageSelection::one_pixel:
+      case one_pixel://ImageSelection::one_pixel:
       {
         selectpixel[0]=-1;
         selectpixel[1]=-1;
+        selectpixel[2]=-1;
         /*for(int i=0;i<imageList->imageList.size();i++)
         {
           local_success=SelectPixel(imageList->imageList[i]);
@@ -67,7 +113,7 @@ void svImageSelect::Select(){
         isMove = false;
         break;
       }
-      case ImageSelection::one_label:
+      case one_label://ImageSelection::one_label:
       {
         selectlabel = -1;
         /*
@@ -96,6 +142,7 @@ void svImageSelect::Select(){
 
 bool svImageSelect::SelectLayer(bool addselected)//svImage *image)
 {
+  isMove = false;
   for(int i=0;i<imageList->imageList.size();i++)
   {
     svImage *image = imageList->imageList[i];
@@ -108,24 +155,22 @@ bool svImageSelect::SelectLayer(bool addselected)//svImage *image)
       if(mousex>tranx && mousex<tranx+sidex
       && mousey>trany && mousey<trany+sidey)
       {
-        if(image->isSelected){
-          image->isSelected = false;
-          isMove = false;
-          if(addselected)
+        image->isHighlighted = true;
+        if(addselected)
+        {
+          if(image->isSelected)
           {
+            image->isSelected = false;
             std::vector<int>::iterator it;
             it = find (selectedlayer.begin(), selectedlayer.end(), i);
             if (it != selectedlayer.end())
             {
-              selectedlayer.erase(i);
+              selectedlayer.erase(selectedlayer.begin()+i);//erase(i);
             }
           }
-        }
-        else{
-          image->isSelected = true;
-          image->isHighlighted = true;
-          if(addselected)
+          else
           {
+            image->isSelected = true;
             std::vector<int>::iterator it;
             it = find (selectedlayer.begin(), selectedlayer.end(), i);
             if (it != selectedlayer.end())
@@ -133,14 +178,20 @@ bool svImageSelect::SelectLayer(bool addselected)//svImage *image)
               selectedlayer.push_back(i);
             }
             selectlayer.push_back(i);
-          }
+          } 
+          isMove = false;        
+        }
+        else
+        {
           isMove = true;
+          selectlayer.push_back(i); 
         }
         return true;
       }
       else
       {
-        //image->isSelected = false;
+        //image->
+        //isSelected = false;
         //image->isHighlighted = false;
       }
     }
@@ -161,11 +212,12 @@ bool svImageSelect::SelectPixel()//svImage *image)
       float trany = image->trany;
       float sidex = image->sidex;
       float sidey = image->sidey;
+      float scale = image->scale;
       if(mousex>image->tranx && mousex<image->tranx+image->sidex
       && mousey>image->trany && mousey<image->trany+image->sidey)
       {
-        selectlayer = index;
         index = image->sliceIndex;
+        selectpixel[2]=index;//selectlayer = index;
       }
       if(index<0)
       {
@@ -174,25 +226,26 @@ bool svImageSelect::SelectPixel()//svImage *image)
 
       float x = 0;
       float y = 0;
-      svScalar minD = min(image->myData->iminD[0], image->myData->iminD[1]);
+      svVector3 iminD = image->myData->iminD;
+   //   svScalar minD = min(image->myData->iminD[0], image->myData->iminD[1]);
       for(int r=0;r<image->myData->imageRow;r++){
           for(int c=0;c<image->myData->imageColumn;c++){
-             if(mousex>x*scale + tranx && mousex < (x+minD) * scale + tranx
-             && mousey>y*scale + trany && mousey < (y+minD) * scale + trany)
+             if(mousex>x*scale + tranx && mousex < (x+iminD[0]) * scale + tranx
+             && mousey>y*scale + trany && mousey < (y+iminD[1]) * scale + trany)
              {
                selectpixel[0] = r;
                selectpixel[1] = c;
                local_success = true;
                break;
              }
-             x += minD;
+             x += iminD[0];
           }
           if(local_success)
           {
             break;
           }
           x = 0;
-          y += minD;
+          y += iminD[1];
       }
       if(local_success)break;
     }
@@ -207,6 +260,7 @@ bool svImageSelect::SelectLabel()///svImage *image)
   {
     svImage *image = imageList->imageList[i];
     int index=-1;
+    float scale = image->scale;
     float tranx = image->tranx;
     float trany = image->trany;
     float sidex = image->sidex;
@@ -223,33 +277,46 @@ bool svImageSelect::SelectLabel()///svImage *image)
 
       float x = 0;
       float y = 0;
-      svScalar minD = min(image->myData->iminD[0], image->myData->iminD[1]);
+      svVector3 iminD = image->myData->iminD;
+//      svScalar minD = min(image->myData->iminD[0], image->myData->iminD[1]);
       for(int r=0;r<image->myData->imageRow;r++){
           for(int c=0;c<image->myData->imageColumn;c++){
              int j = r * image->myData->imageColumn + c;
-             j = image->myData->imageData[myData[index]][j];
-             if(mousex>x*scale + tranx && mousex < (x+minD) * scale + tranx
-             && mousey>y*scale + trany && mousey < (y+minD) * scale + trany)
+             j = image->myData->imageData[image->sliceIndex][j];
+             if(j<0)continue;
+             if(mousex>x*scale + tranx && mousex < (x+iminD[0]) * scale + tranx
+             && mousey>y*scale + trany && mousey < (y+iminD[1]) * scale + trany)
              {
                selectlabel = image->myData->sliceData[index][j].ilabel;
-               vector<int>::iterator it;
-               it = find (selectedlabel.begin(), selectedlabel.end(), i);
-               if (it == selectedlayer.end())
+               int ii=0;
+               for(ii=0;ii<selectedlabel.size();ii++)
                {
-                 selectedlayer.push_back(selectlabel);
+                  if(selectedlabel[ii] == selectlabel){break;}
                }
-               else
+               if(ii==selectedlabel.size()) selectedlayer.push_back(selectlabel);
+               else selectedlayer.erase(selectedlayer.begin()+ii);
+/*
+	       selectcolor = image->myData->sliceData[index][j].icolor;
+               int c= 0;int size = selectedcolor.size();
+               for(c=0;c<selectedcolor.size();c++)
                {
-                  selectedlayer.erase(it);
+                     if(isEqual(selectcolor[0], selectedcolor[c][0],false)
+                     && isEqual(selectcolor[1], selectedcolor[c][1],false)
+                     && isEqual(selectcolor[2], selectedcolor[c][2],false))
+                     {
+                          selectedcolor.erase(selectedcolor.begin()+c);break;
+                     }
                }
+               if(c==size)selectedcolor.push_back(selectcolor);
+*/
                local_success = true;
                break;
              }
-             x += minD;
+             x += iminD[0];
           }
           if(local_success)break;
           x = 0;
-          y += minD;
+          y += iminD[1];
       }
       if(local_success)break;
     }
@@ -257,9 +324,11 @@ bool svImageSelect::SelectLabel()///svImage *image)
   return local_success;
 }
 
-void svImageMove::Move(){
-  if(selectEvent->selecttype == one_layer && selectEvent->isMove){
+void svImageMotion::Motion(){
+  if(selectEvent->selecttype == one_layer){// && selectEvent->isMove){
     int numOfLayers = selectEvent->selectlayer.size();
+    boundary2D[0] = selectEvent->boundary2D[0];
+    boundary2D[1] = selectEvent->boundary2D[1];
     switch (numOfLayers) {
       case 0:
       {
@@ -279,22 +348,22 @@ void svImageMove::Move(){
   }
 }
 
-void svImageMove::MoveOneLayer()
+void svImageMotion::MoveOneLayer()
 {
-  if(mousex > boundary2D[0][0] && mousex < boundary2D[0][1]
-  && mousey > boundary2D[1][0] && mousey < boundary2D[1][1])
+  //if(mousex > boundary2D[0][0] && mousex < boundary2D[1][0]
+  //&& mousey > boundary2D[0][1] && mousey < boundary2D[1][1])
   {
     //re-arrange 2d image
     Drag2DinGrid();
   }
-  else
+  //else
   {
     //drag to 3D
     //Dragto3D();
   }
 }
 
-void svImageMove::MoveMultipleLayers()
+void svImageMotion::MoveMultipleLayers()
 {
   if(!(mousex > boundary2D[0][0] && mousex < boundary2D[0][1]
   && mousey > boundary2D[1][0] && mousey < boundary2D[1][1]))
@@ -303,20 +372,24 @@ void svImageMove::MoveMultipleLayers()
   }
 }
 
-void svImageMove::Drag2DinGrid()
+void svImageMotion::Drag2DinGrid()
 {
+  svImageList *imageList = selectEvent->imageList;
+
   imageList->isGrid = true;
   float sidex = imageList->imageList[0]->sidex;
   float sidey = imageList->imageList[0]->sidey;
   int column = (mousex - boundary2D[0][0])/sidex;
-  int row = -(mousey - bounary2D[1][1])/sidey;
+  int row = -(mousey - boundary2D[1][1])/sidey;
   if(column>=0 && row>=0){
     SetLocations(column, row);
   }
 }
 
-void svImageMove::Dragto3D()
+void svImageMotion::Dragto3D()
 {
+  svImageList *imageList = selectEvent->imageList;
+
   for(int i=0;i<selectEvent->selectlayer.size();i++)
   {
     int index= selectEvent->selectlayer[i];
@@ -324,29 +397,37 @@ void svImageMove::Dragto3D()
   }
 }
 
-void svImageMove::SetLocations(int column, int row)
+void svImageMotion::SetLocations(int column, int row)
 {
+  //cout<<column<<" "<<row<<endl;
+  svImageList *imageList = selectEvent->imageList;
+
   int layer_index = selectEvent->selectlayer[0];
   for(list< vector<int> >::iterator it=imageList->groupList.begin();
     it!=imageList->groupList.end();++it)
   {
     bool findit = false;
-     for(int i=0;i<(*it).size();i++){
+    for(int i=0;i<(*it).size();i++){
        if((*it)[i] == layer_index){
          (*it).erase((*it).begin() + i); findit = true;
          break;
        }
-     }
-     if(findit)break;
+    }
+    if(findit && (*it).size()==0)
+    {
+       imageList->groupList.erase(it); 
+    }
+    if(findit) break;
   }
   if(column>=imageList->groupList.size()){
     vector<int> tmpgroup;
     tmpgroup.push_back(layer_index);
-    groupList.push_back(tmpgroup);
+    imageList->groupList.push_back(tmpgroup);
     tmpgroup.clear();
   }
   else{
-    list< vector<int> >::iterator it = imageList->groupList.begin() + column;
+    list< vector<int> >::iterator it = imageList->groupList.begin();
+     for(int i=0;i<column;i++)it++;// + column;
     (*it).insert((*it).begin()+(row>(*it).size()?(*it).size():row), layer_index);
   }
   imageList->SetLocations();
@@ -423,16 +504,20 @@ void svImage::Drag2DLayout(svScalar *cut, int column, int row, int layerindex)
 */
 void svImageRelease:: Release()
 {
+  svImageList *imageList = selectEvent->imageList;
+
   UpdateState();
   imageList->isGrid = false;
   for(int i=0;i<imageList->imageList.size();i++)
   {
-    imageList->isSelectable = true;
-    imageList->isHighlighted = false;
+    imageList->imageList[i]->isSelectable = true;
+    imageList->imageList[i]->isHighlighted = false;
     //imageList->isSelected = false;
   }
   //TODO: UPDATE STATE
-  //selectEvent->selectlayer.clear();
+  selectEvent->selectlayer.clear();
+  selectEvent->imageList->UpdateState();
+  UpdateState();
   //selectEvent->selectpixel[0]=-1;
   //selectEvent->selectpixel[1]=-1;
   //selectEvent->selectlabel = -2;
@@ -440,60 +525,85 @@ void svImageRelease:: Release()
 
 void svImageRelease::UpdateState()
 {
+  svImageList *imageList = selectEvent->imageList;
+
   switch (selectEvent->selecttype)
   {
-    case (ImageSelection::one_3d):
+    case (one_3d):
     {
-      state->UpdateVisible(selectEvent->selectedlayer);
+//      state->UpdateSplitVisible(selectEvent->selectedlayer);
       break;
     }
-    case (ImageSelection::one_pixel)://updatt contour values
+    case (one_pixel)://updatt contour values
     {
-      int layerindex = selectEvent->selectlayer;
+      int layerindex = selectEvent->selectpixel[2];//selectEvent->selectlayer;
       svImage *image = imageList->imageList[layerindex];
       int index = selectEvent->selectpixel[0] * image->myData->imageColumn
                 + selectEvent->selectpixel[1];
       index = image->myData->imageData[layerindex][index];
+      if(index<0)break;//continue;
       index = image->myData->sliceData[layerindex][index].torindex;
-      svScalar den = image->myData->splitData[layerindex][index];
-      state->UpateContour(layerindex, den);
+      svScalar den = (*(image->myData->splitData[layerindex][index])).den;
+      state->UpdateContour(layerindex, den);
       break;
     }
-    case (ImageSelection::one_label):
+    case (one_label):
     {
-      state->UpdateVisible(selectEvent->selectedlabel);
+      for(int i=0;i<imageList->imageList.size();i++)
+      {
+         svImage *image = imageList->imageList[i];//layerindex];
+         for(int j=0;j<image->myData->sliceData[i].size();j++)
+         {
+            bool exist=false;
+            for(int s =0;s<selectEvent->selectedlabel.size();s++)
+            {
+                  if(image->myData->sliceData[i][j].ilabel==selectEvent->selectedlabel[s])
+                     exist = true;
+            }
+            int index = image->myData->sliceData[i][j].torindex;
+            if(exist && (*image->myData->qdotVisible).at(image->myData->splitData[i][index]) )
+              (*image->myData->qdotVisible).at(image->myData->splitData[i][index])=true;
+         }
+      }
+      ////state->UpdateSplitVisible(selectEvent->selectedlabel);
       break;
     }
   }
 }
 
-void svImageMotion::Motion()
+void svImageMove::Move()
 {
-  motionlayer = -1;
-  motionpixel[0] = -1;
-  motionpixel[1] = -1;
-  motionlabel = -2;
-  switch (selectEvent->selectype){
-    case ImageSelection::one_layer:
+  movelayer = -1;
+  movepixel[0] = -1;
+  movepixel[1] = -1;
+  movelabel = -2;
+  switch (selectEvent->selecttype){
+    case one_layer:
     {
-      MotionLayer();
+      MoveLayer();
       break;
     }
-    case ImageSelection::one_pixel:
+    case one_3d:
     {
-      MotionPixel();
+      MoveLayer();
       break;
     }
-    case ImageSelection::one_label:
+    case one_pixel:
     {
-      MotionLabel();
+      MovePixel();
+      break;
+    }
+    case one_label:
+    {
+      MoveLabel();
       break;
     }
   }
 }
 
-void svImageMotion::MotionLayer()
+void svImageMove::MoveLayer()
 {
+  svImageList *imageList = selectEvent->imageList;
   for(int i=0;i<imageList->imageList.size();i++)
   {
     svImage *image = imageList->imageList[i];
@@ -501,13 +611,14 @@ void svImageMotion::MotionLayer()
     float trany = image->trany;
     float sidex = image->sidex;
     float sidey = image->sidey;
+    float scale = image->scale;
     if(image->isSelectable)
     {
       if(mousex>tranx && mousex<tranx+sidex
       && mousey>trany && mousey<trany+sidey)
       {
         image->isHighlighted = true;
-        motionlayer = i;
+        movelayer = i;
       }
       else{
         image->isHighlighted = false;
@@ -516,8 +627,9 @@ void svImageMotion::MotionLayer()
   }
 }
 
-void svImageMotion::MotionPixel()
+void svImageMove::MovePixel()
 {
+  svImageList *imageList = selectEvent->imageList;
   for(int i=0;i<imageList->imageList.size();i++)
   {
     int index=-1;
@@ -540,29 +652,31 @@ void svImageMotion::MotionPixel()
 
       float x = 0;
       float y = 0;
-      svScalar minD = min(image->myData->iminD[0], image->myData->iminD[1]);
+      svVector3 iminD = image->myData->iminD;
+//      svScalar minD = min(image->myData->iminD[0], image->myData->iminD[1]);
       for(int r=0;r<image->myData->imageRow;r++){
           for(int c=0;c<image->myData->imageColumn;c++){
-             if(mousex>x*scale + tranx && mousex < (x+minD) * scale + tranx
-             && mousey>y*scale + trany && mousey < (y+minD) * scale + trany)
+             if(mousex>x*scale + tranx && mousex < (x+iminD[0]) * scale + tranx
+             && mousey>y*scale + trany && mousey < (y+iminD[1]) * scale + trany)
              {
-               image->motionpixel[0] = r;
-               image->motionpixel[1] = c;
+               movepixel[0] = r;
+               movepixel[1] = c;
                local_success = true;
                break;
              }
-             x += minD;
+             x += iminD[0];
           }
           if(local_success)break;
           x = 0;
-          y += minD;
+          y += iminD[1];
       }
     }
   }
 }
 
-void svImageMotion::MotionLabel()
+void svImageMove::MoveLabel()
 {
+  svImageList *imageList = selectEvent->imageList;
   for(int i=0;i<imageList->imageList.size();i++)
   {
     int index=-1;
@@ -575,6 +689,15 @@ void svImageMotion::MotionLabel()
     float scale = image->scale;
     if(image->isSelectable)
     {
+      if(mousex>tranx && mousex<tranx+sidex
+      && mousey>trany && mousey<trany+sidey)
+      {
+        image->isHighlighted = true;
+      }
+      else{
+        image->isHighlighted = false;
+      }
+/*
       if(mousex>image->tranx && mousex<image->tranx+image->sidex
       && mousey>image->trany && mousey<image->trany+image->sidey)
       {
@@ -588,20 +711,22 @@ void svImageMotion::MotionLabel()
       for(int r=0;r<image->myData->imageRow;r++){
           for(int c=0;c<image->myData->imageColumn;c++){
              int j = r * image->myData->imageColumn + c;
-             j = image->myData->imageData[myData[image->sliceIndex]][j];
+             j = image->myData->imageData[image->sliceIndex][j];
+             if(j<0)continue;
              if(mousex>x*scale + tranx && mousex < (x+minD) * scale + tranx
              && mousey>y*scale + trany && mousey < (y+minD) * scale + trany)
              {
-               motionlabel = image->myData->sliceData[image->sliceIndex][j].ilabel;
+               movelabel = image->myData->sliceData[image->sliceIndex][j].ilabel;
+              // movecolor = image->myData->sliceData[image->sliceIndex][j].icolor;
                local_success = true;
-               break;
              }
              x += minD;
           }
-          if(local_success)break;
+          //if(local_success)break;
           x = 0;
           y += minD;
       }
+*/
     }
   }
 }

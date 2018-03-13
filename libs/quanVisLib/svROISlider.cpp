@@ -9,6 +9,9 @@ svROISlider::svROISlider(svQDOTData *data)
     slider[i] = new svSlider();
     slider[i]->isDouble = true;
   }
+  selectRec[0] = true;
+  selectRec[1] = false;
+  selectRec[2] = false;
   Init(data);
 }
 
@@ -20,15 +23,15 @@ void svROISlider::Init(svQDOTData *data)
   dir_degree[0] = SLIDER_DIR_DEGREE;
   dir_degree[1] = SLIDER_DIR_DEGREE;
   dir_degree[2] = SLIDER_DIR_DEGREE;
-  pos_degree[0] = myData->myQDOT->minXDistance;
-  pos_degree[1] = myData->myQDOT->minYDistance;
+  pos_degree[0] = myData->myQDOT->minZDistance;//hard code
+  pos_degree[1] = myData->myQDOT->minZDistance;//hard code
   pos_degree[2] = myData->myQDOT->minZDistance;
   font_color[0] = 0;
   font_color[1] = 0;
   font_color[2] = 0;
   font_color[3] = 0.5;
-  mag_range[0] = myData->minMag;
-  mag_range[1] = myData->maxMag;
+  mag_range[0] = myData->myQDOT->minMag;
+  mag_range[1] = myData->myQDOT->maxMag;
   dir_range[0][0] = 0; dir_range[0][1] = 180;
   dir_range[1][0] = 0; dir_range[1][1] = 180;
   dir_range[2][0] = 0; dir_range[2][1] = 180;
@@ -51,9 +54,12 @@ void svROISlider::setWidgetVel()
   {
     for(int j=0;j<2;j++)
     {
-      svScalar distance = fabs(slider[sliderindex[i]]->widgetPos[j][2]
-                              -slider[sliderindex[i]]->boundWidgetPos[0][2]);
-      widgetDir[i][j] = distance/(dir_range[i][1]-dir_range[i][0]);
+      svScalar distance = fabs(slider[sliderindex[i]]->widgetPos[j][1]
+                              -slider[sliderindex[i]]->boundWidgetPos[0][1]);
+
+      widgetDir[i][j] = distance/fabs(slider[sliderindex[i]]->boundWidgetPos[1][1]
+                              -slider[sliderindex[i]]->boundWidgetPos[0][1]);
+      widgetDir[i][j] = widgetDir[i][j]*(dir_range[i][1]-dir_range[i][0]);
       int num = (int)(widgetDir[i][j] / dir_degree[i]);
       widgetDir[i][j] = (svScalar)num * dir_degree[i] + dir_range[i][0];
     }
@@ -67,9 +73,11 @@ void svROISlider::setWidgetPos()
   {
     for(int j=0;j<2;j++)
     {
-      svScalar distance = fabs(slider[sliderindex[i]]->widgetPos[j][2]
-                              -slider[sliderindex[i]]->boundWidgetPos[0][2]);
-      widgetPos[i][j] = distance/(pos_range[i][1]-pos_range[i][0]);
+      svScalar distance = fabs(slider[sliderindex[i]]->widgetPos[j][1]
+                              -slider[sliderindex[i]]->boundWidgetPos[0][1]);
+      widgetPos[i][j] = distance/fabs(slider[sliderindex[i]]->boundWidgetPos[1][1]
+                              -slider[sliderindex[i]]->boundWidgetPos[0][1]);
+      widgetPos[i][j] = widgetPos[i][j]*(pos_range[i][1]-pos_range[i][0]);
       int num = (int)(widgetPos[i][j] / pos_degree[i]);
       widgetPos[i][j] = (svScalar)num * pos_degree[i] + pos_range[i][0];
     }
@@ -78,13 +86,13 @@ void svROISlider::setWidgetPos()
 
 void svROISlider::setWidgetMag()//logMag
 {
-  svScalar D = fabs(slider[sliderindex->boundWidgetPos[1][2]
-                            -slider[sliderindex->boundWidgetPos[0][2]);
   int sliderindex = 6;
+  svScalar D = fabs(slider[sliderindex]->boundWidgetPos[1][1]
+                            -slider[sliderindex]->boundWidgetPos[0][1]);
   for(int j=0;j<2;j++)
   {
-    svScalar distance = fabs(slider[sliderindex->widgetPos[j][2]
-                              -slider[sliderindex->boundWidgetPos[0][2]);
+    svScalar distance = fabs(slider[sliderindex]->widgetPos[j][1]
+                              -slider[sliderindex]->boundWidgetPos[0][1]);
     if(isEqual(distance, 0, false))
     {
       widgetMag[j] = mag_range[0];
@@ -95,27 +103,35 @@ void svROISlider::setWidgetMag()//logMag
     }
     else
     {
-      distance = log10(distance);
+      svScalar min=0;
+      distance = distance/D;
       if(mag_range[0] > 0)
       {
-        widgetMag[j] = distance/(log10(mag_range[1])-log10(mag_range[0]));
+        min = log10(mag_range[0]);
+        widgetMag[j] = fabs((log10(mag_range[1])-log10(mag_range[0])));
+        float num = (int)(widgetMag[j] / mag_degree);
+        widgetMag[j] = (svScalar)num * mag_degree * distance  + min;
+        widgetMag[j] = pow(10., widgetMag[j]);
       }
       else
       {
-        widgetMag[j] = distance/(log10(mag_range[1]));
+        distance = fabs(slider[sliderindex]->widgetPos[j][1]
+                              -slider[sliderindex]->boundWidgetPos[1][1]);
+        distance /= D;
+        widgetMag[j] = fabs(log10(mag_range[1]));
+       float num = (int)(widgetMag[j] / mag_degree);
+      // cerr<<mag_range[1]<<" "<<widgetMag[j]<<" "<<num<<" "<<mag_degree<<" "<<min<<endl;
+       widgetMag[j] = log10(mag_range[1])-(svScalar)num * mag_degree * distance;
+       widgetMag[j] = pow(10., widgetMag[j]);
       }
-      int num = (int)(widgetMag[j] / mag_degree);
-      widgetMag[j] = (svScalar)num * mag_degree + mag_range[0];
-      widgetMag[j] = pow(10., widgetMag[j]);
     }
 
   }
 }
 
-void svROISlider::Reshape(int left, int bottom, int width)
+void svROISlider::Reshape(int left, int top, int width)
 {
   this->left = left;
-  this->bottom = bottom;
   this->width = width;
   roundPos.clear();
 
@@ -123,6 +139,7 @@ void svROISlider::Reshape(int left, int bottom, int width)
   int recH = recW  * ROI_SLIDER_RATIO;
   double r = (double)recH/10.;
   int h = recH;
+  this->bottom = top - recH - r*2;
   int w = recW;
 
   svVector3 p;
@@ -183,7 +200,7 @@ void svROISlider::setTransformation(svScalar r, int recH, int recW)
   mag_text[0] = 10.;//-r+
   mag_text[1] = (float)recH*2./3.+(float)recH/8.;
   dir_text[0] = 10.;//-r+
-  dir_text[1] = (float)recH/3.+(float)recH/8.);
+  dir_text[1] = (float)recH/3.+(float)recH/8.;
   pos_text[0] = 10.;//-r+
   pos_text[1] = (float)recH/8.;
 
@@ -201,11 +218,11 @@ void svROISlider::setTransformation(svScalar r, int recH, int recW)
   slider[1]->trany = slider[4]->trany;
   slider[2]->tranx = slider[5]->tranx;
   slider[2]->trany = slider[5]->trany;
-  for(int i=0;i<6;i++)
+  for(int i=0;i<7;i++)
   {
     slider[i]->scalex = ((svScalar)recH - (svScalar)recH/6.)/100.;
     slider[i]->scaley = slider[i]->scalex;
-  }
+ }
 }
 
 void svROISlider::setRec(float r, int recH, int recW)
@@ -233,10 +250,11 @@ void svROISlider::setRec(float r, int recH, int recW)
 
 void svROISlider::Render()
 {
+  glDisable(GL_DEPTH_TEST);
   glPushMatrix();
   glTranslatef(recPos[0][0], recPos[0][1],0);
   RenderRec();
-  RenerTex();
+  RenderText();
   if(selectRec[0])
     RenderMag();
   else if(selectRec[1])
@@ -262,7 +280,7 @@ void svROISlider::RenderMag()
                     string(topText),
                     string(widgetText1),
                     string(widgetText2),
-                    "");
+                    "", 35, 10);
 }
 
 void svROISlider::RenderDir()
@@ -283,7 +301,7 @@ void svROISlider::RenderDir()
                     string(topText),
                     string(widgetText1),
                     string(widgetText2),
-                    "");
+                    "", 25, 10);
   }
 }
 
@@ -305,21 +323,24 @@ void svROISlider::RenderPos()
                     string(topText),
                     string(widgetText1),
                     string(widgetText2),
-                    "");
+                    "", 30, 10);
   }
 }
 
 void svROISlider::RenderRec()
 {
+  int recW = width / ROI_SLIDER_SIZE;
+  int recH = recW  * ROI_SLIDER_RATIO;
+
   glLineWidth(5.);
   glColor4f(font_color[0],
             font_color[1],
             font_color[2],
             0.5);
   glBegin(GL_LINE_LOOP);
-  for(int i=0;i<recP.size();i++)
+  for(int i=0;i<roundPos.size();i++)
   {
-      glVertex2f(recP[i][0], recP[i][1]);
+      glVertex2f(roundPos[i][0], roundPos[i][1]);
   }
   glEnd();
   glLineWidth(1.);
@@ -331,19 +352,19 @@ void svROISlider::RenderRec()
 
   glBegin(GL_LINES);
   glVertex2f((float)recW/5., (float)recH/3.);
-  glVertex2f(0-recH/10., (float)recH/3.);
+  glVertex2f(0, (float)recH/3.);
   glEnd();
 
   glBegin(GL_LINES);
   glVertex2f((float)recW/5., (float)recH*2./3.);
-  glVertex2f(0-recH/10., (float)recH*2./3.);
+  glVertex2f(0, (float)recH*2./3.);
   glEnd();
 
   glColor4f(0.5,0.5,0.5,0.5);
   glBegin(GL_POLYGON);
-  for(int i=0;i<recP.size();i++)
+  for(int i=0;i<roundPos.size();i++)
   {
-      glVertex2f(recP[i][0], recP[i][1]);
+      glVertex2f(roundPos[i][0], roundPos[i][1]);
   }
   glEnd();
 }
@@ -352,7 +373,7 @@ void svROISlider::RenderText()
 {
    char str[20];
    sprintf(str, "Magnitude");
-   if(selectMag)
+   if(selectRec[0])//Mag)
        glColor3f(254./255.,178./255.,76./255.);
    else
        glColor3f(font_color[0], font_color[1], font_color[2]);
@@ -361,7 +382,7 @@ void svROISlider::RenderText()
        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, str[j]);
 
    sprintf(str, "Orientation");
-   if(selectVel)
+   if(selectRec[1])//Vel)
        glColor3f(254./255.,178./255.,76./255.);
    else
        glColor3f(font_color[0], font_color[1], font_color[2]);
@@ -370,7 +391,7 @@ void svROISlider::RenderText()
        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, str[j]);
 
    sprintf(str, "Space");
-   if(selectPos)
+   if(selectRec[2])
        glColor3f(254./255.,178./255.,76./255.);
    else
        glColor3f(font_color[0], font_color[1], font_color[2]);
@@ -381,6 +402,7 @@ void svROISlider::RenderText()
 
 void svROISlider::UpdateState()
 {
+    state->updateVisible = true;
     state->UpdateMag(widgetMag[1], widgetMag[0]);
     state->UpdateAngle(widgetDir[0][1], widgetDir[1][1], widgetDir[2][1],
                         widgetDir[0][0], widgetDir[1][0], widgetDir[2][0]);

@@ -6,6 +6,7 @@
 
 
 #include "svQDOTData.h"
+#include "svColors.h"
 
 namespace __svl_lib {
 
@@ -24,7 +25,7 @@ class svMesh {
 
     virtual void GenerateGlyph(ViewProperty &property);
     virtual void GenerateSurface();
-
+    virtual void GenerateSurface(svColors *color, int cluster);
     virtual void RenderSurface();
     virtual void RenderGlyphs();
 

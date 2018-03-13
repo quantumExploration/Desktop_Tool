@@ -2,11 +2,11 @@
 #define __SV_WIDGET_MOUSE_H
 
 #include "svWidget.h"
+#include "svMouseEvent.h"
 
 namespace __svl_lib{
 
-
-class svWidgetSelect : svMouseSelect{
+class svWidgetSelect : public svMouseSelect{
 public:
   virtual void Select();
   virtual void Reset();
@@ -14,13 +14,14 @@ public:
   svWidget * widget;
 };
 
-class svWidgetMotion : svMouseMotion{ //drage
+class svWidgetMotion : public svMouseMotion{ //drage
+public:
   virtual void Motion();
   svWidgetSelect *selectEvent;
 //  svWidget * widget;
 };
 
-class svWidgetRelease : svMouseRelease{
+class svWidgetRelease : public svMouseRelease{
 public:
   virtual void Release();
   //svWidget * widget;
@@ -31,7 +32,7 @@ public:
 
 
 
-class svWidgetMove : svMouseMove{
+class svWidgetMove : public svMouseMove{
 public:
   virtual void Move();
   //svWidget * widget;

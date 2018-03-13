@@ -223,7 +223,9 @@ void svLCArrow::GenerateIndex()
                 {
                         int start1 = tbcount;
                         tbcount++;
-                        bool visible=myData->state->qdotVisible.at(myData->splitData[i][j]);
+                        bool visible = ((*myData->qdotVisible).at(myData->splitData[i][j])
+                                  &&(*myData->sampleVisible).at(myData->splitData[i][j]));
+
                         for(int t=0;t<(CYLINDERSLICE+1)*2;t++)
                         {
                             if(t%2==0&&t<CYLINDERSLICE*2)

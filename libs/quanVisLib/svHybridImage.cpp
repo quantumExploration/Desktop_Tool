@@ -12,14 +12,14 @@ svHybridImage::svHybridImage():svImage(){
 }
 
 void svHybridImage::GenerateHybridImage(string ifname1, string ifname2,
-                                        float cutoff, string ofname,
-                                        int sliceIndex){
+                                        float cutoff, string ofname){
+//                                        int sliceIndex){
   //cout<<ifname1<<endl;
   //cout<<ifname2<<endl;
   //cout<<ofname<<endl;
   //cerr<<sliceIndex<<endl;
-  SaveImage(ifname1, sliceIndex);
-  SaveContours(ifname2, sliceIndex);
+  SaveImage(ifname1);//, sliceIndex);
+  SaveContours(ifname2);//, sliceIndex);
   string bin(BIN_DIR);
   stringstream stream;
   stream<<cutoff;
@@ -28,7 +28,7 @@ void svHybridImage::GenerateHybridImage(string ifname1, string ifname2,
                + " " + ifname2 + " " + stream.str() + " " + ofname;
   system(exe.c_str());
   //cerr<<exe<<endl;
-  ReadColors(ofname, sliceIndex);
+  ReadColors(ofname);//, sliceIndex);
 /*
   ifstream infile(offile);
   int s1, s2;
@@ -46,7 +46,7 @@ void svHybridImage::GenerateHybridImage(string ifname1, string ifname2,
 
 }
 
-void svHybridImage::SaveImage(string ofname, int sliceIndex){
+void svHybridImage::SaveImage(string ofname){//, int sliceIndex){
   ofstream outfile(ofname.c_str());
   outfile<<1<<endl;
   outfile<<row<<" "<<column<<endl;
@@ -66,7 +66,7 @@ void svHybridImage::SaveImage(string ofname, int sliceIndex){
   outfile.close();
 }
 
-void svHybridImage::SaveContours(string ofname, int sliceIndex){
+void svHybridImage::SaveContours(string ofname){//, int sliceIndex){
   ofstream outfile(ofname.c_str());
   svVector3Array tmpColor;
   outfile<<1<<endl;
@@ -85,48 +85,48 @@ void svHybridImage::SaveContours(string ofname, int sliceIndex){
       }
   }
   int i = sliceIndex;
-  cerr<<myContour->contourTreeData[sliceIndex].size()<<" "<<myContour->contourLines[sliceIndex].size()<<endl;
-  svScalar minD = min(myData->iminD[0], myData->iminD[1]);
+//  cerr<<myContour->contourTreeData[sliceIndex].size()<<" "<<myContour->contourLines[sliceIndex].size()<<endl;
+  //svScalar minD = min(myData->iminD[0], myData->iminD[1]);
   for(int j=0;j<myContour->contourTreeData[sliceIndex].size();j+=2){
       svVector3 p1 = myContour->contourTreeData[sliceIndex][j].pos;
-      int x = (p1[0] - myData->ilbbox[0])/minD;
-      int y = (p1[1] - myData->ilbbox[1])/minD;
+      int x = (p1[0] - myData->ilbbox[0])/iminD[0];
+      int y = (p1[1] - myData->ilbbox[1])/iminD[1];
       //if(sliceIndex==40)cerr<<myContour->contourTreeData[sliceIndex].size()<<" "<<p1[0]<<" "<<p1[1]<<endl;
       if(x>=column) x = column - 1;
       if(y>=row) y =row-1;
       svVector3 p2 = myContour->contourTreeData[sliceIndex][j+1].pos;
       svVector3 p = (p1+p2)/(svScalar)2.;
-      x = (p[0] - myData->ilbbox[0])/minD;
-      y = (p[1] - myData->ilbbox[1])/minD;
+      x = (p[0] - myData->ilbbox[0])/iminD[0];
+      y = (p[1] - myData->ilbbox[1])/iminD[1];
       if(x>=column) x = column - 1;
       if(y>=row) y =row-1;
       tmpColor[x + y * column ]=black;
-      x = (p2[0] - myData->ilbbox[0])/minD;
-      y = (p2[1] - myData->ilbbox[1])/minD;
+      x = (p2[0] - myData->ilbbox[0])/iminD[0];
+      y = (p2[1] - myData->ilbbox[1])/iminD[1];
       if(x>=column) x = column - 1;
       if(y>=row) y =row-1;
       tmpColor[x + y * column ]=black;
   }
-  /*for(int j=0;j<myContour->contourLines.size();j+=2){
+  for(int j=0;j<myContour->contourLines[sliceIndex].size();j+=2){
     svVector3 p1 = myContour->contourLines[sliceIndex][j].pos;
-    int x = (p1[0] - myData->ilbbox[0])/minD;
-    int y = (p1[1] - myData->ilbbox[1])/minD;
+    int x = (p1[0] - myData->ilbbox[0])/iminD[0];
+    int y = (p1[1] - myData->ilbbox[1])/iminD[1];
     if(x>=column) x = column - 1;
     if(y>=row) y =row-1;
     tmpColor[x + y * column ]=red;
     svVector3 p2 = myContour->contourLines[sliceIndex][j+1].pos;
     svVector3 p = (p1+p2)/(svScalar)2.;
-    x = (p[0] - myData->ilbbox[0])/minD;
-    y = (p[1] - myData->ilbbox[1])/minD;
+    x = (p[0] - myData->ilbbox[0])/iminD[0];
+    y = (p[1] - myData->ilbbox[1])/iminD[1];
     if(x>=column) x = column - 1;
     if(y>=row) y =row-1;
     tmpColor[x + y * column ]=red;
-    x = (p2[0] - myData->ilbbox[0])/minD;
-    y = (p2[1] - myData->ilbbox[1])/minD;
+    x = (p2[0] - myData->ilbbox[0])/iminD[0];
+    y = (p2[1] - myData->ilbbox[1])/iminD[1];
     if(x>=column) x = column - 1;
     if(y>=row) y =row-1;
     tmpColor[x + y * column ]=red;
-  }*/
+  }
   for(int j=0;j<tmpColor.size();j++){
        outfile<<tmpColor[j][0]<<" "<<tmpColor[j][1]<<" "<<tmpColor[j][2]<<endl;
   }
@@ -134,7 +134,7 @@ void svHybridImage::SaveContours(string ofname, int sliceIndex){
  tmpColor.free();
 }
 
-void svHybridImage::ReadColors(string ofname, int sliceIndex){
+void svHybridImage::ReadColors(string ofname){//, int sliceIndex){
   ifstream infile(ofname.c_str());
   int n; infile>>n;
   int rr,cc;

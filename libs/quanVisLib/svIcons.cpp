@@ -232,6 +232,7 @@ void DrawHorizonBars(float w, float h, svVector3 *pos,
   glColor4f(0,0,0,0.5);
   for(int i=0;i<num;i++)
   {
+     //cout<<seg<<" "<<tophisto<<" "<<histovalues[i]<<endl;
      float barh = seg * (float)histovalues[i];
      glBegin(GL_QUADS);
      glVertex2f(pos[i][0]+shiftw, pos[i][1]+shifth);

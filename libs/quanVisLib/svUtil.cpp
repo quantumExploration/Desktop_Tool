@@ -146,12 +146,17 @@ svVector3 GetNewVector(svVector3 v, GLfloat *m)
 
 void GetRotateAngle(svVector3 dir, double &angle_x,  double &angle_z)
 {
-            angle_x = acos(dir[2]);
+   
+           angle_x = acos(dir[2]);
                 if(dir[1] > 0)
                 {
                         angle_x = - angle_x;
                 }
                 double xy_project = dir[0] * dir[0] + dir[1] * dir[1];
+                if(!(xy_project>0))
+                {
+                     angle_z = 0; return;
+                }
                 xy_project = sqrt(xy_project);
                  angle_z = acos(dir[1]/xy_project);
                 if(angle_x < 0)
@@ -207,6 +212,25 @@ void GetRotateFont(svVector3 dir, double &angle_x,  double &angle_z,
      angle_z = -angle_z;
 }
 //----------------------------------------------------------
+bool isInside(Spin point, map<Spin, Spin> circle)
+{
+   bool inside = true;
+   svVector3 prevn;
+   for(std::map<Spin, Spin>::iterator it=circle.begin();it!=circle.end();++it)
+   {
+      Spin tmp1 = it->first;
+      Spin tmp2 = it->second;
+      svVector3 p= point.pos;
+      svVector3 p1 = tmp1.pos;
+      svVector3 p2 = tmp2.pos;
+      svVector3 n = cross(p1-p, p2-p);
+      if(it == circle.begin()){prevn = n;continue;}
+      if(dot(n, prevn)<0){inside = false; return inside;}
+      prevn = n;
+   }
+   return inside;
+}
+
 bool isEqualLarger(svScalar a, svScalar b, bool highprecision){
   if(a > b) return true;
   else if(fabs(a-b)<(highprecision?hepisode:lepisode)) return true;
@@ -225,6 +249,27 @@ bool isEqual(svScalar a, svScalar b, bool highprecision){
 
 bool sortScalarLargetoSmall(svScalar a, svScalar b){return a>b;}
 
+
+string float_to_string(float num, int precision)
+{
+   std::stringstream stream;
+   stream<<fixed<<setprecision(precision)<<num;
+   return stream.str();
+}
+
+string int_to_string(int num)
+{
+   std::stringstream stream;
+   stream<<num;
+   return stream.str();
+}
+
+string e_to_string(double num, int precision)
+{
+  std::ostringstream streamObj;
+  streamObj<<scientific<<setprecision(precision)<<num;
+  return streamObj.str();
+}
 
 svScalar GetEntropy(svVector3Array vec)
 {

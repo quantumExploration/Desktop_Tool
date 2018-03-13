@@ -3,18 +3,17 @@
 
 #include "svImageList.h"
 #include "svMouseEvent.h"
-
 namespace __svl_lib{
 
-enum struct ImageSelection{
+enum ImageSelection{
   one_layer,
   one_3d,
+  one_label, //cluster
   //multiple_layer,
-  one_pixel,
-  one_label //cluster
+  one_pixel
 };
 
-class svImageSelect : svMouseSelect{
+class svImageSelect : public svMouseSelect{
 public:
   virtual void Select();
   virtual void Reset();
@@ -22,8 +21,11 @@ public:
   svImageList *imageList;
   int selecttype;
 
-  int selectpixel[2];
+  svVector3 boundary2D[2];
+  int selectpixel[3];
   int selectlabel;
+  svVector4 selectcolor;
+  vector<svVector4> selectedcolor;
   vector<int> selectedlabel;
   vector<int> selectlayer;
   vector<int> selectedlayer;
@@ -36,45 +38,43 @@ protected:
   //virtual void UpdateState();
 };
 
-class svImageMove : svMouseMove{
+class svImageMotion : public svMouseMotion{
 public:
-  virtual void Move();
-
+  virtual void Motion();
   svImageSelect *selectEvent;
-  svImageList *imageList;
-  svVector3 bounary2D[2];
+  svVector3 boundary2D[2];
 protected:
   virtual void MoveOneLayer();
   virtual void MoveMultipleLayers();
-  virtual void SetLocations();
+  virtual void SetLocations(int column, int row);
   virtual void Drag2DinGrid();
   virtual void Dragto3D();
 };
 
-class svImageRelease : svMouseRelease{
+class svImageRelease : public svMouseRelease{
 public:
   virtual void Release();
   svImageSelect *selectEvent;
-  svImageList *imageList;
   State *state;
 
 protected:
   virtual void UpdateState();
 };
 
-class svImageMotion : svMouseMotion{
-  virtual void Motion();
+class svImageMove : public svMouseMove{
+public:
+  virtual void Move();
 
-  int motionlayer;
-  int motionpixel[2];
-  int motionlabel;
-  svImageList *imageList;
+  int movelayer;
+  int movepixel[2];
+  int movelabel;
+  svVector4 movecolor;
   svImageSelect *selectEvent;
 
 protected:
-  virtual void MotionLayer();
-  virtual void MotionPixel();
-  virtual void MotionLabel();
+  virtual void MoveLayer();
+  virtual void MovePixel();
+  virtual void MoveLabel();
 };
 
 }

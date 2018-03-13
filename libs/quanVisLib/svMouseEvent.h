@@ -11,32 +11,34 @@
 
 namespace __svl_lib{
 
-enum struct Button {
+enum  Button {
   button_left,
   button_right,
   button_middle
 };
 
-enum struct ButtonState{
+enum ButtonState{
   button_up,
   button_down
 };
 
 class svMouseSelect{
+public:
   svMouseSelect(){};
   ~svMouseSelect(){};
 
-  virtual void Select(){}
+  virtual void Select(){};
 
   bool success;
   int mousex;
   int mousey;
   int button;
-  int state;
+  int mouse_state;
   bool isMove;
 };
 
 class svMouseMove{
+public:
   svMouseMove(){};
   ~svMouseMove(){};
 
@@ -49,6 +51,7 @@ class svMouseMove{
 };
 
 class svMouseMotion{
+public:
   svMouseMotion(){};
   ~svMouseMotion(){};
 
@@ -59,6 +62,7 @@ class svMouseMotion{
 };
 
 class svMouseRelease{
+public:
   svMouseRelease(){}
   ~svMouseRelease(){}
 };

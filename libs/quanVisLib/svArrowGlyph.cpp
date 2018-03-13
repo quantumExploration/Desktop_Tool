@@ -76,6 +76,7 @@ void svArrowGlyph::UpdateData()
      //tube_indices_size = dataSize * 4 * CYLINDERSLICE;
 
      CleanData();
+    seed_num = myData->splitData.size();
     int dataSize = 0;
     for(int i=0;i<seed_num;i++)
         for(int j=0;j<myData->splitData[i].size();j++)//myData->GetSeed(i);j++)
@@ -113,7 +114,8 @@ void svArrowGlyph::UpdateIndex()
      {
           for(int j=0;j<myData->splitData[i].size();j++)//->GetSeed(i);j++)
           {
-              if(myData->state->qdotVisible.at(myData->splitData[i][j]))//j%sample==0)
+              if((*myData->qdotVisible).at(myData->splitData[i][j])
+             && (*myData->sampleVisible).at(myData->splitData[i][j]))//j%sample==0)
                     count++;
           }
      }
@@ -681,7 +683,8 @@ void svArrowGlyph::SaveArrowtoOSG(char *file){
 	int count2 = 0;
     	for(int i =0;i<seed_num;i++){
                 for(int j=0;j<myData->splitData[i].size();j++){
-			bool visible=myData->state->qdotVisible.at(myData->splitData[i][j]);
+                        bool visible = ((*myData->qdotVisible).at(myData->splitData[i][j])
+                                  &&(*myData->sampleVisible).at(myData->splitData[i][j]));
 			if(visible){
                         	int start1 = count2;
                         	count2++;
@@ -710,7 +713,8 @@ void svArrowGlyph::SaveArrowtoOSG(char *file){
 	count2 =0;
     	for(int i =0;i<seed_num;i++){
                 for(int j=0;j<myData->splitData[i].size();j++){
-                        bool visible=myData->state->qdotVisible.at(myData->splitData[i][j]);
+                        bool visible = ((*myData->qdotVisible).at(myData->splitData[i][j])
+                                  &&(*myData->sampleVisible).at(myData->splitData[i][j]));
                         int start1 = count2;
                         count2++;
 			if(visible) {
@@ -740,7 +744,8 @@ void svArrowGlyph::SaveArrowtoOSG(char *file){
 	count2 =0;
     	for(int i =0;i<seed_num;i++){
                 for(int j=0;j<myData->splitData[i].size();j++){
-                        bool visible=myData->state->qdotVisible.at(myData->splitData[i][j]);
+                        bool visible = ((*myData->qdotVisible).at(myData->splitData[i][j])
+                                  &&(*myData->sampleVisible).at(myData->splitData[i][j]));
                         int start1 = count2;
                         count2++;
 			if(visible) {
@@ -769,7 +774,8 @@ void svArrowGlyph::SaveArrowtoOSG(char *file){
 	count2 =0;
     	for(int i =0;i<seed_num;i++){
                 for(int j=0;j<myData->splitData[i].size();j++){
-                        bool visible=myData->state->qdotVisible.at(myData->splitData[i][j]);
+                        bool visible = ((*myData->qdotVisible).at(myData->splitData[i][j])
+                                  &&(*myData->sampleVisible).at(myData->splitData[i][j]));
                         int start1 = count2;
                         count2++;
 			if(visible) {
@@ -820,7 +826,9 @@ void svArrowGlyph::SaveTubetoOSG(char *file){
 	int count1=0;
     	for(int i =0;i<seed_num;i++){
                 for(int j=0;j<myData->splitData[i].size();j++){
-                        bool visible=myData->state->qdotVisible.at(myData->splitData[i][j]);
+                        bool visible = ((*myData->qdotVisible).at(myData->splitData[i][j])
+                                  &&(*myData->sampleVisible).at(myData->splitData[i][j]));
+
 			if(visible){
                         	for(int t=0;t<(CYLINDERSLICE+1)*2;t++){
                             		if(t%2==0&&t<CYLINDERSLICE*2){
@@ -843,7 +851,9 @@ void svArrowGlyph::SaveTubetoOSG(char *file){
 	count1=0;
    	for(int i =0;i<seed_num;i++){
                 for(int j=0;j<myData->splitData[i].size();j++){
-                        bool visible=myData->state->qdotVisible.at(myData->splitData[i][j]);
+                        bool visible = ((*myData->qdotVisible).at(myData->splitData[i][j])
+                                  &&(*myData->sampleVisible).at(myData->splitData[i][j]));
+
                         for(int t=0;t<(CYLINDERSLICE+1)*2;t++){
                                  if(visible)//myData->GetVisibleLabel(i,j))//visibleLabel[i][j])
                                  {
@@ -866,7 +876,9 @@ void svArrowGlyph::SaveTubetoOSG(char *file){
 	count1=0;
    	for(int i =0;i<seed_num;i++){
                 for(int j=0;j<myData->splitData[i].size();j++){
-                        bool visible=myData->state->qdotVisible.at(myData->splitData[i][j]);
+                        bool visible = ((*myData->qdotVisible).at(myData->splitData[i][j])
+                                  &&(*myData->sampleVisible).at(myData->splitData[i][j]));
+
                         for(int t=0;t<(CYLINDERSLICE+1)*2;t++){
                                  if(visible)//myData->GetVisibleLabel(i,j))//visibleLabel[i][j])
                                  {
@@ -888,7 +900,9 @@ void svArrowGlyph::SaveTubetoOSG(char *file){
 	count1=0;
    	for(int i =0;i<seed_num;i++){
                 for(int j=0;j<myData->splitData[i].size();j++){
-                        bool visible=myData->state->qdotVisible.at(myData->splitData[i][j]);
+                        bool visible = ((*myData->qdotVisible).at(myData->splitData[i][j])
+                                  &&(*myData->sampleVisible).at(myData->splitData[i][j]));
+
                         for(int t=0;t<(CYLINDERSLICE+1)*2;t++){
                                  if(visible)//myData->GetVisibleLabel(i,j))//visibleLabel[i][j])
                                  {

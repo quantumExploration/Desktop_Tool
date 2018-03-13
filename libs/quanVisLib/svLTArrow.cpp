@@ -66,7 +66,7 @@ void svLTArrow::SetColors(svColors* color){
 void svLTArrow::UpdateData(){
     CleanData();
     cleancolor();
-
+    seed_num = myData->splitData.size();
     int dataSize = 0;
     for(int i=0;i<seed_num;i++){
         for(int j=0;j<myData->splitData[i].size();j++)
@@ -114,7 +114,8 @@ void svLTArrow::UpdateIndex(){
      for(int i=0;i<seed_num;i++){
           for(int j=0;j<myData->splitData[i].size();j++)
           {
-                   if(myData->state->qdotVisible.at(myData->splitData[i][j]))//myData->GetVisibleLabel(i,j))//visibleLabel[i][j])
+                   if((*myData->qdotVisible).at(myData->splitData[i][j])
+                    && (*myData->sampleVisible).at(myData->splitData[i][j]))//myData->GetVisibleLabel(i,j))//visibleLabel[i][j])
                    {
                        count++;
                    }
@@ -279,7 +280,9 @@ void svLTArrow::SaveTubetoOSG(char *file){
         outfile<<"              {"<<endl;
     	for(int i =0;i<seed_num;i++){
             for(int j=0;j<myData->splitData[i].size();j++){
-                 bool visible = myData->state->qdotVisible.at(myData->splitData[i][j]);
+                        bool visible = ((*myData->qdotVisible).at(myData->splitData[i][j])
+                                  &&(*myData->sampleVisible).at(myData->splitData[i][j]));
+
                  for(int t=0;t<cylinder_segment*2*2;t++){
 			if(visible){
 				outfile<<"                      "
@@ -301,7 +304,9 @@ void svLTArrow::SaveTubetoOSG(char *file){
         outfile<<"              {"<<endl;
     	for(int i =0;i<seed_num;i++){
             for(int j=0;j<myData->splitData[i].size();j++){
-                 bool visible = myData->state->qdotVisible.at(myData->splitData[i][j]);
+                        bool visible = ((*myData->qdotVisible).at(myData->splitData[i][j])
+                                  &&(*myData->sampleVisible).at(myData->splitData[i][j]));
+
                  for(int t=0;t<cylinder_segment*2*2;t++){
 			if(visible){
 				outfile<<"                      "
@@ -322,7 +327,9 @@ void svLTArrow::SaveTubetoOSG(char *file){
         outfile<<"              {"<<endl;
     	for(int i =0;i<seed_num;i++){
             for(int j=0;j<myData->splitData[i].size();j++){
-                 bool visible = myData->state->qdotVisible.at(myData->splitData[i][j]);
+                        bool visible = ((*myData->qdotVisible).at(myData->splitData[i][j])
+                                  &&(*myData->sampleVisible).at(myData->splitData[i][j]));
+
                  for(int t=0;t<cylinder_segment*2*2;t++){
 			if(visible){
 				outfile<<"                      "
@@ -377,7 +384,9 @@ void svLTArrow::SaveArrowtoOSG(char *file){
         int count2 = 0;
   	for(int i =0;i<seed_num;i++){
              for(int j=0;j<myData->splitData[i].size();j++){
-                     bool visible = myData->state->qdotVisible.at(myData->splitData[i][j]);
+                        bool visible = ((*myData->qdotVisible).at(myData->splitData[i][j])
+                                  &&(*myData->sampleVisible).at(myData->splitData[i][j]));
+
                      for(int t=0;t<cylinder_segment*3;t++){
                             if(visible){
 					outfile<<"                      "
@@ -399,7 +408,9 @@ void svLTArrow::SaveArrowtoOSG(char *file){
 	count2= 0 ;
   	for(int i =0;i<seed_num;i++){
              for(int j=0;j<myData->splitData[i].size();j++){
-                     bool visible = myData->state->qdotVisible.at(myData->splitData[i][j]);
+                        bool visible = ((*myData->qdotVisible).at(myData->splitData[i][j])
+                                  &&(*myData->sampleVisible).at(myData->splitData[i][j]));
+
                      for(int t=0;t<cylinder_segment*3;t++){
                             if(visible){
 					outfile<<"                      "
@@ -420,7 +431,9 @@ void svLTArrow::SaveArrowtoOSG(char *file){
 	count2=0;
   	for(int i =0;i<seed_num;i++){
              for(int j=0;j<myData->splitData[i].size();j++){
-                     bool visible = myData->state->qdotVisible.at(myData->splitData[i][j]);
+                        bool visible = ((*myData->qdotVisible).at(myData->splitData[i][j])
+                                  &&(*myData->sampleVisible).at(myData->splitData[i][j]));
+
                      for(int t=0;t<cylinder_segment*3;t++){
                             if(visible){
 					outfile<<"                      "
@@ -532,7 +545,9 @@ void svLTArrow::GenerateIndex(){
              {
                      int start1 = tbcount;
                      tbcount++;
-                     bool visible = myData->state->qdotVisible.at(myData->splitData[i][j]);
+                        bool visible = ((*myData->qdotVisible).at(myData->splitData[i][j])
+                                  &&(*myData->sampleVisible).at(myData->splitData[i][j]));
+
                      for(int t=0;t<cylinder_segment*2*2;t+=4)
                      {
                             if(t%4==0) //&&t<cylinder_segment*2*2-4
@@ -567,7 +582,8 @@ void svLTArrow::GenerateIndex(){
              for(int j=0;j<myData->splitData[i].size();j++){
                      int start2 = abcount;
                      abcount++;
-                    bool visible = myData->state->qdotVisible.at(myData->splitData[i][j]);
+                        bool visible = ((*myData->qdotVisible).at(myData->splitData[i][j])
+                                  &&(*myData->sampleVisible).at(myData->splitData[i][j]));
 
                      for(int t=0;t<cylinder_segment*3;t++){
                             if(t%3==0){

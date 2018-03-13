@@ -12,13 +12,15 @@ void svWidgetSelect::Reset()
 
 void svWidgetSelect::Select()
 {
-  if(state == GLUT_DOWN && button == GLUT_LEFT_BUTTON)
+  if(button == GLUT_LEFT_BUTTON)
   {
     success = false;
+
     Reset();
+    float scalex = widget->scalex;
     if(mousex > widget->box[0][0]*scalex + widget->tranx
         && mousex < widget->box[2][0]*widget->scalex + widget->tranx
-        && mousey > widget->box[0][1]*widget->scaley+widget->trany
+        && mousey > widget->box[0][1]*widget->scaley + widget->trany
         && mousey < (widget->box[0][1]+widget->boxside)*widget->scaley+widget->trany)
     {
         widget->bselect=true;
@@ -54,10 +56,14 @@ void svWidgetMotion::Motion()
  svScalar movement;
  int x = mousex;
  int y = mousey;
+ if(x < widget->line[0][0]*widget->scalex+widget->tranx 
+ || x > widget->line[1][0]*widget->scalex+widget->tranx) 
+     return ;
  movement = -selectEvent->mousex + mousex;
+ movement = movement/(widget->scalex);
  if(widget->bselect)
  {
-    if((widget->box[1][0] + movement)> widget->line[0][0] + 1.*widget->boxside
+    if((widget->box[1][0]+movement)> widget->line[0][0] + 1.*widget->boxside
     && (widget->box[0][0]+movement)>widget->line[0][0]
     && (widget->box[2][0]+movement)<widget->line[1][0])
     {
@@ -143,7 +149,7 @@ void svWidgetMove::Move()
 {
   //Reset();
   svWidget *widget = selectEvent->widget;
-  if(mousex > widget->box[0][0]*scalex + widget->tranx
+  if(mousex > widget->box[0][0]*widget->scalex + widget->tranx
       && mousex < widget->box[2][0]*widget->scalex + widget->tranx
       && mousey > widget->box[0][1]*widget->scaley+widget->trany
       && mousey < (widget->box[0][1]+widget->boxside)*widget->scaley+widget->trany)
@@ -154,11 +160,10 @@ void svWidgetMove::Move()
   {
     widget->bselect = false;
   }
-  if(!widget->bselect)
-  {
     int value = widget->triangleside * sqrt(3);
     for(int i=0;i<3;i++)
     {
+       widget->tselect[i] = false;
        if(mousex > widget->triangle[i][0][0]*widget->scalex+widget->tranx
        && mousex < (widget->triangle[i][0][0]+widget->triangleside)*widget->scalex + widget->tranx
       &&  mousey > widget->triangle[i][0][1]*widget->scaley+widget->trany
@@ -174,7 +179,6 @@ void svWidgetMove::Move()
           }
        }
     }
-  }
 }
 
 

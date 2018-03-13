@@ -14,6 +14,9 @@ svSlider::svSlider()
   boundWidgetPos[1][0] = 0;
   boundWidgetPos[1][1] = 100;
 
+  barw= 8;
+  barh = barw/2.;
+
   ResetColor();
 
   widgetPos[0] = boundWidgetPos[0];
@@ -41,6 +44,7 @@ void svSlider::ResetBool()
    widgetSelect[1] = false;
 }
 */
+/*
 void svSlider::RenderDoubleSlider(string bottomText, string topText,
                        string widgetText1, string widgetText2,
                        string subject)
@@ -66,27 +70,27 @@ void svSlider::RenderDoubleSlider(string bottomText, string topText,
     glColor3f(font_color[0],font_color[1],font_color[2]);
 
     glRasterPos2f(boundWidgetPos[0][0]+11., boundWidgetPos[0][1]-2);
-    for(int j=0;j<strlen(bottomText);j++)
+    for(int j=0;j<strlen(bottomText.c_str());j++)
     {
        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, bottomText[j]);
     }
     glRasterPos2f(boundWidgetPos[1][0]+11., boundWidgetPos[1][1]-2);
-    for(int j=0;j<strlen(topText);j++)
+    for(int j=0;j<strlen(topText.c_str());j++)
     {
        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, topText[j]);
     }
     glRasterPos2f(widgetPos[0][0]+11., widgetPos[0][1]-2);
-    for(int j=0;j<strlen(widgetText1);j++)
+    for(int j=0;j<strlen(widgetText1.c_str());j++)
     {
        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, widgetText1[j]);
     }
     glRasterPos2f(widgetPos[1][0]+11., widgetPos[1][1]-2);
-    for(int j=0;j<strlen(widgetText2);j++)
+    for(int j=0;j<strlen(widgetText2.c_str());j++)
     {
        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, widgetText2[j]);
     }
     glRasterPos2f(boundWidgetPos[0][0]-18., boundWidgetPos[1][1]);
-    for(int j=0;j<strlen(subject);j++)
+    for(int j=0;j<strlen(subject.c_str());j++)
     {
        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, subject[j]);
     }
@@ -125,18 +129,20 @@ void svSlider::RenderDoubleSlider(string bottomText, string topText,
 
     glPopMatrix();
 }
-
+*/
 void svSlider::Render(string bottomText, string topText,
                        string widgetText1, string widgetText2,
-                       string subject)
+                       string subject, float shiftleft, float shiftright)
 {
-  if(isDouble) RenderDoubleSlider(bottomText, topText, widgetText1, widgetText2, subject)
-  else RenderSingleSlider(bottomText, topText, widgetText1, subject);
+  glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glEnable(GL_BLEND);
+  if(isDouble) RenderDoubleSlider(bottomText, topText, widgetText1, widgetText2, subject, shiftleft, shiftright);
+  else RenderSingleSlider(bottomText, topText, widgetText1, subject,shiftleft,shiftright);
 }
 
 void svSlider::RenderDoubleSlider(string bottomText, string topText,
                        string widgetText1, string widgetText2,
-                       string subject)
+                       string subject, float shiftleft, float shiftright)
 {
     glPushMatrix();
     glTranslatef(tranx, trany, 0);
@@ -158,69 +164,69 @@ void svSlider::RenderDoubleSlider(string bottomText, string topText,
 
     glColor3f(font_color[0],font_color[1],font_color[2]);
 
-    glRasterPos2f(boundWidgetPos[0][0]+11., boundWidgetPos[0][1]-2);
-    for(int j=0;j<strlen(bottomText);j++)
+    glRasterPos2f(boundWidgetPos[0][0]+shiftright, boundWidgetPos[0][1]-2);
+    for(int j=0;j<strlen(bottomText.c_str());j++)
     {
        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, bottomText[j]);
     }
-    glRasterPos2f(boundWidgetPos[1][0]+11., boundWidgetPos[1][1]-2);
-    for(int j=0;j<strlen(topText);j++)
+    glRasterPos2f(boundWidgetPos[1][0]+shiftright, boundWidgetPos[1][1]-2);
+    for(int j=0;j<strlen(topText.c_str());j++)
     {
        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, topText[j]);
     }
-    glRasterPos2f(widgetPos[0][0]+11., widgetPos[0][1]-2);
-    for(int j=0;j<strlen(widgetText1);j++)
+    glRasterPos2f(widgetPos[0][0]-shiftleft, widgetPos[0][1]-2);
+    for(int j=0;j<strlen(widgetText1.c_str());j++)
     {
        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, widgetText1[j]);
     }
-    glRasterPos2f(widgetPos[1][0]+11., widgetPos[1][1]-2);
-    for(int j=0;j<strlen(widgetText2);j++)
+    glRasterPos2f(widgetPos[1][0]-shiftleft, widgetPos[1][1]-2);
+    for(int j=0;j<strlen(widgetText2.c_str());j++)
     {
        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, widgetText2[j]);
     }
     glRasterPos2f(boundWidgetPos[0][0]-18., boundWidgetPos[1][1]);
-    for(int j=0;j<strlen(subject);j++)
+    for(int j=0;j<strlen(subject.c_str());j++)
     {
        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, subject[j]);
     }
 
     glColor3f(font_color[0],font_color[1],font_color[2]);
     glBegin(GL_LINE_LOOP);
-    glVertex2f(widgetPos[0][0]-10.,widgetPos[0][1]-5.);
-    glVertex2f(widgetPos[0][0]+10.,widgetPos[0][1]-5.);
-    glVertex2f(widgetPos[0][0]+10.,widgetPos[0][1]+5.);
-    glVertex2f(widgetPos[0][0]-10.,widgetPos[0][1]+5.);
+    glVertex2f(widgetPos[0][0]-barw,widgetPos[0][1]-barh);
+    glVertex2f(widgetPos[0][0]+barw,widgetPos[0][1]-barh);
+    glVertex2f(widgetPos[0][0]+barw,widgetPos[0][1]+barh);
+    glVertex2f(widgetPos[0][0]-barw,widgetPos[0][1]+barh);
     glEnd();
     glColor4f(widgetColor[0][0],widgetColor[0][1],
               widgetColor[0][2],widgetColor[0][3]);
     glBegin(GL_QUADS);
-    glVertex2f(widgetPos[0][0]-10.,widgetPos[0][1]-5.);
-    glVertex2f(widgetPos[0][0]+10.,widgetPos[0][1]-5.);
-    glVertex2f(widgetPos[0][0]+10.,widgetPos[0][1]+5.);
-    glVertex2f(widgetPos[0][0]-10.,widgetPos[0][1]+5.);
+    glVertex2f(widgetPos[0][0]-barw,widgetPos[0][1]-barh);
+    glVertex2f(widgetPos[0][0]+barw,widgetPos[0][1]-barh);
+    glVertex2f(widgetPos[0][0]+barw,widgetPos[0][1]+barh);
+    glVertex2f(widgetPos[0][0]-barw,widgetPos[0][1]+barh);
     glEnd();
 
     glColor3f(font_color[0],font_color[1],font_color[2]);
     glBegin(GL_LINE_LOOP);
-    glVertex2f(widgetPos[1][0]-10.,widgetPos[1][1]-5.);
-    glVertex2f(widgetPos[1][0]+10.,widgetPos[1][1]-5.);
-    glVertex2f(widgetPos[1][0]+10.,widgetPos[1][1]+5.);
-    glVertex2f(widgetPos[1][0]-10.,widgetPos[1][1]+5.);
+    glVertex2f(widgetPos[1][0]-barw,widgetPos[1][1]-barh);
+    glVertex2f(widgetPos[1][0]+barw,widgetPos[1][1]-barh);
+    glVertex2f(widgetPos[1][0]+barw,widgetPos[1][1]+barh);
+    glVertex2f(widgetPos[1][0]-barw,widgetPos[1][1]+barh);
     glEnd();
     glColor4f(widgetColor[1][0],widgetColor[1][1],
               widgetColor[1][2],widgetColor[1][3]);
     glBegin(GL_QUADS);
-    glVertex2f(widgetPos[1][0]-10.,widgetPos[1][1]-5.);
-    glVertex2f(widgetPos[1][0]+10.,widgetPos[1][1]-5.);
-    glVertex2f(widgetPos[1][0]+10.,widgetPos[1][1]+5.);
-    glVertex2f(widgetPos[1][0]-10.,widgetPos[1][1]+5.);
+    glVertex2f(widgetPos[1][0]-barw,widgetPos[1][1]-barh);
+    glVertex2f(widgetPos[1][0]+barw,widgetPos[1][1]-barh);
+    glVertex2f(widgetPos[1][0]+barw,widgetPos[1][1]+barh);
+    glVertex2f(widgetPos[1][0]-barw,widgetPos[1][1]+barh);
     glEnd();
 
     glPopMatrix();
 }
 void svSlider::RenderSingleSlider(string bottomText, string topText,
                        string widgetText,
-                       string subject)
+                       string subject, float shiftleft, float shiftright)
 {
     glPushMatrix();
     glTranslatef(tranx, trany, 0);
@@ -242,41 +248,41 @@ void svSlider::RenderSingleSlider(string bottomText, string topText,
 
     glColor3f(font_color[0],font_color[1],font_color[2]);
 
-    glRasterPos2f(boundWidgetPos[0][0]+11., boundWidgetPos[0][1]-2);
-    for(int j=0;j<strlen(bottomText);j++)
+    glRasterPos2f(boundWidgetPos[0][0]+shiftright, boundWidgetPos[0][1]-2);
+    for(int j=0;j<strlen(bottomText.c_str());j++)
     {
        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, bottomText[j]);
     }
-    glRasterPos2f(boundWidgetPos[1][0]+11., boundWidgetPos[1][1]-2);
-    for(int j=0;j<strlen(topText);j++)
+    glRasterPos2f(boundWidgetPos[1][0]+shiftright, boundWidgetPos[1][1]-2);
+    for(int j=0;j<strlen(topText.c_str());j++)
     {
        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, topText[j]);
     }
-    glRasterPos2f(widgetPos[0][0]+11., widgetPos[0][1]-2);
-    for(int j=0;j<strlen(widgetText1);j++)
+    glRasterPos2f(widgetPos[0][0]-shiftleft, widgetPos[0][1]-2);
+    for(int j=0;j<strlen(widgetText.c_str());j++)
     {
        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, widgetText[j]);
     }
     glRasterPos2f(boundWidgetPos[0][0]-18., boundWidgetPos[1][1]);
-    for(int j=0;j<strlen(subject);j++)
+    for(int j=0;j<strlen(subject.c_str());j++)
     {
        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, subject[j]);
     }
 
     glColor3f(font_color[0],font_color[1],font_color[2]);
     glBegin(GL_LINE_LOOP);
-    glVertex2f(widgetPos[0][0]-10.,widgetPos[0][1]-5.);
-    glVertex2f(widgetPos[0][0]+10.,widgetPos[0][1]-5.);
-    glVertex2f(widgetPos[0][0]+10.,widgetPos[0][1]+5.);
-    glVertex2f(widgetPos[0][0]-10.,widgetPos[0][1]+5.);
+    glVertex2f(widgetPos[0][0]-barw,widgetPos[0][1]-barh);
+    glVertex2f(widgetPos[0][0]+barw,widgetPos[0][1]-barh);
+    glVertex2f(widgetPos[0][0]+barw,widgetPos[0][1]+barh);
+    glVertex2f(widgetPos[0][0]-barw,widgetPos[0][1]+barh);
     glEnd();
     glColor4f(widgetColor[0][0],widgetColor[0][1],
               widgetColor[0][2],widgetColor[0][3]);
     glBegin(GL_QUADS);
-    glVertex2f(widgetPos[0][0]-10.,widgetPos[0][1]-5.);
-    glVertex2f(widgetPos[0][0]+10.,widgetPos[0][1]-5.);
-    glVertex2f(widgetPos[0][0]+10.,widgetPos[0][1]+5.);
-    glVertex2f(widgetPos[0][0]-10.,widgetPos[0][1]+5.);
+    glVertex2f(widgetPos[0][0]-barw,widgetPos[0][1]-barh);
+    glVertex2f(widgetPos[0][0]+barw,widgetPos[0][1]-barh);
+    glVertex2f(widgetPos[0][0]+barw,widgetPos[0][1]+barh);
+    glVertex2f(widgetPos[0][0]-barw,widgetPos[0][1]+barh);
     glEnd();
 
     glPopMatrix();

@@ -15,6 +15,7 @@ State::State(){
   cP = new ContourProperty();
   symP = new SymmetryProperty();
 
+  cP->seed_num = 0;
   updateSlice = true;
   updateVisible = true;
   updateCluster = true;
@@ -192,7 +193,7 @@ void State::NewClusterProperty(vector<int> num,
 
   kP->roiP.resize(num.size());
   for(int i=0;i<num.size();i++){
-     kP->roiP[i] = new ROIProperty();
+     kP->roiP[i] = roiP[i];//new ROIProperty();
      kP->isNormalize.push_back(true);
      kP->dimension.push_back(QDOT_DIMENSION);
      kP->isSplit.push_back(split[i]);
@@ -204,7 +205,7 @@ void State::NewClusterProperty(vector<int> num,
      kP->weights.push_back(w);
      w.free();
      if(roiP[i] == NULL){ kP->roiP[i] = NULL;continue;}
-     for(int j=0;j<roiP[i]->splitVisible.size();j++)
+     /*for(int j=0;j<roiP[i]->splitVisible.size();j++)
          kP->roiP[i]->splitVisible.push_back(roiP[i]->splitVisible[j]);
      kP->roiP[i]->maxMag = roiP[i]->maxMag;
      kP->roiP[i]->minMag = roiP[i]->minMag;
@@ -214,7 +215,8 @@ void State::NewClusterProperty(vector<int> num,
      kP->roiP[i]->minX = roiP[i]->minX;
      kP->roiP[i]->minY = roiP[i]->minY;
      kP->roiP[i]->minZ = roiP[i]->minZ;
-  }
+*/ 
+ }
 }
 void State::AddCluster(int num, bool split, double *weights, ROIProperty *roiP)
 {
@@ -434,18 +436,17 @@ void State::UpdateVisible(svQDOT *myData){//svQDOT *myQDOT){
     && isEqualSmaller(spin.yangle,rP->maxY,false)
     && isEqualLarger(spin.zangle,rP->minZ,false)
     && isEqualSmaller(spin.zangle,rP->maxZ,false)
-/*    && isEqualLarger(spin.pos[0],rP->minPX,false)
+    && isEqualLarger(spin.pos[0],rP->minPX,false)
     && isEqualSmaller(spin.pos[0],rP->maxPX,false)
     && isEqualLarger(spin.pos[1],rP->minPY,false)
     && isEqualSmaller(spin.pos[1],rP->maxPY,false)
     && isEqualLarger(spin.pos[2],rP->minPZ,false)
-    && isEqualSmaller(spin.pos[2],rP->maxPZ,false)*/
+    && isEqualSmaller(spin.pos[2],rP->maxPZ,false)
     && qdotVisible.at(&(myData->qdotData[i]))//rP->splitVisible[i]
     && sampleVisible.at(&(myData->qdotData[i]))){//data->splitData[i][j])){
       qdotVisible.at(&(myData->qdotData[i]))=true;//data->splitData[i][j])= true;
     }
     else{
-      //cout<<i<<endl;
       qdotVisible.at(&(myData->qdotData[i]))=false;//(data->splitData[i][j])= false;
     }
  }

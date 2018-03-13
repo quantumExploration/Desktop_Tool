@@ -26,15 +26,21 @@ public:
         void initDivergingColor();
         void initDiscreteColor();
 
+        svVector4 GetColors(int label){
+             svVector4 white(1,1,1,1);
+             if(label<0) return white;
+             return discreteColor[label];}
         void SetAlpha(float alpha);
         void SetColorBlind(bool safe){blind_safe = safe;}
         void SetColorType(int type){color_type = type;}
         void GetColors(svQDOTData * data, svVector4Array *color,
                        svVector4Array *secondColor=NULL);
-				void GetDivergingColors(int level, bool blind_safe,svVector4Array *color);
+	void GetDivergingColors(int level, bool blind_safe,svVector4 *color);
         //void GetColors(svQDOTData * data, svVector4Array *color){}
         void RenderDivergingLegend(vector<string> text){}
-
+        void RenderDivergingLegend(svQDOTData *data);
+        void Get8Colors(svVector4 *c);
+        void Get8Colors(bool blind_safe,svQDOTData *data, svVector4Array *color);
 protected:
         void RGB2LAB(double R, double G, double B, double &l, double &a, double &b);
         void ColorBlindSafe(double r, double g, double b, double &r2, double &g2, double &b2);
@@ -43,6 +49,7 @@ protected:
         void GetDivergingColors(bool blind_safe,svQDOTData *data, svVector4Array *color);
         void GetDiscreteColors(bool blind_safe,svQDOTData *data, svVector4Array *color);
         void GetDiscreteColors(bool blind_safe, svQDOTData *data, svVector4Array *color, svVector4Array *secondColor);
+        void Get8Colors(bool blind_safe, svQDOTData *data, svVector4Array *color, svVector4Array *secondColor);
         void clean();
 
         int color_type;

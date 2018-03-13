@@ -11,7 +11,7 @@
  * image (2D) + plane (3D)
  * */
 
-#include "svRawQDOTData.h"
+//#include "svRawQDOTData.h"
 #include "svColors.h"
 
 namespace __svl_lib {
@@ -20,9 +20,13 @@ class svSlice
 {
  public:
   svSlice(){}
-  svSlice(svRawQDOTData *d);
-  virtual ~svSlice();
 
+  virtual void RenderSlice(svScalar side, svVector3 origin,
+                          svVector3 dir, svVector3 x, svVector3 y);
+
+//  svSlice(svRawQDOTData *d);
+  virtual ~svSlice(){}
+/*
   virtual void New(svRawQDOTData *d);  
   virtual void SetColors(svColors *c);
   virtual void SetSlice(){}; 
@@ -31,6 +35,8 @@ class svSlice
   
   virtual void Reshape(int w, int h){image_height= h; image_width =w;}
   virtual void RenderSlice();
+
+  virtual void RenderSlice(svVector3 lbbox, svVector3 rbbox);
 
   virtual bool Mouse(int button, int state, int x, int y){};
   virtual void Move(int x, int y){}
@@ -73,6 +79,7 @@ class svSlice
 
   svVector3 lbbox;
   svVector3 rbbox;
+*/
 };
 
 }

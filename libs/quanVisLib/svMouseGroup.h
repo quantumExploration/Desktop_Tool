@@ -4,16 +4,19 @@
 #include "svImageMouse.h"
 #include "svWidgetMouse.h"
 #include "svROISliderMouse.h"
+#include "svButtonMouse.h"
 
-#include <queue>
+#include <vector>
+
+using namespace std;
 
 namespace __svl_lib{
 
-enum struct selectableType{
-  simage,
-  swidget, //ROI
-  slayerwidget,
-  sbutton
+enum selectableType{
+  mouse_widget=0, //ROI
+  mouse_slider=1,
+  mouse_image=2,
+  mouse_button=3
 };
 
 struct ImageProperty{
@@ -37,6 +40,12 @@ struct ROISliderProperty{
   svROISliderMotion * motion;
 };
 
+struct ButtonProperty{
+  svButtonSelect *select;
+  svButtonMove *move; 
+  svButtonRelease * release;  
+};
+
 typedef struct MouseEventProperty{
   ImageProperty *image;
   WidgetProperty *widget;
@@ -46,13 +55,17 @@ typedef struct MouseEventProperty{
 };
 
 class svMouseGroup{
+public:
   svMouseGroup(){};
-  ~svMouseGroup(){mouseGruops.clear();}
-  void AddImageMouse(svImageList *imageList);
+  ~svMouseGroup(){};//???mouseGruops.clear();}
+  void AddImageMouse(svImageList *imageList, int type);
+  void SetImageMouseType(int type);
+  void ResetImageLabel();
   void AddWidgetMouse(svWidget *widget);
   void AddROISliderMouse(svROISlider *slider);
-
-  queue<MouseEventProperty *> mouseGruops;
+  void AddButtonMouse(svSymmetryButtons *button);
+  vector<MouseEventProperty *> mouseGroups;
+  int currentMouse;
 };
 
 }

@@ -124,7 +124,14 @@ vector<Spin> svKmeans::Normalization(int klevel, double *mean, double *stdev, ve
                              && isEqualSmaller(spin.yangle,property.roiP[klevel]->maxY,false)
                              && isEqualLarger(spin.zangle,property.roiP[klevel]->minZ,false)
                              && isEqualSmaller(spin.zangle,property.roiP[klevel]->maxZ,false)
-                                 && property.roiP[klevel]->splitVisible[i]){
+                             && isEqualLarger(spin.pos[0],property.roiP[klevel]->minPX,false)
+                             && isEqualSmaller(spin.pos[0],property.roiP[klevel]->maxPX,false)
+                             && isEqualLarger(spin.pos[1],property.roiP[klevel]->minPY,false)
+                             && isEqualSmaller(spin.pos[1],property.roiP[klevel]->maxPY,false)
+                             && isEqualLarger(spin.pos[2],property.roiP[klevel]->minPZ,false)
+                             && isEqualSmaller(spin.pos[2],property.roiP[klevel]->maxPZ,false)
+                             && (property.roiP[klevel]->splitVisible[i]
+                             || property.roiP[klevel]->sliceVisible[i])){
                                         clusterdata.push_back(spin);
                                         slice.push_back(i);index.push_back(l);
                                         mean[0]+=spin.pos[0];
@@ -200,7 +207,14 @@ vector<Spin> svKmeans::Normalization(int klevel, double *mean, double *stdev, ve
                    && isEqualSmaller(spin.yangle,property.roiP[klevel]->maxY,false)
                    && isEqualLarger(spin.zangle,property.roiP[klevel]->minZ,false)
                    && isEqualSmaller(spin.zangle,property.roiP[klevel]->maxZ,false)
-                   && property.roiP[klevel]->splitVisible[sliceindex]){//TODO
+                             && isEqualLarger(spin.pos[0],property.roiP[klevel]->minPX,false)
+                             && isEqualSmaller(spin.pos[0],property.roiP[klevel]->maxPX,false)
+                             && isEqualLarger(spin.pos[1],property.roiP[klevel]->minPY,false)
+                             && isEqualSmaller(spin.pos[1],property.roiP[klevel]->maxPY,false)
+                             && isEqualLarger(spin.pos[2],property.roiP[klevel]->minPZ,false)
+                             && isEqualSmaller(spin.pos[2],property.roiP[klevel]->maxPZ,false)
+                   && (property.roiP[klevel]->splitVisible[sliceindex]
+                    || property.roiP[klevel]->sliceVisible[sliceindex])){//TODO
                         clusterdata.push_back(spin);
  			index.push_back(l);
 			slice.push_back(sliceindex);
@@ -748,6 +762,49 @@ void svNear::ComputeComponents(vector<Spin *> data,
     numOfComponents++;
  }
 }
+void svNear::ComputeNear(vector<Spin *> pos1, vector<Spin *> pos2, int *label)
+{
+       int     nPts;                         // actual number of data points
+       ANNpointArray   dataPts;              // data points
+       ANNpoint        queryPt;              // query point
+       ANNidxArray     nnIdx;                // near neighbor indices
+       ANNdistArray    dists;                // near neighbor distances
+       nnIdx = new ANNidx[1];                // allocate near neigh indices
+       dists = new ANNdist[1];               // allocate near neighbor dists
+       int dim = 3;
+       queryPt = annAllocPt(dim);                         // allocate query point
+       nPts = pos1.size();
+       dataPts = annAllocPts(nPts*dim, dim);
+       int count = 0;
+       for(int j=0;j<pos1.size();j++){
+           dataPts[count][0] = (*pos1[j]).pos[0];
+           dataPts[count][1] = (*pos1[j]).pos[1];
+           dataPts[count][2] = (*pos1[j]).pos[2];
+           count++;
+       }
+       ANNkd_tree *kdTree = new ANNkd_tree(dataPts,               // the data points
+                                        nPts,                  // number of points
+                                        dim);                   // dimension of space 
+       for(int i=0;i<pos2.size();i++){
+          queryPt[0] = (*pos2[i]).pos[0];
+          queryPt[1] = (*pos2[i]).pos[1];
+          queryPt[2] = (*pos2[i]).pos[2];
+          kdTree->annkSearch(                                               // search
+                                queryPt,                               // query point
+                                1,                     // number of near neighbors
+                                nnIdx,                // nearest neighbors (returned)
+                                dists,                 // distance (returned)
+                                0.0);           // error bound
+         label[i] = nnIdx[0];
+      }
+      delete kdTree;
+      dataPts = annAllocPts(0,0);
+      delete [] nnIdx;
+      delete [] dists;
+      queryPt = annAllocPt(0);
+      annClose();                     // done with ANN
+
+}
 void svNear::ComputeNear(svVector3Array *pos1, svVector3Array *pos2,
                          int seed, svInt *index){
        int     nPts;                           // actual number of data points
@@ -1029,7 +1086,6 @@ void svNear::ComputeNear(svVector3Array pos1,
        dists = new ANNdist[10];               // allocate near neighbor dists
        int dim = 3;
        queryPt = annAllocPt(dim);                         // allocate query point
-//================================================================================
        nPts = pos1.size();
        dataPts = annAllocPts(nPts*dim, dim);
        int count = 0;
@@ -1042,9 +1098,7 @@ void svNear::ComputeNear(svVector3Array pos1,
        ANNkd_tree *kdTree = new ANNkd_tree(dataPts,               // the data points
                                         nPts,                  // number of points
                                         dim);                   // dimension of space 
-//cerr<<"ann.........."<<endl
        index = new svIntArray[pos2.size()];
-//=====================================================================
        for(int i=0;i<pos2.size();i++){
           queryPt[0] = pos2[i][0];
           queryPt[1] = pos2[i][1];
@@ -1062,12 +1116,8 @@ void svNear::ComputeNear(svVector3Array pos1,
             }
             else break;
           }
-          //cerr<<pos1[layer[i]][index[i]][0]<<" "
-//<<pos1[layer[i]][index[i]][1]<<" "
-//<<pos1[layer[i]][index[i]][2]<<endl;
       }
 cerr<<"ANN DONE"<<endl;
-//====================================================================
       delete kdTree;
       dataPts = annAllocPts(0,0);
       delete [] nnIdx;
@@ -1868,6 +1918,88 @@ void svMeshGenerator::GenerateBoundaryPoints(char *inputfile, char *outputfile){
     sprintf(exe, "rm %s", inputfile);
     system(exe);
     delete [] exe;
+}
+
+void svMeshGenerator::GenerateBoundaryPoints2D(char *inputfile, char *outputfile)
+{
+    char *exe = new char[1024];
+    sprintf(exe, "%s/ex_alpha_shapes_2 %s > %s 2>&1", BIN_DIR, inputfile, outputfile);
+    system(exe);
+    sprintf(exe, "rm %s", inputfile);
+    system(exe);
+    delete [] exe;
+}
+
+void svMeshGenerator::GenerateSurface(char *inputfile, char *vtkfile, char *pointfile, char *surfacefile)//, int genus)
+{
+    /*char *exe = new char[1024];
+    sprintf(exe, "%s/topology %s NULL NULL %s 10 50 200 10 50 %d",
+                  BIN_DIR, inputfile, outputfile, genus);
+    system(exe);
+    sprintf(exe, "rm %s", inputfile);
+    system(exe);
+    delete [] exe;
+*/
+    GenerateBoundaryPoints(inputfile, pointfile);
+    ifstream infile(pointfile);
+    int n;
+    infile>>n;
+    vector<double> unique[3];
+    vector<double> index[3];
+    for(int i=0;i<n;i++)
+    {
+       double pos[3];
+       int in = -1;
+       infile>>pos[0]>>pos[1]>>pos[2];
+       for(int j=0;j<unique[0].size();j++)
+       {
+           if(isEqual(unique[0][j], pos[0],false)
+           && isEqual(unique[1][j], pos[1],false)
+           && isEqual(unique[2][j], pos[2],false))
+           {
+               in = j;break;
+           }
+       }
+       if(in>=0)
+       {
+         index[i%3].push_back(in);
+       } 
+       else
+       {
+         index[i%3].push_back(unique[0].size());
+         unique[0].push_back(pos[0]);
+         unique[1].push_back(pos[1]);
+         unique[2].push_back(pos[2]);
+       }
+    }
+    infile.close();
+//========================================
+    ofstream outfile(vtkfile);
+    outfile<<"# vtk DataFile Version 2.0"<<endl;
+    outfile<<"Cluster Surface"<<endl;
+    outfile<<"ASCII"<<endl;
+    outfile<<"DATASET POLYDATA"<<endl;
+    outfile<<"POINTS "<<unique[0].size()<<" float"<<endl;
+    for(int i=0;i<unique[0].size();i++)
+        outfile<<unique[0][i]<<" "<<unique[1][i]<<" "<<unique[2][i]<<endl;
+    outfile<<"POLYGONS "<<index[0].size()<<" "<<index[0].size() * 4<<endl;
+    for(int i=0;i<index[0].size();i++)
+    {
+      outfile<<3<<" "<<index[0][i]<<" "<<index[1][i]<<" "<<index[2][i]<<endl;
+    }
+    outfile.close();
+//=========================================
+    char *exe = new char[1024];
+    sprintf(exe, "%s/SmoothMesh %s %s", BIN_DIR, vtkfile, surfacefile);
+    system(exe);
+  //  cout<<exe<<endl;
+    delete [] exe;
+//=========================
+    for(int i=0;i<3;i++)
+    {
+         unique[i].clear();
+         index[i].clear();
+    }
 }
 
 //==================Mesh End=====================

@@ -38,12 +38,16 @@ typedef struct svSliceData{
 //===============Implementation=========================//
 typedef struct svQDOTData{ //interface
  svQDOTData(){
-   state = new State();
+   //state = new State();
  }
+ svQDOTData(svQDOT *qdot);
  virtual ~svQDOTData(){cleandata();}
  virtual void UpdateVisibleBySplit();
  virtual void GenerateAverage();
- void cleandata();
+ virtual void ResetVisible();
+ virtual void UpdateVisible();
+ 
+void cleandata();
 
  vector< vector<Spin *> > splitData;
 // map<Spin *, bool> visibleLabel;
@@ -62,6 +66,8 @@ typedef struct svQDOTData{ //interface
  //svScalar minZDistance;
  svQDOT *myQDOT;
  State *state;
+ map<Spin *, bool> *sampleVisible;
+ map<Spin *, bool> *qdotVisible;
  map<Spin *, int> *clusterList;
  vector< map<Spin *, vector<Spin *> > > *symmetryList;
  map<Spin *, int> *sliceList;
@@ -91,6 +97,7 @@ typedef struct meshVertice{
 typedef struct meshFacet{
  svVector3 pos[3];
  svVector3 norm;
+ int label;
 } meshFacet;
 
 typedef struct svMeshData{
@@ -102,6 +109,7 @@ typedef struct svMeshData{
  void ProcessBoundary();
  void ReadGlyphsFile(int region, char *file);
  void SaveGlyphstoFile(int region, char *file);
+ void ReadMesh(char *file, int i);
 
  svQDOT *myQDOT;
  vector< vector<meshGlyph> > glyphs;
@@ -148,14 +156,31 @@ struct svRawClusterData : svQDOTData{
  void SetClusterLabel(vector< vector<Spin*> > tmpdata, int **tmplist);
  void cleanup(){}
 
+ svMeshData *meshData;
  list< vector<int> > boundaryIndex;
  list< vector<int> > connectIndex;//connected component
  vector<int> numOfComponents;//number of connected components in each cluster
  map<Spin *, int> sampleLabel;
  svRawSliceData *mySlice;
  svRawSymmetryData *mySymmetry;
+ int genus;
 };
+/*
 
+struct svRawClusterTopologyMesh : svMeshData
+{
+  svRawClusterTopologyMesh(svRawClusterData *data);
+  virtual ~svRawClusterTopologymesh(){};
+  void Init(svRawClusterData *data);
+  void GenerateClusterTopology(char *dir);
+  void GenerateBoundary2D(vector<Spin> data, char *file);
+  void EdgeProcess();
+  void SavetoCTR();
+  void ReadTopology();
+  svRawClusterData *myData;
+  vector<int> label;
+}
+*/
 struct svRawSummaryData : svQDOTData{
   svRawSummaryData(svQDOT *data);
   virtual ~svRawSummaryData();
@@ -179,6 +204,7 @@ struct svRawSliceData : svQDOTData{
  void GenerateSampling(int frequency);//sampling by symmetry
  void SaveSlicetoVTK(char *dir, char *file);
  void SaveSliceDensitytoFile(char *dir);
+ void SetImageLabel(bool cluster);
 //===============API end=====================//
  void SplitData(svVector3 &center, svVector3 &dir, svScalar &distance);
  void GenerateAxis(svVector3 &center, svVector3 &dir, svScalar &distance);
@@ -188,6 +214,7 @@ struct svRawSliceData : svQDOTData{
  void GenerateImage();
  void cleanup();
 
+ bool isSplit;
  svRawSymmetryData *mySymmetry;
  svRawClusterData *myCluster;
  vector<svScalar> sliceDen;
@@ -212,6 +239,7 @@ typedef struct svContourClusterData : svQDOTData{
   svContourClusterData(svQDOT *qdot, svContourData *data);
   ~svContourClusterData(){cleanup();}
 /*===========API=================================*/
+  void GenerateClusters();
   void New(svQDOT *qdot, svContourData *data);
   void ResetCluster();
   void Init(char *folder);//<--generate clusters
@@ -222,6 +250,7 @@ typedef struct svContourClusterData : svQDOTData{
   void SetClusterLabel(char *file){}//NEED TO BE FIXED
   void SetClusterLabel(int **tmplist);
   void cleanup(){}
+  svRawSliceData *mySlice;
   svContourData *myData;
 } svContourClusterData;
 
@@ -255,6 +284,7 @@ typedef struct svContourData : svQDOTData{
   void GenerateContour(char *contourfile, char *vtkdir, char *planename, int layer, float contourValue);
   void GenerateContourLine(char *contourfile, char *vtkdir, char *planename, int layer, float contourValue);
   void SetContours(char *contourfile);
+  void SetContours(char *contourfile, int layer);
   void SetContourTreeData(char *svlfile, int layer);
   void SetContourLines(char *svlfile, int layer);
   void SplitData();

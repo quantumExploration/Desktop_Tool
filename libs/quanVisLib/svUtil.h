@@ -5,11 +5,13 @@
 #else
 #include <GL/glut.h>
 #endif
+#include <sstream>
 #include <iomanip>
 #include <algorithm>
 #include "svType.h"
 #include "svParticle.h"
 #include "svArray.h"
+#include "svQDOT.h"
 
 namespace __svl_lib {
 #define SWAP(T, a, b)   { T t; t=a; a=b; b=t;  }
@@ -53,10 +55,17 @@ svVector3 svAverage(const svVector3& v1, const svVector3& v2);
 
 void ProgressBar(int percentage);
 
+
+bool isInside(Spin point, map<Spin, Spin> circle);
+
 bool isEqualLarger(svScalar a, svScalar b, bool highprecision);
 bool isEqualSmaller(svScalar a, svScalar b, bool highprecision);
 bool isEqual(svScalar a, svScalar b, bool highprecision);
 
+
+string float_to_string(float num, int precision);
+string e_to_string(double num, int precision);
+string int_to_string(int num);
 
 svVector3 GetVertical(svVector3 pos, svVector3 dir,  ViewProperty &property);
 svVector3 GetVerticalByeye(svVector3 pos, svVector3 v, ViewProperty &property);

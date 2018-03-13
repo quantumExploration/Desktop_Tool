@@ -32,6 +32,11 @@ svLinearArrow::svLinearArrow(svQDOTData *d):svArrowGlyph(d)//svVectorField* f, i
     //expScale = 16;
 }
 
+void svLinearArrow::SetColors(svColors* color){
+  color->GetColors(myData, glyphColors, NULL);
+}
+
+
 void svLinearArrow::GenerateArrows()
 {
     //arrow_indices_size = 0;
@@ -217,7 +222,8 @@ void svLinearArrow::GenerateIndex()
                 {
                         int start1 = tbcount;
                         tbcount++;
-                        bool visible = myData->state->sampleVisible.at(myData->splitData[i][j]);
+                        bool visible = ((*myData->qdotVisible).at(myData->splitData[i][j])
+                                  &&(*myData->sampleVisible).at(myData->splitData[i][j]));
                         for(int t=0;t<(CYLINDERSLICE+1)*2;t++)
                         {
                             if(t%2==0&&t<CYLINDERSLICE*2)

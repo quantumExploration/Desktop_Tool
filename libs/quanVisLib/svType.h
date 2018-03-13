@@ -36,7 +36,8 @@ typedef struct{
 enum COLOR_TYPE{
   c_magnitude = 0,
   c_cluster = 1,
-  c_texture_cluster = 2
+  c_texture_cluster = 2,
+  c_symmetry = 3
 };
 
 enum DATA_TYPE{

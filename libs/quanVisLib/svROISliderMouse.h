@@ -1,12 +1,13 @@
 #ifndef __SV_ROI_SLIDER_MOUSE_H
 #define __SV_ROI_SLIDER_MOUSE_H
 
+#include "svMouseEvent.h"
 #include "svROISlider.h"
 
 namespace __svl_lib{
 
 
-class svROISliderSelect : svMouseSelect{
+class svROISliderSelect : public svMouseSelect{
 public:
   virtual void Select();
   virtual void Reset();
@@ -14,13 +15,14 @@ public:
   svROISlider *slider;
 };
 
-class svROISliderMotion : svMouseMotion{ //drage
+class svROISliderMotion : public svMouseMotion{ //drage
+public:
   virtual void Motion();
   //svROISlider *slider;
   svROISliderSelect *selectEvent;
 };
 
-class svROISliderRelease : svMouseRelease{
+class svROISliderRelease : public svMouseRelease{
 public:
   virtual void Release();
   svROISliderSelect *selectEvent;
@@ -28,7 +30,7 @@ public:
 //  svImageSelect *selectEvent;
 };
 
-class svROISliderMove : svMouseMove{
+class svROISliderMove : public svMouseMove{
 public:
   virtual void Move();
   svROISliderSelect *selectEvent;

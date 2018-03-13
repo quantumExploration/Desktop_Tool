@@ -44,7 +44,6 @@ enum
 #define  CONTOUR_GLOBAL 2
 #define  CONTOUR_LOCAL  3
 
-
 struct SliceProperty{
   svVector3 pos;
   svVector3 dir;
@@ -57,6 +56,8 @@ struct ROIProperty{
   svScalar maxMag;
   svScalar minMag;
   vector<bool> splitVisible;
+  vector<bool> sliceVisible;
+  bool symmetryVisible[9];
   svScalar maxX;
   svScalar maxY;
   svScalar maxZ;
@@ -159,6 +160,31 @@ struct State{
 
    State();
    ~State();
+   void PrintROI() 
+   {
+     cout<<"======Angle==="<<endl;
+     cout<<rP->maxX<<" "<<rP->minX<<endl;
+     cout<<rP->maxY<<" "<<rP->minY<<endl;
+     cout<<rP->maxZ<<" "<<rP->minZ<<endl;
+     cout<<"=====Pos===="<<endl;
+     cout<<rP->maxPX<<" "<<rP->minPX<<endl;
+     cout<<rP->maxPY<<" "<<rP->minPY<<endl;
+     cout<<rP->maxPZ<<" "<<rP->minPZ<<endl;
+     cout<<"=====Mag===="<<endl;
+     cout<<rP->maxMag<<" "<<rP->minMag<<endl;
+     cout<<"=====Layer===="<<endl;
+     for(int i=0;i<rP->splitVisible.size();i++)
+       if(rP->splitVisible[i]) cout<<i<<" ";
+     cout<<endl;
+     cout<<"=====Slice===="<<endl;
+     for(int i=0;i<rP->sliceVisible.size();i++)
+       if(rP->sliceVisible[i]) cout<<i<<" ";
+     cout<<endl;
+     cout<<"=====Symmetry=="<<endl;
+     for(int i=0;i<9;i++)
+       cout<<rP->symmetryVisible[i]<<" ";
+     cout<<endl;
+   }
 //contour property=====================================
    void NewContourProperty(int seed_num,
                               vector<double> v,//values

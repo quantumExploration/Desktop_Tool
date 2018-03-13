@@ -285,6 +285,7 @@ void svColors::initDiscreteColor(){
 }
 void svColors::GetColors(svQDOTData * data, svVector4Array *color,
                          svVector4Array *secondColor){
+ cerr<<color_type<<endl;
  switch (color_type) {
    case c_cluster:{
     GetDiscreteColors(blind_safe, data, color);
@@ -301,6 +302,13 @@ void svColors::GetColors(svQDOTData * data, svVector4Array *color,
       GetDiscreteColors(blind_safe, data, color);
     break;
    }
+   case c_symmetry:{
+    if(secondColor!=NULL)
+    Get8Colors(blind_safe, data, color,secondColor);
+    else
+     Get8Colors(blind_safe, data, color);
+    break;
+   }
  }
 }
 
@@ -309,7 +317,7 @@ void svColors::SetAlpha(float alpha){
 }
 
 void svColors::GetDivergingColors(int level,
-                    bool blind_safe, svVector4Array *color)
+                    bool blind_safe, svVector4 *color)
 {
   int divergingIndex = level;//maxExp - minExp+1;
   if(!blind_safe){
@@ -332,11 +340,13 @@ void svColors::GetDivergingColors(int level,
 
 void svColors::GetDivergingColors(bool blind_safe,
                  svQDOTData* data, svVector4Array *color){
-  svScalar maxExp = data->maxExp;//-9e+9;
-  svScalar minExp = data->minExp;//9e+9;
+  svScalar maxExp = data->myQDOT->maxExp;//-9e+9;
+  svScalar minExp = data->myQDOT->minExp;//9e+9;
   int divergingIndex = maxExp - minExp+1;
   if(!blind_safe){
+    cout<<(data->splitData).size()<<endl;
     for(int i=0;i<(data->splitData).size();i++){
+       //cerr<<i<<endl;
        for(int j=0;j<data->splitData[i].size();j++){
           Spin d = *(((data->splitData)[i])[j]);
           int den = d.exp - minExp;//cerr<<12-den+step<<endl;
@@ -361,6 +371,68 @@ void svColors::GetDivergingColors(bool blind_safe,
       }
     }
   }
+}
+
+void svColors::Get8Colors(svVector4 *c)
+{
+    for(int i=0;i<8;i++)
+       c[i] = discreteColor[i];
+}
+
+void svColors::Get8Colors(bool blind_safe,
+                 svQDOTData* data, svVector4Array *color){
+     svVector4 white(1,1,1,1);
+     for(int i=0;i<data->splitData.size();i++){
+          for(int j=0;j<data->splitData[i].size();j++){
+             color[i][j] = white;
+            if((*data->symmetryList).size()==0)  color[i][j] = white;
+            else{
+                 for(int s = 0;s<(*data->symmetryList).size();s++)
+                 {
+                     if((*data->symmetryList)[s].count(data->splitData[i][j])>0)
+                     {
+                        color[i][j] = discreteColor[s];break;
+                     }
+                 }
+             }
+          }
+     }
+}
+
+void svColors::Get8Colors(bool blind_safe,
+                 svQDOTData* data, svVector4Array *color, svVector4Array *secondColor)
+{
+     svVector4 white(1,1,1,1);
+     svVector4 black(0,0,0,1);
+     for(int i=0;i<data->splitData.size();i++){
+          for(int j=0;j<data->splitData[i].size();j++){
+            color[i][j] = black;
+            secondColor[i][j]= white;
+            if((*data->symmetryList).size()==0) color[i][j] = black;
+            else{
+                 for(int s = 0;s<(*data->symmetryList).size();s++)
+                 {
+                     if((*data->symmetryList)[s].count(data->splitData[i][j])>0)
+                     {
+                        color[i][j] = discreteColor[s];
+                        double l, a, b;
+                        RGB2LAB((double)color[i][j][0],
+                        (double)color[i][j][1],
+                        (double)color[i][j][2],
+                        l, a, b);
+                        l=95;
+                        double R,G,B;
+                        LAB2RGB(l,a,b,R,G,B);
+                        secondColor[i][j][0] = R;
+                        secondColor[i][j][1] = G;
+                        secondColor[i][j][2] = B;
+                        break;
+                     }
+                 }
+             }
+
+          }
+     }
 }
 
 void svColors::GetDiscreteColors(bool blind_safe,
@@ -451,6 +523,45 @@ void svColors::GetDiscreteColors(bool blind_safe, svQDOTData *data,
   }
 */
 }
+
+void svColors::RenderDivergingLegend(svQDOTData *data)
+{
+    svScalar maxExp = data->myQDOT->maxExp;//-9e+9;
+    svScalar minExp = data->myQDOT->minExp;//9e+9;
+    int divergingIndex = maxExp - minExp+1;
+
+        glPushMatrix();
+        char str[50];
+        float x = 0;
+        float y = 0;
+        float size = 1;
+        float m_length_in = 1;
+        glColor3f(1,1,1);//font_color[0],font_color[1],font_color[2]);
+        double index;
+        for(int i=0;i<divergingIndex;i++)
+        {
+                          glColor3f(divergingColor[divergingIndex][i][0]/255.,
+                                 divergingColor[divergingIndex][i][1]/255.,
+                                 divergingColor[divergingIndex][i][2]/255.);
+
+                        glBegin(GL_QUADS);
+                        glVertex2f(x,y);
+                        glVertex2f(x+size,y);
+                        glVertex2f(x+size,y+size);
+                        glVertex2f(x,y+size);
+                        glEnd();
+
+                        glColor3f(1,1,1);
+                        sprintf(str,"%d", (int)minExp+i);
+                        glRasterPos2f(x + size*1.1, y );
+                        for(int j=0;j<strlen(str);j++)
+                             glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, str[j]);
+                        y = y + size;
+
+        }
+        glPopMatrix();
+}
+
 
 void svColors::RGB2LAB(double R, double G, double B, double &l, double &a, double &b)
 {

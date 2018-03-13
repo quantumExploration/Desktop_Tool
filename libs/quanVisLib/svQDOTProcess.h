@@ -150,6 +150,7 @@ typedef struct svNeighbor{
 
 typedef struct svNear{
       svNear();
+      void ComputeNear(vector<Spin *> pos1, vector<Spin *> pos2, int *label);
       void ComputeComponents(vector<Spin *> data, 
                              int &numOfComponents,
                              vector<int> &connectIndex,
@@ -193,6 +194,8 @@ typedef struct svMeshGenerator{
   svMeshGenerator(){};
   void GenerateMesh(char *ifname, char *ofname, float sbottom, float pbottom); 
   void GenerateBoundaryPoints(char *inputfile, char *outputfile);
+  void GenerateBoundaryPoints2D(char *inputfile, char *outputfile);
+  void GenerateSurface(char *inputfile, char *vtkfile, char *pointfile, char *surfacefile);
 } svMeshGenerator;
 }
 #endif // __SV_QDOT_PROCESS_H

@@ -23,13 +23,13 @@ class svHybridImage:public svImage
 
   void SetContourColors(float r){}
   void GenerateHybridImage(string ifname1, string ifname2,
-                           float cutoff, string ofname, int sliceIndex);
+                           float cutoff, string ofname);//, int sliceIndex);
 
 
 protected:
-  void SaveImage(string ofname, int sliceIndex);
-  void SaveContours(string ofname, int sliceIndex);
-  void ReadColors(string ofname, int sliceIndex);
+  void SaveImage(string ofname);//, int sliceIndex);
+  void SaveContours(string ofname);//, int sliceIndex);
+  void ReadColors(string ofname);// int sliceIndex);
   //virtual void Render2D();
 };
 

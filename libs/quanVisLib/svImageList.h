@@ -29,12 +29,14 @@ public:
                     float cutoff);
   void GenerateGrouping(int binSize){}
   void GenerateGroupingByColor(float percentage);
+  void GenerateDisplay();
 
   void Render2D();
   void Render3D();
   void RenderGrid();
 
   void SetLocations();
+  void UpdateState();
 
   void cleanup(){}
 
@@ -52,6 +54,8 @@ public:
   bool isGrid;
 protected:
   bool GenerateGroupingByColor(int image1, int image2, float percentage);
+  double rotate_x;
+  double rotate_z;
 };
 
 }

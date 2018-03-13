@@ -7,6 +7,139 @@ using namespace std;
 namespace __svl_lib {
 
 //======================qdot data===============================//
+svQDOTData::svQDOTData(svQDOT *qdot)
+{ 
+   sampleVisible = new map<Spin *, bool>(); 
+   qdotVisible = new map<Spin *, bool>();
+   symmetryList = new vector< map<Spin *, vector<Spin *> > >();
+
+  //(*qdotVisible).clear();
+  for(int i=0;i<qdot->qdotData.size();i++)
+  {
+    (*sampleVisible).insert(std::pair<Spin *, bool> (&qdot->qdotData[i], true));
+    (*qdotVisible).insert(std::pair<Spin *, bool> (&qdot->qdotData[i], true));
+  }cerr<<"qdotvis"<<endl;
+}
+
+void svQDOTData::UpdateVisible()
+{
+  for(int i=0;i<splitData.size();i++)
+  {
+    for(int j=0;j<splitData[i].size();j++)
+    {
+       Spin spin = (*splitData[i][j]);
+    if(isEqualLarger(spin.den,state->rP->minMag,true)
+    && isEqualSmaller(spin.den,state->rP->maxMag,true)
+    && isEqualLarger(spin.xangle,state->rP->minX,false)
+    && isEqualSmaller(spin.xangle,state->rP->maxX,false)
+    && isEqualLarger(spin.yangle,state->rP->minY,false)
+    && isEqualSmaller(spin.yangle,state->rP->maxY,false)
+    && isEqualLarger(spin.zangle,state->rP->minZ,false)
+    && isEqualSmaller(spin.zangle,state->rP->maxZ,false)
+    && isEqualLarger(spin.pos[0],state->rP->minPX,false)
+    && isEqualSmaller(spin.pos[0],state->rP->maxPX,false)
+    && isEqualLarger(spin.pos[1],state->rP->minPY,false)
+    && isEqualSmaller(spin.pos[1],state->rP->maxPY,false)
+    && isEqualLarger(spin.pos[2],state->rP->minPZ,false)
+    && isEqualSmaller(spin.pos[2],state->rP->maxPZ,false)
+    //&& (*qdotVisible).at(splitData[i][j]) 
+    && (state->rP->splitVisible[i] || state->rP->sliceVisible[i])){
+       (*qdotVisible).at(splitData[i][j])=true;
+     }
+     else
+       (*qdotVisible).at(splitData[i][j])=false;
+    //cout<<(*symmetryList).size()<<endl;
+    if((*symmetryList).size()!=0)
+    {
+      bool exist = false;
+      bool sym = false;
+      for(int s=0;s<(*symmetryList).size();s++)
+      {
+        if(!state->rP->symmetryVisible[s]
+         && (*symmetryList)[s].count(splitData[i][j])>0)
+        {
+           sym = true;
+           (*qdotVisible).at(splitData[i][j]) = false;
+           (*qdotVisible).at((*symmetryList)[s].at(splitData[i][j])[0]) = false; 
+        }
+        else if((*symmetryList)[s].count(splitData[i][j])>0)
+            sym = true;
+/*
+        if(state->rP->symmetryVisible[s] 
+         && (*symmetryList)[s].count(splitData[i][j])>0)
+         {
+            sym = true;
+            exist = true; break;
+         }
+         else if((*symmetryList)[s].count(splitData[i][j])>0)
+         {
+           exist = false;
+           sym = true;break;
+         }
+*/
+      }
+      if((*qdotVisible).at(splitData[i][j]))
+      { 
+         if(!sym && !state->rP->symmetryVisible[8])
+               (*qdotVisible).at(splitData[i][j]) = false;
+       //  cout<<sym<<" "<<exit<<endl;
+         //if(sym && exist) (*qdotVisible).at(splitData[i][j]) = true;
+        // else
+       //  if(sym &&!exist) (*qdotVisible).at(splitData[i][j]) = false;
+         //else if(!state->rP->symmetryVisible[8] && sym)
+           // (*qdotVisible).at(splitData[i][j]) = false;
+       //  else if(state->rP->symmetryVisible[8] && sym) 
+       //          (*qdotVisible).at(splitData[i][j]) = true;
+      }
+    }
+    }
+  }
+/*
+  for(int i=0;i<myQDOT->qdotData.size();i++){
+    Spin spin = myQDOT->qdotData[i];
+    if(isEqualLarger(spin.den,state->rP->minMag,true)
+    && isEqualSmaller(spin.den,state->rP->maxMag,true)
+    && isEqualLarger(spin.xangle,state->rP->minX,false)
+    && isEqualSmaller(spin.xangle,state->rP->maxX,false)
+    && isEqualLarger(spin.yangle,state->rP->minY,false)
+    && isEqualSmaller(spin.yangle,state->rP->maxY,false)
+    && isEqualLarger(spin.zangle,state->rP->minZ,false)
+    && isEqualSmaller(spin.zangle,state->rP->maxZ,false)
+    && isEqualLarger(spin.pos[0],state->rP->minPX,false)
+    && isEqualSmaller(spin.pos[0],state->rP->maxPX,false)
+    && isEqualLarger(spin.pos[1],state->rP->minPY,false)
+    && isEqualSmaller(spin.pos[1],state->rP->maxPY,false)
+    && isEqualLarger(spin.pos[2],state->rP->minPZ,false)
+    && isEqualSmaller(spin.pos[2],state->rP->maxPZ,false)
+    && state->rP->splitVisible[i]){
+    //&& (*qdotVisible).at(&(myQDOT->qdotData[i]))){//rP->splitVisible[i]
+    //&& sampleVisible.at(&(myData->qdotData[i]))){//data->splitData[i][j])){
+      (*qdotVisible).at(&(myQDOT->qdotData[i]))=true;//data->splitData[i][j])= true;
+    }
+    else{
+      (*qdotVisible).at(&(myQDOT->qdotData[i]))=false;//(data->splitData[i][j])= false;
+    }
+  }
+*/
+}
+
+void svQDOTData::ResetVisible()
+{
+  for(int i=0;i<splitData.size();i++)
+   for(int j=0;j<splitData[i].size();j++)
+     (*qdotVisible).at(splitData[i][j]) = true;
+  for(int i=0;i<splitData.size();i++)
+   for(int j=0;j<splitData[i].size();j++)
+     (*sampleVisible).at(splitData[i][j]) = true;
+
+/*
+  for(int i=0;i<myQDOT->qdotData.size();i++)
+  {
+     (*qdotVisible).at(&myQDOT->qdotData[i]) = true;    
+  }
+*/
+}
+
 void svQDOTData::cleandata(){
   for(int i=0;i<splitData.size();i++) splitData[i].clear();
   splitData.clear();
@@ -27,9 +160,9 @@ void svQDOTData::UpdateVisibleBySplit(){
   for(int i=0;i<splitData.size();i++){
    for(int j=0;j<splitData[i].size();j++){
      if(state->rP->splitVisible[i])
-       state->qdotVisible.at(splitData[i][j])= true;
+       (*qdotVisible).at(splitData[i][j])= true;
      else
-       state->qdotVisible.at(splitData[i][j]) = false;
+       (*qdotVisible).at(splitData[i][j]) = false;
    }
   }
 }
@@ -141,6 +274,27 @@ void svMeshData::SetData(char *dir){
   ProcessBoundary();
 //cerr<<"boundary points"<<endl;
   GenerateMeshGlyphs(dir);
+}
+
+void svMeshData::ReadMesh(char *file,int i)
+{
+     facets[i].clear();
+     ifstream infile(file);
+     int n;
+     infile>>n;
+     facets[i].resize(n/3);
+     for(int j=0;j<n;j+=3){
+        for(int v=0;v<3;v++){
+            infile>>facets[i][j/3].pos[v][0]
+                  >>facets[i][j/3].pos[v][1]
+                  >>facets[i][j/3].pos[v][2]
+                  >>facets[i][j/3].norm[0]
+                  >>facets[i][j/3].norm[1]
+                  >>facets[i][j/3].norm[2];
+        }
+        facets[i][j/3].norm = facets[i][j/3].norm;
+     }
+     infile.close();
 }
 
 void svMeshData::SetOBJ(char *dir)
@@ -307,8 +461,190 @@ void svMeshData::SaveGlyphstoFile(int region, char *file){
   outfile.close();
 }
 
+//==========================svMeshData===========================//
+/*
+svRawClusterTopologyMesh::svRawClusterTopologyMesh(svRawClusterData *data)
+{
+  Init(data);
+}
+
+void svRawClusterTopologyMesh::Init(svRawClusterData *data)
+{
+  myData = data;
+  for(int i=0;i<facets.size();i++)
+     facets[i].clear();
+  facets.clear();
+  int num = data->splitData.size();
+  facets.resize(num);
+}
+
+void svRawClusterTopologyMesh::GenerateClusterTopology(char *dir)
+{
+  char *tname = new char[200];
+  char *tmpfile = new char[200];
+  char *ctrname = new char[200];
+  char *objname = new char[200];
+  svQDOT *myQDOT = myData->myQDOT;
+  int zlayer = 1+(myQDOT->rbbox[2] - myQDOT->lbbox[2])/myQDOT->minZDistance;
+  cout<<"Generate cluster topology .... it will take several minutes ...."<<endl;
+  for(int i=0;i<facets.size();i++)
+  {
+     vector<Spin> *data = new (vector<Spin>)[zlayer];
+     int *count = new int[zlayer];
+     for(int j=0;j<zlayer;j++)count[j]=0;
+     for(int j=0;j<myData->splitData[i].size();j++)
+     {
+        int znum = (myData->splitData[i]-myQDOT->lbbox[2])/myQDOT->minZDistance;
+        count[znum]++;
+        data[znum].push_back(*myData->splitData[i][j]);
+     } 
+     sprintf(ctrname,"%s/%d.contour",dir,i);
+     sprintf(objname,"%s/%d.obj",dir,i);
+     ofstream outfile(ctrname);
+     int tmpcount;
+     for(int j=0;j<znum;j++)
+     {
+        if(count[znum]<3) continue;
+        tmpcount++;
+     }
+     if(tmpcount<3)
+     {
+        cout<<"Warning: not enough points to generate surface"<<endl;
+        continue;
+     }
+     outfile<<tmpcount<<endl;
+     outfile.close();
+     for(int j=0;j<znum;j++)
+     {
+        if(count[znum]<3) continue;
+        sprintf(tname, "%s/tname%d%d",dir, i, j); 
+        sprintf(tmpfile, "%s/tmp%d%d",dir, i, j);
+        GenerateBoundary2D(data[j],tmpfile, tname,ctrname,j);
+     }
+     GenerateTopologySurface(ctrname, objname);
+     ReadSurface(objname,i);
+  }  
+  delete [] tname;
+  delete [] tmpfile;
+  delete [] ctrname;
+  delete [] objname; 
+}
+
+void svRawClusterTopologyMesh::GenerateBoundary2D(vector<Spin> data,
+                      char *tmpfile, char *tname, char *ctrname, int index)
+{
+  ofstream outfile(tmpfile);
+  outfile<<data.size()<<endl;
+  for(int i=0;i<data.size();i++)
+  {
+     outfile<<data[i].pos[0]<<" "<<data[i].pos[1]<<" "<<data[i].pos[2]<<endl;
+  }  
+  outfile.close();
+  svMeshGenerator *mesh = new svMeshGenerator();
+  mesh->GenerateBoundaryPoints2D(tmpfile, tname);
+  EdgeProcess(tname, ctrname, index); 
+}
+void svRawClusterTopologyMesh::EdgeProcess(char *infile, char *outfile, int index)
+{
+//store in a map
+  ifstream in(infile);
+  int n;
+  in>>n;
+  map<Spin, Spin> edge;
+  Spin start;
+  Spin tmp1, tmp2;
+  in>>tmp1.pos[0]>>tmp1.pos[1];
+  start = tmp1;
+  in>>tmp2.pos[0]>>tmp2.pos[1];
+  for(int i=1;i<n;i+=2)
+  {
+     in>>tmp1.pos[0]>>tmp1.pos[1];
+     in>>tmp2.pos[0]>>tmp2.pos[1];
+     edge.insert(std::pair<Spin, Spin>(tmp1, tmp2));
+  }
+  in.close();
+//sort edges
+  vector< map<Spin, Spin> > circles; 
+  vector<int> color;
+  vector<int> count;
+  int tmpcount = 0;
+  map<Spin, Spin> tmp;
+  while(!edge.empty())
+  { 
+    if(edge.count(start)==0)
+    {
+       count.push_back(tmpcount);
+       color.push_back(0);
+       circles.push_back(tmp);
+       tmp.clear();
+       start = (edge.begin()).first();
+    }
+    Spin next = edge.at(start);
+    tmp.insert(std::pair<Spin, Spin>(start, next));
+    edge.erase(start);
+    start = next; 
+    tmpcount++;
+  }
+//test  
+  for(int i=0;i<circles.size();i++)
+  { 
+     vector<int> outside;
+     start = (circles[i].begin())->first;
+     for(int j=0;j<cirlces.size();j++)
+     {
+          if(j!=i)
+          {
+              bool inside = isInside(start, circles[j]);
+              if(inside) outside.push_back(j);
+          }
+     }
+     if(outside.size()%2==0)color[i] = 0;
+     else color[i] = 1;
+  }
+//store  
+  svScalar z = (svScalar)index*myQDOT->minZDistance;
+  ofstream outfile(outfile,std::ofstream::out | std::ofstream::app);
+  outfile<<"0 0 "<<myQDOT->lbbox[2]+(svScalar)index*myQDOT->minZDistance<<" 0"<<endl;
+  for(int i=0;i<circles.size();i++)
+  {
+    outfile<<count[i]<<" "<<count[i]<<endl;
+    for(std::map<char,int>::iterator it=circles[i].begin(); it!=circles[i].end(); ++it) 
+    {
+       tmp1 = it->first; tmp2 = it->second;
+       outfile<<tmp1.pos[0]<<" "<<tmp1.pos[1]<<" "<<z<<endl;
+    }
+    for(int j=0;j<count[i];j++)
+    {
+        if(j<count[i]-1)outfile<<j<<" "<<j+1<<" ";
+        else outfile<<j<<" "<<0<<" ";
+        if(color[i]==0) outfile<<0<<" "<<1<<endl;
+        else outfile<<1<<" "<<0<<endl;
+    }
+  }
+  outfile.close();
+//release
+  color.clear();count.clear();
+  for(int i=0;i<circles.size();i++) circles[i].clear();
+  circles.cleare();
+}
+
+void svRawClusterTopologyMesh::GenerateTopologySurface(char *ctrname, char *objname)
+{
+  //ifstream infile(objname);
+  //if(infile.is_open())(infile.close();return;}
+  svMeshGenerator *mesh = new svMeshGenerator;
+  mesh->GenerateTopologySurface(ctrname, objname, myData->genus);
+}
+
+void svRawClusterTopologyMesh::ReadSurface(char *objname,int cluster)
+{
+  loadOBJ(objname, facets, cluster);
+}
+*/
+//===================svMeshData End=======================//
+
 //====================Slice Data============================
-svRawSliceData::svRawSliceData(svQDOT *data){
+svRawSliceData::svRawSliceData(svQDOT *data):svQDOTData(data){
   myQDOT = NULL;
   mySymmetry = NULL;
   myCluster = NULL;
@@ -325,8 +661,9 @@ void svRawSliceData::New(svQDOT *data){
   minExp = myQDOT->minExp;
 }
 void svRawSliceData::Init(svVector3 &center, svVector3 &dir, svScalar &distance){
-  dir = normalize(dir);
+  //dir = normalize(dir);
   SplitData(center, dir, distance);
+  if(isSplit == false) return; 
   GenerateAxis(center, dir, distance);
   sliceDir = dir;
   sliceDistance = distance;
@@ -334,7 +671,7 @@ void svRawSliceData::Init(svVector3 &center, svVector3 &dir, svScalar &distance)
   GenerateSlice();
   GenerateHistogram();
 
-  int size = splitData.size();
+  /*int size = splitData.size();
   isSelectable.resize(size);
   std::fill(isSelectable.begin(), isSelectable.end(), true);
   isVisible.resize(size);
@@ -343,6 +680,7 @@ void svRawSliceData::Init(svVector3 &center, svVector3 &dir, svScalar &distance)
   std::fill(isHighlighted.begin(), isHighlighted.end(), false);
   isSelected.resize(size);
   std::fill(isSelected.begin(), isSelected.end(), false);
+  */
   /*for(int i=0;i<myQDOT->qdotData.size();i++){
     visibleLabel.insert(std::pair<Spin *, bool>(&(myQDOT->qdotData[i]), true));
   }*/
@@ -364,6 +702,50 @@ void svRawSliceData::SaveSlicetoVTK(char *dir, char *file){
      outfile<<"ASCII"<<endl;
      outfile<<"DATASET UNSTRUCTURED_GRID"<<endl;
 
+     svScalar x=0;
+     svScalar y=0;
+    // svScalar minD = min(iminD[0], iminD[1]); 
+     outfile<<"POINTS "<<imageRow * imageColumn<<" float"<<endl;
+     for(int r=0;r<imageRow;r++){
+       for(int c=0;c<imageColumn;c++){
+          int j = r * imageColumn + c;
+          int index = imageData[i][j];
+          outfile<<x<<" "<<y<<" "<<0<<endl;
+          x += iminD[0];
+       }
+       x = 0;
+       y = y + iminD[1];
+     }
+     outfile<<endl;
+
+     outfile<<"POINT_DATA "<<imageRow * imageColumn<<endl;
+     outfile<<"VECTORS velocity float"<<endl;
+     for(int r=0;r<imageRow;r++){
+       for(int c=0;c<imageColumn;c++){
+          int j = r * imageColumn + c;
+          int index = imageData[i][j];
+          if(index<0) outfile<<0<<" "<<0<<" "<<0<<endl;
+          else 
+            outfile<<(*splitData[i][sliceData[i][index].torindex]).dir[0]<<" "
+                   <<(*splitData[i][sliceData[i][index].torindex]).dir[1]<<" "
+                   <<(*splitData[i][sliceData[i][index].torindex]).dir[2]<<endl;
+       }
+     }
+     outfile<<endl;
+
+     outfile<<"SCALARS density float 1"<<endl;
+     outfile<<"LOOKUP_TABLE default"<<endl;
+     for(int r=0;r<imageRow;r++){
+       for(int c=0;c<imageColumn;c++){
+          int j = r * imageColumn + c;
+          int index = imageData[i][j];
+          if(index<0) outfile<<0<<endl;
+          else 
+            outfile<<(*splitData[i][sliceData[i][index].torindex]).den<<endl;
+       }
+     }
+     outfile<<endl;
+/*
      outfile<<"POINTS "<<splitData[i].size()<<" float"<<endl;
      for(int j=0;j<splitData[i].size();j++){//TODO fix the plane cooridinates
         outfile<<(*splitData[i][j]).pos[0]<<" "
@@ -385,6 +767,7 @@ void svRawSliceData::SaveSlicetoVTK(char *dir, char *file){
        outfile<<(*splitData[i][j]).den<<endl;
      }
      outfile<<endl;
+*/
      outfile.close();
   }
   delete [] str;
@@ -415,6 +798,42 @@ void svRawSliceData::SaveSliceDensitytoFile(char *dir){
 }
 
 void svRawSliceData::SplitData(svVector3 &center, svVector3 &dir, svScalar &distance){
+  isSplit = false;
+  svScalar tmpdistance;
+  double mind1 = 9e+9;
+  double mind2 = 9e+9;
+  for(int i=0;i<myQDOT->qdotData.size();i++)
+  {
+    Spin tmpspin = myQDOT->qdotData[i];
+    double d= (tmpspin.pos[0] - center[0]) * dir[0]
+           + (tmpspin.pos[1] - center[1]) * dir[1]
+           + (tmpspin.pos[2] - center[2]) * dir[2];
+    d = fabs(d);
+    if(isEqualSmaller(d, mind1, false))  mind1 = d;
+    else if(d < mind2) mind2 = d;
+  }
+  if(isEqual(mind1, 0, false))
+  {
+     isSplit = true;
+     distance = mind2 - mind1;
+  } 
+  else 
+  {
+    isSplit = false;
+    if(splitData.size()==0)
+    {
+       cout<<"No data on slice"<<endl;
+       exit(0);
+    }
+    return;
+  }
+//==
+  for(int i=0;i<splitData.size();i++) splitData[i].clear();
+  splitData.clear();
+  sliceDen.clear();
+  //sliceOrigin.clear();
+  (*sliceList).clear();
+
   svVector3 minCenter, maxCenter;
   minCenter = center; maxCenter = center;
   if(dir[2]<0) dir = -dir;
@@ -435,6 +854,7 @@ void svRawSliceData::SplitData(svVector3 &center, svVector3 &dir, svScalar &dist
   int numSlice = sqrt((maxCenter[0]-minCenter[0])*(maxCenter[0]-minCenter[0])
          + (maxCenter[1]-minCenter[1])*(maxCenter[1]-minCenter[1])
          + (maxCenter[2]-minCenter[2])*(maxCenter[2]-minCenter[2]))/distance+1;
+//  cout<<numSlice<<" "<<distance<<endl;
   splitData.resize(numSlice);
   sliceDen.resize(numSlice);
   for(int i=0;i<numSlice;i++)sliceDen[i]=0;
@@ -442,9 +862,10 @@ void svRawSliceData::SplitData(svVector3 &center, svVector3 &dir, svScalar &dist
      Spin tmpspin = (myQDOT->qdotData).at(i);
      svVector3 tmp = tmpspin.pos - minCenter;
      double dot = GetDot(tmp, dir);
-     if((fmod(dot, (double)distance)<1e-5)
-        || (distance-fmod(dot, (double)distance)<1e-5)){
+     if(isEqual(fmod(dot, (double)distance),0,false)//<1e-5)
+        || isEqual(distance, fmod(dot, (double)distance), false)){//<1e-5)){
         int index = (int)(dot/distance);
+       // cout<<index<<endl;
         splitData[index].push_back(&((myQDOT->qdotData).at(i)));
         (*sliceList).insert(std::pair<Spin*,int>(&((myQDOT->qdotData).at(i)),index));
         if((myQDOT->qdotData).at(i).den > sliceDen[index]){
@@ -487,20 +908,30 @@ void svRawSliceData::GenerateOrigins(){
         svVector3 newpos;
         newpos[0] = GetDot(currentPos-pos,sliceAxis[0]);
         newpos[1] = GetDot(currentPos-pos,sliceAxis[1]);
+        newpos[2] = GetDot(currentPos-pos,sliceAxis[2]);
         if(ilbbox[0]>newpos[0]){ilbbox[0]=newpos[0];}
         if(ilbbox[1]>newpos[1]){ilbbox[1]=newpos[1];}
+        if(ilbbox[2]>newpos[2]){ilbbox[2]=newpos[2];}
      }
   }
 
   svVector3 origin = ilbbox[0] * sliceAxis[0]
                    + ilbbox[1] * sliceAxis[1]
+                  // + ilbbox[2] * sliceAxis[2]
                    + pos;
+//  cout<<ilbbox[0]<<" "<<ilbbox[1]<<" "<<ilbbox[2]<<endl;
+//  cout<<pos[0]<<" "<<pos[1]<<" "<<pos[2]<<endl;
+//  cout<<sliceAxis[0][0]<<" "<<sliceAxis[0][1]<<" "<<sliceAxis[0][2]<<endl;
+//  cout<<sliceAxis[1][0]<<" "<<sliceAxis[1][1]<<" "<<sliceAxis[1][2]<<endl;
+//  cout<<sliceAxis[2][0]<<" "<<sliceAxis[2][1]<<" "<<sliceAxis[2][2]<<endl;
+//  cout<<origin[0]<<" "<<origin[1]<<" "<<origin[2]<<endl;
+  sliceOrigin.clear();
   for(int i=0;i<splitData.size();i++){
      svVector3 pp = sliceMinCenter  + (svScalar)i * sliceDistance * sliceDir;
      double od = pointtoPlane(origin, pp, sliceDir);
      svVector3 op = origin+ (svScalar)od * sliceDir;
      sliceOrigin.push_back(op);
-     //cerr<<op[0]<<" "<<op[1]<<" "<<op[2]<<endl;
+     cerr<<op[0]<<" "<<op[1]<<" "<<op[2]<<endl;
   }
 }
 
@@ -519,7 +950,7 @@ void svRawSliceData::GenerateHistogram()
 
   svScalar max = myQDOT->maxExp;
   svScalar level = max - NUM_TOP_MAG;
-  int *count = new int[splitData.size()];
+  /*int *count = new int[splitData.size()];
   for(int i=0;i<splitData.size();i++)
   {
     count[i] = 0;
@@ -527,7 +958,7 @@ void svRawSliceData::GenerateHistogram()
     {
           count[i]++;
     }
-  }
+  }*/
   for(int i=0;i<splitData.size();i++)
   {
     for(int h=0;h<NUM_TOP_MAG;h++)
@@ -537,10 +968,10 @@ void svRawSliceData::GenerateHistogram()
        svScalar exp = (*splitData[i][j]).exp;
        svScalar coe = (*splitData[i][j]).coe;
         if(exp > level&&coe>0)
-        {
+        {//if(i==40 && j == 500) cerr<<exp<<" "<<coe<<endl;
           for(int h=0;h<NUM_TOP_MAG;h++)
           {
-            if(isEqual(exp, level+h+1, false))
+            if(isEqual(exp, level+(svScalar)h+1., false))
               histovalues[h][i] += 1.;
           }
           /* if(fabs(exp[i][j]-level-1)<1e-3)
@@ -553,6 +984,9 @@ void svRawSliceData::GenerateHistogram()
                 prob[0][i] = prob[0][i]+1;*/
         }
      }
+
+   // for(int h=0;h<NUM_TOP_MAG;h++) cerr<<max<<" "<<level<<" "<<histovalues[h][i]<<" ";
+    //cerr<<endl;
      //prob[i] = prob[i]/ (svScalar)count[i];//cerr<<prob[i]<<endl;
   }//cerr<<c<<endl;
 }
@@ -567,6 +1001,11 @@ bool sortSlice(svSliceData data1, svSliceData data2){
 }
 
 void svRawSliceData::GenerateSlice(){
+  for(int i=0;i<sliceData.size();i++)sliceData[i].clear();
+  sliceData.clear();
+  for(int i=0;i<imageData.size();i++)imageData[i].clear();
+  imageData.clear();
+
   sliceData.resize(sliceOrigin.size());
   imageData.resize(sliceOrigin.size());
   ilbbox[0]=9e+9;ilbbox[1]=9e+9;ilbbox[2]=9e+9;
@@ -600,30 +1039,34 @@ void svRawSliceData::GenerateSlice(){
 void svRawSliceData::GenerateImage(){
 //grid
    int ii = sliceData.size()/2;
+  // cout<<ii<<" "<<sliceData[ii].size()<<" "<<splitData[ii].size()<<endl;
+   //iminD[1] = 1;
    for(int j=0;j<sliceData[ii].size();j++){
       svScalar dd = sliceData[ii][j].ipos[1] - sliceData[ii][0].ipos[1];
+    //  cout<<sliceData[ii][j].ipos[1]<<" "<<sliceData[ii][j].ipos[0]<<endl;
       if(dd>0){
          iminD[1] = dd;break;
       }
    }
    iminD[0]=9e+9;
+  /// cerr<<iminD[1]<<endl;
    for(int j=1;j<sliceData[ii].size();j++){
       svScalar dd = sliceData[ii][j].ipos[0] - sliceData[ii][0].ipos[0];
       if(dd>0 && dd<iminD[0]) iminD[0] =dd;
    }
    iminD[2] = sliceDistance;
-   svScalar minD = min(iminD[0], iminD[1]);
+//   svScalar minD = min(iminD[0], iminD[1]);
 //image
    int fill = (int)((sliceData[ii][1].ipos[0]
-                   - sliceData[ii][0].ipos[0])/minD);
-   int row = (irbbox[1] - ilbbox[1])/(minD)+1;
-   int column = (irbbox[0] - ilbbox[0])/(minD)+fill;
+                   - sliceData[ii][0].ipos[0])/iminD[0]);
+   int row = (irbbox[1] - ilbbox[1])/(iminD[1])+1;
+   int column = (irbbox[0] - ilbbox[0])/(iminD[0])+fill;
    //cerr<<row<<" "<<column<<" "<<iminD[0]<<" "<<iminD[1]<<" "<<iminD[2]<<" "<<fill<<" "<<irbbox[0]<<" "<<ilbbox[0]<<endl;
    imageRow = row; imageColumn = column;
    for(int i=0;i<sliceData.size();i++){
       int indexj = 0;
-      int indexr1 = (sliceData[i][0].ipos[1]-ilbbox[1])/minD;
-      int indexr2 = (sliceData[i][sliceData[i].size()-1].ipos[1]-ilbbox[1])/minD;
+      int indexr1 = (sliceData[i][0].ipos[1]-ilbbox[1])/iminD[1];
+      int indexr2 = (sliceData[i][sliceData[i].size()-1].ipos[1]-ilbbox[1])/iminD[1];
       //cerr<<indexr1<<" "<<indexr2<<endl;
       for(int j=0; j<row; j++){//1cerr<<i<<" "<<j<<endl;
         if(j<indexr1 || j>indexr2){//cout<<"out"<<endl;
@@ -644,7 +1087,7 @@ void svRawSliceData::GenerateImage(){
                 imageData[i].push_back(-1);t++;
                } break;
            }
-           int index = (sliceData[i][indexj].ipos[0]-ilbbox[0])/minD;
+           int index = (sliceData[i][indexj].ipos[0]-ilbbox[0])/iminD[0];
 //           cerr<<t<<" "<<sliceData[i][indexj].ipos[0]<<" "<<indexj<<" "<<index<<endl;
            //TODO: DOUBLE CHECK
            if(t>index){//t>0&&sliceData[i][indexj].ipos[1]>sliceData[i][indexj-1].ipos[1]){
@@ -686,8 +1129,24 @@ void svRawSliceData::GenerateImage(){
     }
   }
 }
+
+void svRawSliceData::SetImageLabel(bool cluster)
+{
+  for(int i=0;i<sliceData.size();i++)
+  {
+    for(int j=0;j<sliceData[i].size();j++)
+    {
+       int index = sliceData[i][j].torindex;
+       if(cluster)
+           sliceData[i][j].ilabel = (*clusterList).at(splitData[i][index]);
+       else
+           sliceData[i][j].ilabel = (*splitData[i][index]).exp;
+    }
+  }
+}
+
 void svRawSliceData::GenerateSampling(int frequency){
-  state->sampleVisible.clear();
+/*  state->sampleVisible.clear();
   for(int i=0;i<splitData.size();i++){
      for(int j=0;j<splitData[i].size();j++){
         vector<int> value(3);
@@ -717,6 +1176,37 @@ void svRawSliceData::GenerateSampling(int frequency){
         }
      }
   }
+*/
+  (*sampleVisible).clear();
+  for(int i=0;i<splitData.size();i++){
+     for(int j=0;j<splitData[i].size();j++){
+        vector<int> value(3);
+        value = myQDOT->qdotFormat.at(splitData[i][j]);
+        if(value[0]%frequency==0
+          && value[1]%frequency==0
+          && value[2]%frequency==0){
+          (*sampleVisible).insert(std::pair<Spin *, bool>(splitData[i][j], true));
+        }
+        else
+          (*sampleVisible).insert(std::pair<Spin *, bool>(splitData[i][j], false));
+     }
+  }
+  if(mySymmetry == NULL) return;
+  for(int i=0;i<SYMMETRY_TYPE;i++){
+     if(mySymmetry->splitData[i].size()<=0) continue;
+     for(int j=0;j<myQDOT->qdotData.size();j++){
+        if((*(mySymmetry->symmetryList))[i].count(&myQDOT->qdotData[j])<=0)
+             continue;
+        vector<Spin *> value = (*(mySymmetry->symmetryList))[i].at(&myQDOT->qdotData[j]);
+        if(value.size()>0){
+            if((*sampleVisible).at(&myQDOT->qdotData[j])==true){
+              for(int v=0;v<value.size();v++){
+                 (*sampleVisible).at(value[v]) = true;
+              }
+            }
+        }
+     }
+  }
 }
 void svRawSliceData::cleanup(){
   sliceDen.clear();
@@ -731,10 +1221,9 @@ void svRawSliceData::cleanup(){
 //======================================================================
 
 //============================Symmetry Data=========================//
-svRawSymmetryData::svRawSymmetryData(svQDOT *qdot){
+svRawSymmetryData::svRawSymmetryData(svQDOT *qdot):svQDOTData(qdot){
   mySlice = NULL;
   myCluster = NULL;
-  symmetryList = new vector< map<Spin *, vector<Spin *> > >();
   (*symmetryList).resize(SYMMETRY_TYPE);
   New(qdot);
   data_structure_type = d_symmetry;
@@ -745,10 +1234,15 @@ void svRawSymmetryData::New(svQDOT *qdot){
   for(int i=0;i<SYMMETRY_TYPE;i++)(*symmetryList)[i].clear();
   maxExp = myQDOT->maxExp;
   minExp = myQDOT->minExp;
+  splitData.resize(SYMMETRY_TYPE+1);
 }
 void svRawSymmetryData::Init(char *dir){
-  splitData.resize(SYMMETRY_TYPE+1);
+  for(int i=0;i<splitData.size();i++) splitData[i].clear();
+  for(int i=0;i<SYMMETRY_TYPE;i++)
+     (*symmetryList)[i].clear();
+
   GenerateSymmetry(dir);
+/*
   isSelectable.resize(SYMMETRY_TYPE+1);
   std::fill(isSelectable.begin(), isSelectable.end(), true);
   isVisible.resize(SYMMETRY_TYPE+1);
@@ -757,8 +1251,10 @@ void svRawSymmetryData::Init(char *dir){
   std::fill(isHighlighted.begin(), isHighlighted.end(), false);
   isSelected.resize(SYMMETRY_TYPE+1);
   std::fill(isSelected.begin(), isSelected.end(), false);
+*/
 }
 void svRawSymmetryData::GenerateSymmetry(char *dir){
+
   svSymmetry *symmetry = new svSymmetry();
   svVector3 cutPos(0,0,myQDOT->lbbox[2]);
   svVector3 cutDir(0,0,1);
@@ -837,7 +1333,7 @@ void svRawSymmetryData::SplitData(){
 //======================================================================
 
 //==================svRawClusterData====================================//
-svRawClusterData::svRawClusterData(svQDOT *qdot){
+svRawClusterData::svRawClusterData(svQDOT *qdot):svQDOTData(qdot){
   mySlice = NULL;
   mySymmetry = NULL;
   clusterList = new map<Spin *, int>();
@@ -846,6 +1342,7 @@ svRawClusterData::svRawClusterData(svQDOT *qdot){
 }
 void svRawClusterData::New(svQDOT *qdot){
   myQDOT = qdot;
+  meshData = new svMeshData(qdot);
   (*clusterList).clear();
   if(splitData.size()>0){cleandata();cleanup();}
   for(int i=0;i<myQDOT->qdotData.size();i++){
@@ -862,6 +1359,7 @@ void svRawClusterData::ResetCluster(){
   }
   for(int i=0;i<splitData.size();i++){
       splitData[i].clear();
+      meshData->facets[i].clear();
   }
   for(list< vector<int> >::iterator it=boundaryIndex.begin();it!=boundaryIndex.end();++it)
   {
@@ -869,11 +1367,27 @@ void svRawClusterData::ResetCluster(){
   }
   boundaryIndex.clear();
   splitData.clear();
+  meshData->facets.clear();
 }
 void svRawClusterData::Init(char *folder){//, KmeansProperty & property){
+/*  for(int i=0;i<splitData.size();i++) splitData[i].clear();
+  splitData.clear();
+  meshData->facets.clear();
+  for(list< vector<int> >::iterator it=boundaryIndex.begin();it!=boundaryIndex.end();++it)
+  {
+     (*it).clear();
+  }
+  boundaryIndex.clear();
+  for(int i=0;i<myQDOT->qdotData.size();i++){
+     (*clusterList).at(&(myQDOT->qdotData[i])) = -1;
+     sampleLabel.at(&(myQDOT->qdotData[i])) = 0.;
+  }
+*/
+  ResetCluster();
+
   GenerateClustersBySymmetry(folder);//, *(state->kP));
   GenerateSampleLabel(folder);
-  int size = splitData.size();
+/*  int size = splitData.size();
   isSelectable.resize(size);
   std::fill(isSelectable.begin(), isSelectable.end(), true);
   isVisible.resize(size);
@@ -882,6 +1396,7 @@ void svRawClusterData::Init(char *folder){//, KmeansProperty & property){
   std::fill(isHighlighted.begin(), isHighlighted.end(), false);
   isSelected.resize(size);
   std::fill(isSelected.begin(), isSelected.end(), false);
+*/
 //  for(int i=0;i<myQDOT->qdotData.size();i++){
 //    visibleLabel.insert(std::pair<Spin *, bool>(&(myQDOT->qdotData[i]), true));
 //  }
@@ -950,6 +1465,7 @@ void svRawClusterData::GenerateCluster(vector< vector<Spin*> > tmpdata,
   int maxCluster = cluster->ComputeClusters(ifname, ofname, clusterfname, *state->kP, tmplist);
   cerr<<"maxCluster "<<maxCluster<<endl;
   splitData.resize(maxCluster);//-1, 0, 1, 2, ...
+  meshData->facets.resize(maxCluster);
   boundaryIndex.resize(maxCluster);
   SetClusterLabel(tmpdata, tmplist);
   delete cluster;
@@ -959,6 +1475,160 @@ void svRawClusterData::GenerateCluster(vector< vector<Spin*> > tmpdata,
   sprintf(exe, "rm %s", clusterfname); system(exe);
   delete [] exe; delete [] ifname; delete [] ofname; //delete [] clusterfName;
 }
+/*
+void svRawClusterData::SavetoVTK(char *dir, char *file){
+  vector< list<Spin> > tmpData;
+  vector< list<int> > tmpCluster;
+  list<int> tmpC;
+  vector<int> count;
+  list<Spin> tmpList;
+  Spin tmpSpin;
+  svScalar x, y;
+  x = myQDOT->lbbox[0]-myQDOT->minXDistance;
+  y = myQDOT->lbbox[1]- myQDOT->minYDistance;
+  while(x < tmpSpin.pos[0] + 2.*myQDOT->minXDistance)
+  {
+    tmpSpin.pos[0] = x;
+    tmpSpin.pos[1] = y;
+    tmpSpin.pos[2] = myQDOT->qdotData[0].pos[2];
+    tmpList.push_back(tmpSpin);
+    tmpC.push_back(-2);
+    x += myQDOT->minXDistance;
+  }
+  bool firsline = true;
+  for(int i=0;i<myQDOT->qdotData.size()-1;i++)
+  {
+    if(i==0)
+    {
+       tmpSpin = myQDOT->qdotData[i];
+       tmpSpin.pos[0]-=myQDOT->minXDistance;
+       tmpList.push_back(tmpSpin);
+       tmpC.push_back(-2);
+       tmpList.push_back(myQDOT->qdotData[i]);
+       tmpC.push_back(clusterList.at(&myQDOT->qdotData[i]));
+    } 
+    else if(myQDOT->qdotData[i+1].pos[2]>myQDOT->qdotData[i].pos[2])
+    {
+       tmpList.push_back(myQDOT->qdotData[i]);
+       tmpC.push_back(clusterList.at(&myQDOT->qdotData[i]));
+       tmpSpin = myQDOT->qdotData[i];
+       tmpSpin.pos[0]+=myQDOT->minXDistance;
+       tmpList.push_back(tmpSpin);
+       tmpC.push_back(-2);
+       x = myQDOT->lbbox[0]-myQDOT->minXDistance;
+       y = myQDOT->rbbox[1]+myQDOT->minYDistance;
+       while(x < tmpSpin.pos[0] + 2.*myQDOT->minXDistance)
+       {
+           tmpSpin.pos[0] = x;
+           tmpSpin.pos[1] = y;
+           tmpSpin.pos[2] = myQDOT->qdotData[i].pos[2];
+           tmpList.push_back(tmpSpin);
+           tmpC.push_back(-2);
+           x += myQDOT->minXDistance;
+       }
+       count.push_back(tmpC.size());
+       tmpData.push_back(tmpList);
+       tmpCluster.push_back(tmpC);
+       tmpList.clear(); tmpC.clear();
+       x = myQDOT->lbbox[0]-myQDOT->minXDistance;
+       y = myQDOT->lbbox[1]-myQDOT->minYDistance;
+       while(x < tmpSpin.pos[0] + 2.*myQDOT->minXDistance)
+       {
+           tmpSpin.pos[0] = x;
+           tmpSpin.pos[1] = y;
+           tmpSpin.pos[2] = myQDOT->qdotData[i+1].pos[2];
+           tmpList.push_back(tmpSpin);
+           tmpC.push_back(-2);
+           x += myQDOT->minXDistance;
+       }
+       tmpSpin = myQDOT->qdotData[i+1];
+       tmpSpin.pos[0]-=myQDOT->minXDistance;
+       tmpList.push_back(tmpSpin);
+       tmpC.push_back(-2);
+    } 
+    else if(myQDOT->qdotData[i].pos[1]>myQDOT->qdotData[i-1].pos[1])
+    {
+       tmpList.push_back(myQDOT->qdotData[i]);
+       tmpC.push_back(clusterList.at(&myQDOT->qdotData[i]));
+       tmpSpin = myQDOT->qdotData[i];
+       tmpSpin.pos[0]+=myQDOT->minXDistance;
+       tmpList.push_back(tmpSpin);
+       tmpC.push_back(-2);
+       tmpSpin = myQDOT->qdotData[i+1];
+       tmpSpin.pos[0]-=myQDOT->minXDistance;
+       tmpList.push_back(tmpSpin);
+       tmpC.push_back(-2);
+    }
+    else
+    {
+       tmpList.push_back(myQDOT->qdotData[i]);
+       tmpC.push_back(clusterList.at(&myQDOT->qdotData[i]));
+    }
+  }
+  tmpSpin = myQDOT->qdotData[myQDOT->qdotData.size()-1];
+  tmpList.push_back(tmpSpin);
+  tmpC.push_back(-2);
+  x = myQDOT->lbbox[0]-myQDOT->minXDistance;
+  y = myQDOT->rbbox[1]+ myQDOT->minYDistance;
+  while(x < tmpSpin.pos[0] + 2.*myQDOT->minXDistance)
+  {
+    tmpSpin.pos[0] = x;
+    tmpSpin.pos[1] = y;
+    tmpSpin.pos[2] = myQDOT->qdotData[myQDOT->qdotData.size()-1].pos[2];
+    tmpList.push_back(tmpSpin);
+    tmpC.push_back(-2);
+    x += myQDOT->minXDistance;
+  }
+  tmpData.push_back(tmpList);
+  tmpC.push_back(-2);
+
+
+  for(int i=0;i<count.size();i++)
+  {
+    
+  }
+  char *str = new char[1024];
+  for(int i=0;i<splitData.size();i++){
+     sprintf(str,"%s/%s/%0.2f%0.2f%0.2f%0.2f%0.2f%0.2f%d.vtk", dir, file,
+             sliceMinCenter[0], sliceMinCenter[1], sliceMinCenter[2],
+             sliceDir[0], sliceDir[1], sliceDir[2],
+             i );
+     ifstream infile(str);
+     if(infile.is_open()){ infile.close(); continue;}
+     cerr<<str<<endl;
+     ofstream outfile(str);
+     outfile<<"# vtk DataFile Version 2.0"<<endl;
+     outfile<<str<<endl;
+     outfile<<"ASCII"<<endl;
+     outfile<<"DATASET UNSTRUCTURED_GRID"<<endl;
+
+     outfile<<"POINTS "<<splitData[i].size()<<" float"<<endl;
+     for(int j=0;j<splitData[i].size();j++){//TODO fix the plane cooridinates
+        outfile<<(*splitData[i][j]).pos[0]<<" "
+               <<(*splitData[i][j]).pos[1]<<" "
+               <<(*splitData[i][j]).pos[2]<<endl;
+     }
+     outfile<<endl;
+     outfile<<"POINT_DATA "<<splitData[i].size()<<endl;
+     outfile<<"VECTORS velocity float"<<endl;
+     for(int j=0;j<splitData[i].size();j++){
+        outfile<<(*splitData[i][j]).dir[0]<<" "
+               <<(*splitData[i][j]).dir[1]<<" "
+               <<(*splitData[i][j]).dir[2]<<endl;
+     }
+     outfile<<endl;
+     outfile<<"SCALARS density float 1"<<endl;
+     outfile<<"LOOKUP_TABLE default"<<endl;
+     for(int j=0;j<splitData[i].size();j++){
+       outfile<<(*splitData[i][j]).den<<endl;
+     }
+     outfile<<endl;
+     outfile.close();
+  }
+  delete [] str;
+}
+*/
+
 /*
 void svRawClusterData::SetClusterLabel(vector<Spin*> tmpdata, char *file){
   vector<int> cluster;
@@ -1031,9 +1701,10 @@ void svRawClusterData::SetClusterLabel(vector< vector<Spin*> > tmpdata, int **tm
 //TODO:Integrate Alphashape in quanvislib
 //TODO:OpenMP
 void svRawClusterData::GenerateBoundary(int splitlevel, char *dir){
+   if(splitData[splitlevel].size()==0) return;
    int i = splitlevel;
    char *ofname = new char[400];
-   sprintf(ofname, "%s/clustertmp%d.txt", dir,i);
+   sprintf(ofname, "%s/clustertmp%d.txt", dir,i-1);
    //cerr<<ofname<<endl;
    ofstream outfile(ofname);
    outfile<<splitData[i].size()<<endl;
@@ -1045,16 +1716,27 @@ void svRawClusterData::GenerateBoundary(int splitlevel, char *dir){
    outfile.close();
    char *pointfname = new char[400];
    sprintf(pointfname, "%s/clusterpoints%d.txt", dir,i);
+   char *vtkfname = new char[400];
+   sprintf(vtkfname, "%s/cluster%d.vtk",dir,i);
+   char *surfacefname = new char[400]; 
+   sprintf(surfacefname, "%s/clustermesh%d.txt",dir,i);
    svMeshGenerator *mesh = new svMeshGenerator();
-   mesh->GenerateBoundaryPoints(ofname, pointfname);
+   mesh->GenerateSurface(ofname, vtkfname, pointfname, surfacefname);
    ifstream infile(pointfname);
-   int n; infile>>n;
+   int n;infile>>n;
+   meshData->ReadMesh(surfacefname,i);
    vector<svVector3> tmpbound(n);
-   for(int j=0;j<n;j++){
-      infile>>tmpbound[j][0]>>tmpbound[j][1]>>tmpbound[j][2];
+   for(int j=0;j<n;j+=3){
+      for(int v=0;v<3;v++){
+          infile>>tmpbound[j+v][0]>>tmpbound[j+v][1]>>tmpbound[j+v][2];
+      }
+      meshData->facets[i][j/3].label = i-1;
    }
    infile.close();
+   int edgen = n/2;
+   int facen = n/3;
    //cerr<<pointfname<<endl;
+   int vertexn = 0;
    for(int j=0;j<splitData[i].size();j++){
       int index = -1;
       for(int t=0;t<tmpbound.size();t++){
@@ -1062,6 +1744,7 @@ void svRawClusterData::GenerateBoundary(int splitlevel, char *dir){
         && isEqual((*splitData[i][j]).pos[1], tmpbound[t][1], false)
         && isEqual((*splitData[i][j]).pos[2], tmpbound[t][2], false)){
            index = t;
+           vertexn ++;
            break;
         }
       }
@@ -1075,8 +1758,11 @@ void svRawClusterData::GenerateBoundary(int splitlevel, char *dir){
          //sampleLabel.insert(splitData[i][j])= false;
       }
    }
+   genus = 1 - (vertexn - edgen + facen)/2;
    delete [] ofname;
    delete [] pointfname;
+   delete [] vtkfname;
+   delete [] surfacefname;
 }
 //sampling based on x, y and z
 void svRawClusterData::GenerateSampling(int frequency){
@@ -1152,7 +1838,7 @@ void svRawClusterData::GenerateSampleLabel(char *folder){
   for(int i=0;i<splitData.size();i++){
     GenerateBoundary(i, folder);
   }
-cerr<<"//========================sample label============================//"<<endl;
+/*cerr<<"//========================sample label============================//"<<endl;
   for(int i=0;i<splitData.size();i++){
     if(splitData[i].size()==0) continue;
     vector<Spin *> tmpdata;
@@ -1235,7 +1921,7 @@ cerr<<"//==========================Release========================"<<endl;
   delete [] tmplist[0];
   delete [] tmplist;
   tmpdata.clear();
- }
+ }*/
 cerr<<"done"<<endl;
 }
 /*void svRawClusterData::GenerateSampling(int splitlevel, char *dir, int frequency){
@@ -1384,6 +2070,10 @@ void svRawSummaryData::GenerateClusterSummary(svRawClusterData *cluster)
 
 //========================================================================
 svContourData::svContourData(svQDOT *qdot, svRawSliceData *data){
+  qdotVisible = new map<Spin *, bool>();
+  sampleVisible = new map<Spin *, bool>();
+  symmetryList = new vector< map<Spin *, vector<Spin *> > >();
+
   myCluster = NULL;
   New(qdot, data);
   data_structure_type = d_slice;
@@ -1392,6 +2082,7 @@ svContourData::svContourData(svQDOT *qdot, svRawSliceData *data){
 void svContourData::New(svQDOT *qdot, svRawSliceData *data){
   myQDOT = qdot;
   myData = data;
+  contourData.clear();
   if(splitData.size()>0){cleandata();cleanup();}
   splitData.resize((myData->splitData).size());
   contourLines.resize((myData->splitData).size());
@@ -1406,7 +2097,7 @@ void svContourData::New(svQDOT *qdot, svRawSliceData *data){
 }
 void svContourData::Init(){
   int size = splitData.size();
-  isSelectable.resize(size);
+/*  isSelectable.resize(size);
   std::fill(isSelectable.begin(), isSelectable.end(), true);
   isVisible.resize(size);
   std::fill(isVisible.begin(), isVisible.end(), true);
@@ -1414,6 +2105,7 @@ void svContourData::Init(){
   std::fill(isHighlighted.begin(), isHighlighted.end(), false);
   isSelected.resize(size);
   std::fill(isSelected.begin(), isSelected.end(), false);
+*/
 /*  for(int i=0;i<myQDOT->qdotData.size();i++){
     state->sampleVisible.insert(std::pair<Spin *, bool>(&(myQDOT->qdotData[i]), true));
   }
@@ -1422,9 +2114,19 @@ void svContourData::Init(){
 }
 void svContourData::GenerateContours(//ContourProperty &property,
                                      char *dir){
+
+  for(int i=0;i<splitData.size();i++) 
+  { splitData[i].clear(); contourLines[i].clear();}
+
+//  #pragma omp parallel for
   for(int j=0;j<myData->splitData.size();j++){
       for(int i=0;i<state->cP->values[j].size();i++) {
         if(state->cP->isUpdate[i]){
+           svScalar value;
+           svScalar maxDen = myData->sliceDen[j];
+           if(state->cP->type[j][i]==1) value = state->cP->values[j][i]*maxDen;
+           else value = state->cP->values[j][i];
+           cerr<<value<<endl;
            char *contourfile = new char[400];
            sprintf(contourfile,"%s/contour%0.2f%0.2f%0.2f%0.2f%0.2f%0.2f%d%6.2e.txt",
                                 dir,
@@ -1434,7 +2136,7 @@ void svContourData::GenerateContours(//ContourProperty &property,
                                 myData->sliceDir[0],
                                 myData->sliceDir[1],
                                 myData->sliceDir[2],
-                                j, state->cP->values[j][i]);
+                                j, value);//state->cP->values[j][i]);
            char *planename = new  char[200];
            sprintf(planename, "%0.2f%0.2f%0.2f%0.2f%0.2f%0.2f",
                                 myData->sliceMinCenter[0],
@@ -1443,9 +2145,9 @@ void svContourData::GenerateContours(//ContourProperty &property,
                                 myData->sliceDir[0],
                                 myData->sliceDir[1],
                                 myData->sliceDir[2]);
-           GenerateContour(contourfile, dir, planename,j,
-                                state->cP->values[j][i]);
-           SetContours(contourfile);
+           GenerateContour(contourfile, dir, planename,j,value);
+                               // state->cP->values[j][i]);
+           SetContours(contourfile, j);
            sprintf(contourfile,"%s/contour2d%0.2f%0.2f%0.2f%0.2f%0.2f%0.2f%d%6.2e.svl",
                                 dir,
                                 myData->sliceMinCenter[0],
@@ -1454,14 +2156,15 @@ void svContourData::GenerateContours(//ContourProperty &property,
                                 myData->sliceDir[0],
                                 myData->sliceDir[1],
                                 myData->sliceDir[2],
-                                j, state->cP->values[j][i]);
-           GenerateContourLine(contourfile, dir, planename,j,
-                                state->cP->values[j][i]);
+                                j, value);//state->cP->values[j][i]);
+           GenerateContourLine(contourfile, dir, planename,j,value);//
+                               // state->cP->values[j][i]);
            SetContourLines(contourfile, j);
            delete [] contourfile;
           }
        }
   }
+cerr<<"split contour"<<endl;
   SplitData();
 }
 void svContourData::GenerateContourTree(char *dir){
@@ -1587,7 +2290,7 @@ void svContourData::GenerateContoursByContourTree(char *dir,
                    dir, planename, i, v);
 //             cerr<<contourfile<<endl;
              GenerateContour(contourfile, dir, planename, i, v);
-             SetContours(contourfile);
+             SetContours(contourfile,i);
              sprintf(contourfile, "%s/contour2d%s%d%6.2e.txt",
                    dir, planename, i, v);
              GenerateContourLine(contourfile, dir, planename, i, v);
@@ -1642,7 +2345,7 @@ void svContourData::GenerateContourLine(char *contourfile, char *vtkdir, char *p
     delete contourField;
     delete [] vtkName;
 }
-void svContourData::SetContours(char *contourfile){
+void svContourData::SetContours(char *contourfile, int layer){
   ifstream infile(contourfile);
   int num;
   infile>>num;
@@ -1651,6 +2354,21 @@ void svContourData::SetContours(char *contourfile){
     infile>>tmpspin.pos[0]>>tmpspin.pos[1]>>tmpspin.pos[2]
           >>tmpspin.dir[0]>>tmpspin.dir[1]>>tmpspin.dir[2]
           >>tmpspin.den;
+
+    svVector3 pos = myData->sliceOrigin[layer];
+    svVector3 x = myData->sliceAxis[0];
+    svVector3 y = myData->sliceAxis[1];
+    svVector3 z = myData->sliceAxis[2];
+    svVector3 pp;
+    svVector3 p = tmpspin.pos;
+    pp[0] = pos[0] + p[0] * x[0];
+    pp[1] = pos[1] + p[0] * x[1];
+    pp[2] = pos[2] + p[0] * x[2];
+    pp[0] = pp[0] + p[1] * y[0];
+    pp[1] = pp[1] + p[1] * y[1];
+    pp[2] = pp[2] + p[1] * y[2];
+    tmpspin.pos = pp;
+
     if(tmpspin.den>1e-20){
      tmpspin.exp = getNumOfIntegerDigits(tmpspin.den);
      tmpspin.coe = tmpspin.den/pow(10., tmpspin.exp);
@@ -1665,10 +2383,52 @@ void svContourData::SetContours(char *contourfile){
     tmpspin.yangle = acos(tmpspin.dir[1])*180./PI;
     tmpspin.zangle = acos(tmpspin.dir[2])*180./PI;
     contourData.push_back(tmpspin);
-    //splitData[layer].push_back(&(contourData.at(contourData.size()-1)));
   }
   infile.close();
 }
+void svContourData::SetContours(char *contourfile){
+/*  ifstream infile(contourfile);
+  int num;
+  infile>>num;
+  for(int i=0;i<num;i++){
+    Spin tmpspin;
+    infile>>tmpspin.pos[0]>>tmpspin.pos[1]>>tmpspin.pos[2]
+          >>tmpspin.dir[0]>>tmpspin.dir[1]>>tmpspin.dir[2]
+          >>tmpspin.den;
+
+    svVector3 pos = myData->sliceOrigin[layer];
+    svVector3 x = myData->sliceAxis[0];
+    svVector3 y = myData->sliceAxis[1];
+    svVector3 z = myData->sliceAxis[2];
+    svVector3 pp;
+    svVector3 p = tmpspin.pos;
+    pp[0] = pos[0] + p[0] * x[0];
+    pp[1] = pos[1] + p[0] * x[1];
+    pp[2] = pos[2] + p[0] * x[2];
+    pp[0] = pp[0] + p[1] * y[0];
+    pp[1] = pp[1] + p[1] * y[1];
+    pp[2] = pp[2] + p[1] * y[2];
+    tmpspin.pos = pp;
+
+    if(tmpspin.den>1e-20){
+     tmpspin.exp = getNumOfIntegerDigits(tmpspin.den);
+     tmpspin.coe = tmpspin.den/pow(10., tmpspin.exp);
+     if(tmpspin.exp>maxExp) maxExp = tmpspin.exp;
+     if(tmpspin.exp<minExp) minExp = tmpspin.exp;
+    }
+    else{
+     tmpspin.exp = 0;
+    tmpspin.coe = 0;}// tmpspin.den/pow(10., tmpspin.exp);
+    tmpspin.dir.normalize();
+    tmpspin.xangle = acos(tmpspin.dir[0])*180./PI;
+    tmpspin.yangle = acos(tmpspin.dir[1])*180./PI;
+    tmpspin.zangle = acos(tmpspin.dir[2])*180./PI;
+   contourData.push_back(tmpspin);
+  }
+  infile.close();
+*/
+}
+
 
 void svContourData::SetContourLines(char *svlfile, int layer){
     ifstream infile(svlfile);
@@ -1680,10 +2440,10 @@ void svContourData::SetContourLines(char *svlfile, int layer){
          for(int j=0;j<m;j++){
             Spin tmpspin;
             infile>>tmpspin.pos[0]>>tmpspin.pos[1]>>tmpspin.pos[2];
-            svVector3 pos = tmpspin.pos;
-            tmpspin.pos[0] = GetDot(pos  - myData->sliceOrigin[layer], myData->sliceAxis[0]);
-            tmpspin.pos[1] = GetDot(pos - myData->sliceOrigin[layer], myData->sliceAxis[1]);
-            tmpspin.pos[2] = GetDot(pos - myData->sliceOrigin[layer], myData->sliceAxis[2]);
+            //svVector3 pos = tmpspin.pos;
+            //tmpspin.pos[0] = GetDot(pos  - myData->sliceOrigin[layer], myData->sliceAxis[0]);
+            //tmpspin.pos[1] = GetDot(pos - myData->sliceOrigin[layer], myData->sliceAxis[1]);
+            //tmpspin.pos[2] = GetDot(pos - myData->sliceOrigin[layer], myData->sliceAxis[2]);
             //     >>tmpspin.dir[0]>>tmpspin.dir[1]>>tmpspin.dir[2]
             //     >>tmpspin.den;
            //if(tmpspin.den>1e-20){
@@ -1711,11 +2471,11 @@ void svContourData::SetContourTreeData(char *svlfile, int layer){
             infile>>tmpspin.pos[0]>>tmpspin.pos[1]>>tmpspin.pos[2];
                  //>>tmpspin.dir[0]>>tmpspin.dir[1]>>tmpspin.dir[2]
                  //>>tmpspin.den;
-           svVector3 pos = tmpspin.pos;
+           /*svVector3 pos = tmpspin.pos;
            tmpspin.pos[0] = GetDot(pos  - myData->sliceOrigin[layer], myData->sliceAxis[0]);
            tmpspin.pos[1] = GetDot(pos - myData->sliceOrigin[layer], myData->sliceAxis[1]);
            tmpspin.pos[2] = GetDot(pos - myData->sliceOrigin[layer], myData->sliceAxis[2]);
-           if(tmpspin.den>1e-20){
+           */if(tmpspin.den>1e-20){
            tmpspin.exp = getNumOfIntegerDigits(tmpspin.den);
            tmpspin.coe = tmpspin.den/pow(10., tmpspin.exp);}
            else{
@@ -1741,21 +2501,32 @@ void svContourData::SplitData(){
         count++;
  //    }
   }
+
+  (*qdotVisible).clear();
+  for(int i=0;i<splitData.size();i++){
+     for(int j=0;j<splitData[i].size();j++){
+          (*qdotVisible).insert(std::pair<Spin *, bool>(splitData[i][j], true));
+     }
+  }
+  (*sampleVisible).clear();
+  for(int i=0;i<splitData.size();i++){
+     for(int j=0;j<splitData[i].size();j++){
+          (*sampleVisible).insert(std::pair<Spin *, bool>(splitData[i][j], true));
+     }
+  }
 //  cerr<<splitData.size()<<endl;
   //cout<<contourData.size()<<" "<<count<<endl;
 }
 //TODO:NEED TO BE FIXED
 void svContourData::GenerateSampling(int frequency){
-  state->qdotVisible.clear();
+  (*sampleVisible).clear();
 
   for(int i=0;i<splitData.size();i++){
      for(int j=0;j<splitData[i].size();j++){
         if(j%frequency==0){
-          state->qdotVisible.insert(std::pair<Spin *, bool>(splitData[i][j], true));
-//at(splitData[i][j]) = true;
+          (*sampleVisible).insert(std::pair<Spin *, bool>(splitData[i][j], true));
         }
-        else state->qdotVisible.insert(std::pair<Spin *, bool>(splitData[i][j], false));
-//at(splitData[i][j]) = false;
+        else (*sampleVisible).insert(std::pair<Spin *, bool>(splitData[i][j], false));
      }
   }
 //  if(myCluster!=NULL) myCluster->visibleLabel = visibleLabel;
@@ -1777,6 +2548,8 @@ void svContourData::cleanup(){
 //====================contour cluster============================//
 svContourClusterData::svContourClusterData(svQDOT *qdot, svContourData *data){
   clusterList = new map<Spin *, int>();
+  symmetryList = new vector< map<Spin *, vector<Spin *> > >();
+ // (*symmetryList).resize(SYMMETRY_TYPE);
   New(qdot, data);
   data_structure_type = d_cluster;
 }
@@ -1787,10 +2560,12 @@ void svContourClusterData::New(svQDOT *qdot, svContourData *data){
   if(splitData.size()>0){cleandata();}
   for(int i=0;i<myData->contourData.size();i++)
      (*clusterList).insert(std::pair<Spin *, int>(&(myData->contourData[i]), -1));
+ // for(int i=0;i<SYMMETRY_TYPE;i++)(*symmetryList)[i].clear();
 }
 void svContourClusterData::ResetCluster(){
   for(int i=0;i<myData->contourData.size();i++)
      (*clusterList).at(&(myData->contourData[i])) = -1;
+ // for(int i=0;i<SYMMETRY_TYPE;i++)(*symmetryList)[i].clear();
   for(int i=0;i<splitData.size();i++) splitData[i].clear(); splitData.clear();
 }
 void svContourClusterData::Init(char *folder){//,
@@ -1807,7 +2582,32 @@ void svContourClusterData::Init(char *folder){//,
   std::fill(isSelected.begin(), isSelected.end(), false);
 //  state->NewVisible(myQDOT);
 }
+void svContourClusterData::GenerateClusters()
+{
+  svNear *near = new svNear();
+  for(int i=0;i<myData->splitData.size();i++)
+  {
+      //cerr<<i<<endl;
+      int *index = new int[myData->splitData[i].size()];
+      near->ComputeNear(mySlice->splitData[i], myData->splitData[i], index);
+      for(int j=0;j<myData->splitData[i].size();j++)
+      {
+          
+          //cout<<index[j]<<endl;
+          int label = (*mySlice->clusterList).at(mySlice->splitData[i][index[j]]);
+          (*clusterList).at(myData->splitData[i][j]) = label;
+/*
+          for(int s=0;s<8;s++)
+          {
+             if((*myData->symmetryList[s]).count(mySlice->splitData[i][index[j]])>0)
+             {
+                symmetryList[s].insert(std::pair<Spin *, vector<Spin *> >(splitData[i][j], 
+             }
+          }
+*/      }
 
+  }
+}
 void svContourClusterData::GenerateClusters(char *folder){
                              //               KmeansProperty & property){
   char *clusterfname = new char[400];;

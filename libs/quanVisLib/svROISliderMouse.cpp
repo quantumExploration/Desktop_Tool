@@ -19,7 +19,9 @@ void svROISliderSelect::Reset()
 
 void svROISliderSelect::Select()
 {
-//  Reset();
+  Reset(); 
+  success = false;
+  isMove = false;
   svScalar recTranx = slider->recPos[0][0];
   svScalar recTrany = slider->recPos[0][1];
   //check if cursor is inside the panel
@@ -27,7 +29,7 @@ void svROISliderSelect::Select()
   && mousey > slider->recPos[0][1] && mousey < slider->recPos[1][1])
   {
     //magnitude slider
-    if(selectRec[0])
+    if(slider->selectRec[0])
     {
       for(int i=0;i<2;i++)
       {
@@ -37,12 +39,13 @@ void svROISliderSelect::Select()
         svScalar scaley = slider->slider[6]->scaley;
         svScalar tranx = slider->slider[6]->tranx + recTranx;
         svScalar trany = slider->slider[6]->trany + recTrany;
-        if(mousex > slider->slider[6]->(widgetPos[i][0]-w) * scalex + tranx
-        && mousex < slider->slider[6]->(widgetPos[i][0]+w) * scalex + tranx
-        && mousey > slider->slider[6]->(widgetPos[i][1]-h) * scaley + trany
-        && mousey < slider->slider[6]->(widgetPos[i][1]+h) * scaley + trany)
+        if(mousex > (slider->slider[6]->widgetPos[i][0]-w) * scalex + tranx
+        && mousex < (slider->slider[6]->widgetPos[i][0]+w) * scalex + tranx
+        && mousey > (slider->slider[6]->widgetPos[i][1]-h) * scaley + trany
+        && mousey < (slider->slider[6]->widgetPos[i][1]+h) * scaley + trany)
         {
           slider->slider[6]->widgetSelect[i] = true;
+          slider->slider[6]->SetWidgetColor();
           success = true;
           isMove = true;
           break;
@@ -50,7 +53,7 @@ void svROISliderSelect::Select()
       }
     }
     //direction slider
-    else if(selectRec[1])
+    else if(slider->selectRec[1])
     {
       int sliderindex[3]={3,4,5};
       for(int i=0;i<2;i++)
@@ -63,11 +66,12 @@ void svROISliderSelect::Select()
           svScalar scaley = slider->slider[sliderindex[j]]->scaley;
           svScalar tranx = slider->slider[sliderindex[j]]->tranx + recTranx;
           svScalar trany = slider->slider[sliderindex[j]]->trany + recTrany;
-          if(mousex > slider->slider[sliderindex[j]]->(widgetPos[i][0]-w) * scalex + tranx
-          && mousex < slider->slider[sliderindex[j]]->(widgetPos[i][0]+w) * scalex + tranx
-          && mousey > slider->slider[sliderindex[j]]->(widgetPos[i][1]-h) * scaley + trany
-          && mousey < slider->slider[sliderindex[j]]->(widgetPos[i][1]+h) * scaley + trany)
+          if(mousex > (slider->slider[sliderindex[j]]->widgetPos[i][0]-w) * scalex + tranx
+          && mousex < (slider->slider[sliderindex[j]]->widgetPos[i][0]+w) * scalex + tranx
+          && mousey > (slider->slider[sliderindex[j]]->widgetPos[i][1]-h) * scaley + trany
+          && mousey < (slider->slider[sliderindex[j]]->widgetPos[i][1]+h) * scaley + trany)
           {
+            slider->slider[sliderindex[j]]->SetWidgetColor();
             slider->slider[sliderindex[j]]->widgetSelect[i] = true;
             success = true;
             isMove = true;
@@ -76,8 +80,8 @@ void svROISliderSelect::Select()
         }
         if(success)break;
       }
-      //position slider
-      else if(selectRec[2])
+     }
+      else if(slider->selectRec[2])
       {
         int sliderindex[3]={0,1,2};
         for(int i=0;i<2;i++)
@@ -90,31 +94,33 @@ void svROISliderSelect::Select()
             svScalar scaley = slider->slider[sliderindex[j]]->scaley;
             svScalar tranx = slider->slider[sliderindex[j]]->tranx + recTranx;
             svScalar trany = slider->slider[sliderindex[j]]->trany + recTrany;
-            if(mousex > slider->slider[sliderindex[j]]->(widgetPos[i][0]-w) * scalex + tranx
-            && mousex < slider->slider[sliderindex[j]]->(widgetPos[i][0]+w) * scalex + tranx
-            && mousey > slider->slider[sliderindex[j]]->(widgetPos[i][1]-h) * scaley + trany
-            && mousey < slider->slider[sliderindex[j]]->(widgetPos[i][1]+h) * scaley + trany)
-            {
+            if(mousex > (slider->slider[sliderindex[j]]->widgetPos[i][0]-w) * scalex + tranx
+            && mousex < (slider->slider[sliderindex[j]]->widgetPos[i][0]+w) * scalex + tranx
+            && mousey > (slider->slider[sliderindex[j]]->widgetPos[i][1]-h) * scaley + trany
+            && mousey < (slider->slider[sliderindex[j]]->widgetPos[i][1]+h) * scaley + trany)
+            { cerr<<sliderindex[j]<<endl;
+              slider->slider[sliderindex[j]]->SetWidgetColor();
               slider->slider[sliderindex[j]]->widgetSelect[i] = true;
               success = true;
               isMove = true;
-              break;
+              //break;
             }
           }
           if(success)break;
         }
       }
+    }
       //magnitude text
-      if(!success)
+     /* if(!success)
       {
         if(mousex > slider->magRec[0][0]+recTranx
         && mousex < slider->magRec[1][0]+recTranx
         && mousey > slider->magRec[0][1]+recTrany
         && mousey < slider->magRec[1][1]+recTrany)
         {
-          selectRec[0] = true;
-          selectRec[1] = false;
-          selectRec[2] = false;
+          slider->selectRec[0] = true;
+          slider->selectRec[1] = false;
+          slider->selectRec[2] = false;
           success = true;
         }
         else if(mousex > slider->dirRec[0][0]+recTranx
@@ -122,9 +128,9 @@ void svROISliderSelect::Select()
         && mousey > slider->dirRec[0][1]+recTrany
         && mousey < slider->dirRec[1][1]+recTrany)
         {
-          selectRec[0] = false;
-          selectRec[1] = true;
-          selectRec[2] = false;
+          slider->selectRec[0] = false;
+          slider->selectRec[1] = true;
+          slider->selectRec[2] = false;
           success = true;
         }
         else if(mousex > slider->posRec[0][0]+recTranx
@@ -132,40 +138,39 @@ void svROISliderSelect::Select()
         && mousey > slider->posRec[0][1]+recTrany
         && mousey < slider->posRec[1][1]+recTrany)
         {
-          selectRec[0] = false;
-          selectRec[1] = false;
-          selectRec[2] = true;
+          slider->selectRec[0] = false;
+          slider->selectRec[1] = false;
+          slider->selectRec[2] = true;
           success = true;
         }
         else
         {
-          selectRec[0] = false;
-          selectRec[1] = false;
-          selectRec[2] = false;
+          slider->selectRec[0] = false;
+          slider->selectRec[1] = false;
+          slider->selectRec[2] = false;
         }
       }
-    }
-  }
+     */
 }
 
 void svROISliderMotion::Motion()
 {
   svROISlider *slider = selectEvent->slider;
+
   svScalar recTranx = slider->recPos[0][0];
   svScalar recTrany = slider->recPos[0][1];
   svScalar w = slider->slider[0]->widgetW/2.;
   svScalar h = slider->slider[0]->widgetH/2.;
   svScalar scalex = slider->slider[0]->scalex;
   svScalar scaley = slider->slider[0]->scaley;
-
-  svScalar movement;
-  movement = -selectEvent->mousey + mousey;
+//  svScalar movement;
+//  movement = -//selectEvent->mousey + mousey;
   if(selectEvent->success && selectEvent->isMove)
   {
     if(slider->selectRec[0] || slider->selectRec[1] || slider->selectRec[2])
     {
       int sliderindex[3];
-      int end;
+      int end=0;
       if(slider->selectRec[0])
       {
         sliderindex[0]=6;
@@ -189,21 +194,32 @@ void svROISliderMotion::Motion()
       {
         svScalar tranx = slider->slider[sliderindex[i]]->tranx + recTranx;
         svScalar trany = slider->slider[sliderindex[i]]->trany + recTrany;
+
         if(slider->slider[sliderindex[i]]->widgetSelect[0])
         {
-          if(mousey + movement >= slider->slider[sliderindex[i]]->boundWidgetPos[0][1]
-          && mousey + movement <= slider->slider[sliderindex[i]]->widgetPos[1][1]-h)
+          if(mousey < slider->slider[sliderindex[i]]->boundWidgetPos[0][1]*scaley+trany)
           {
-            slider->slider[sliderindex[i]]->widgetPos[0][1] = mousey;
+            slider->slider[sliderindex[i]]->widgetPos[0][1]=slider->slider[sliderindex[i]]->boundWidgetPos[0][1];
           }
+          else if(mousey >= slider->slider[sliderindex[i]]->boundWidgetPos[0][1]*scaley + trany
+          && mousey <= (slider->slider[sliderindex[i]]->widgetPos[1][1]-h)*scaley + trany)
+          {
+            slider->slider[sliderindex[i]]->widgetPos[0][1]=(mousey-trany)/scaley;// +=movement/scaley;//(mousey-trany)/scaley;
+          }
+          break;
         }
         else if(slider->slider[sliderindex[i]]->widgetSelect[1])
         {
-          if(mousey + movement >= slider->slider[sliderindex[i]]->widgetPos[0][1]+h)
-          && mousey + movement <= slider->slider[sliderindex[i]]->boundWidgetPos[1][1])
+          if(mousey > slider->slider[sliderindex[i]]->boundWidgetPos[1][1]*scaley+trany)
           {
-            slider->slider[sliderindex[i]]->widgetPos[1][1] = mousey;
+            slider->slider[sliderindex[i]]->widgetPos[1][1]=slider->slider[sliderindex[i]]->boundWidgetPos[1][1];
           }
+          else if(mousey >= (slider->slider[sliderindex[i]]->widgetPos[0][1]+h)*scaley + trany
+          && mousey <= (slider->slider[sliderindex[i]]->boundWidgetPos[1][1])*scaley+trany)
+          {
+            slider->slider[sliderindex[i]]->widgetPos[1][1]=(mousey-trany)/scaley;// +=movement/scaley;//(mousey-trany)/scaley;
+          }
+          break;
         }
       }
       if(slider->selectRec[0])
@@ -220,7 +236,7 @@ void svROISliderMotion::Motion()
       }
     }
   }
-  selectEvent->mousey = mousey;
+  //selectEvent->mousey = mousey;
 }
 
 
@@ -228,6 +244,8 @@ void svROISliderRelease::Release()
 {
   selectEvent->Reset();
   selectEvent->slider->UpdateState();
+  for(int i=0;i<7;i++)
+      selectEvent->slider->slider[i]->SetWidgetColor();
 }
 
 void svROISliderMove::Move()
@@ -241,7 +259,7 @@ void svROISliderMove::Move()
   && mousey > slider->recPos[0][1] && mousey < slider->recPos[1][1])
   {
     //magnitude slider
-    if(selectRec[0])
+    if(slider->selectRec[0])
     {
       for(int i=0;i<2;i++)
       {
@@ -251,10 +269,10 @@ void svROISliderMove::Move()
         svScalar scaley = slider->slider[6]->scaley;
         svScalar tranx = slider->slider[6]->tranx + recTranx;
         svScalar trany = slider->slider[6]->trany + recTrany;
-        if(mousex > slider->slider[6]->(widgetPos[i][0]-w) * scalex + tranx
-        && mousex < slider->slider[6]->(widgetPos[i][0]+w) * scalex + tranx
-        && mousey > slider->slider[6]->(widgetPos[i][1]-h) * scaley + trany
-        && mousey < slider->slider[6]->(widgetPos[i][1]+h) * scaley + trany)
+        if(mousex > (slider->slider[6]->widgetPos[i][0]-w) * scalex + tranx
+        && mousex < (slider->slider[6]->widgetPos[i][0]+w) * scalex + tranx
+        && mousey > (slider->slider[6]->widgetPos[i][1]-h) * scaley + trany
+        && mousey < (slider->slider[6]->widgetPos[i][1]+h) * scaley + trany)
         {
           slider->slider[6]->widgetSelect[i] = true;
         }
@@ -262,10 +280,11 @@ void svROISliderMove::Move()
         {
           slider->slider[6]->widgetSelect[i] = false;
         }
+        slider->slider[6]->SetWidgetColor();
       }
     }
     //direction slider
-    else if(selectRec[1])
+    else if(slider->selectRec[1])
     {
       int sliderindex[3]={3,4,5};
       for(int i=0;i<2;i++)
@@ -278,10 +297,10 @@ void svROISliderMove::Move()
           svScalar scaley = slider->slider[sliderindex[j]]->scaley;
           svScalar tranx = slider->slider[sliderindex[j]]->tranx + recTranx;
           svScalar trany = slider->slider[sliderindex[j]]->trany + recTrany;
-          if(mousex > slider->slider[sliderindex[j]]->(widgetPos[i][0]-w) * scalex + tranx
-          && mousex < slider->slider[sliderindex[j]]->(widgetPos[i][0]+w) * scalex + tranx
-          && mousey > slider->slider[sliderindex[j]]->(widgetPos[i][1]-h) * scaley + trany
-          && mousey < slider->slider[sliderindex[j]]->(widgetPos[i][1]+h) * scaley + trany)
+          if(mousex > (slider->slider[sliderindex[j]]->widgetPos[i][0]-w) * scalex + tranx
+          && mousex < (slider->slider[sliderindex[j]]->widgetPos[i][0]+w) * scalex + tranx
+          && mousey > (slider->slider[sliderindex[j]]->widgetPos[i][1]-h) * scaley + trany
+          && mousey < (slider->slider[sliderindex[j]]->widgetPos[i][1]+h) * scaley + trany)
           {
             slider->slider[sliderindex[j]]->widgetSelect[i] = true;
           }
@@ -289,10 +308,12 @@ void svROISliderMove::Move()
           {
             slider->slider[sliderindex[j]]->widgetSelect[i] = false;
           }
+          slider->slider[sliderindex[j]]->SetWidgetColor();
         }
       }
+     }
       //position slider
-      else if(selectRec[2])
+      else if(slider->selectRec[2])
       {
         int sliderindex[3]={0,1,2};
         for(int i=0;i<2;i++)
@@ -305,10 +326,10 @@ void svROISliderMove::Move()
             svScalar scaley = slider->slider[sliderindex[j]]->scaley;
             svScalar tranx = slider->slider[sliderindex[j]]->tranx + recTranx;
             svScalar trany = slider->slider[sliderindex[j]]->trany + recTrany;
-            if(mousex > slider->slider[sliderindex[j]]->(widgetPos[i][0]-w) * scalex + tranx
-            && mousex < slider->slider[sliderindex[j]]->(widgetPos[i][0]+w) * scalex + tranx
-            && mousey > slider->slider[sliderindex[j]]->(widgetPos[i][1]-h) * scaley + trany
-            && mousey < slider->slider[sliderindex[j]]->(widgetPos[i][1]+h) * scaley + trany)
+            if(mousex > (slider->slider[sliderindex[j]]->widgetPos[i][0]-w) * scalex + tranx
+            && mousex < (slider->slider[sliderindex[j]]->widgetPos[i][0]+w) * scalex + tranx
+            && mousey > (slider->slider[sliderindex[j]]->widgetPos[i][1]-h) * scaley + trany
+            && mousey < (slider->slider[sliderindex[j]]->widgetPos[i][1]+h) * scaley + trany)
             {
               slider->slider[sliderindex[j]]->widgetSelect[i] = true;
             }
@@ -316,46 +337,49 @@ void svROISliderMove::Move()
             {
               slider->slider[sliderindex[j]]->widgetSelect[i] = false;
             }
+          slider->slider[sliderindex[j]]->SetWidgetColor();
           }
         }
       }
+      
+      bool temp[3];
+      for(int i=0;i<3;i++) temp[i]=slider->selectRec[i];
 
         if(mousex > slider->magRec[0][0]+recTranx
         && mousex < slider->magRec[1][0]+recTranx
         && mousey > slider->magRec[0][1]+recTrany
         && mousey < slider->magRec[1][1]+recTrany)
         {
-          selectRec[0] = true;
-          selectRec[1] = false;
-          selectRec[2] = false;
+          slider->selectRec[0] = true;
+          slider->selectRec[1] = false;
+          slider->selectRec[2] = false;
         }
         else if(mousex > slider->dirRec[0][0]+recTranx
         && mousex < slider->dirRec[1][0]+recTranx
         && mousey > slider->dirRec[0][1]+recTrany
         && mousey < slider->dirRec[1][1]+recTrany)
         {
-          selectRec[0] = false;
-          selectRec[1] = true;
-          selectRec[2] = false;
+          slider->selectRec[0] = false;
+          slider->selectRec[1] = true;
+          slider->selectRec[2] = false;
         }
         else if(mousex > slider->posRec[0][0]+recTranx
         && mousex < slider->posRec[1][0]+recTranx
         && mousey > slider->posRec[0][1]+recTrany
         && mousey < slider->posRec[1][1]+recTrany)
         {
-          selectRec[0] = false;
-          selectRec[1] = false;
-          selectRec[2] = true;
+          slider->selectRec[0] = false;
+          slider->selectRec[1] = false;
+          slider->selectRec[2] = true;
         }
         else
         {
-          selectRec[0] = false;
-          selectRec[1] = false;
-          selectRec[2] = false;
+          slider->selectRec[0] = temp[0];//false;
+          slider->selectRec[1] = temp[1];//false;
+          slider->selectRec[2] = temp[2];//false;
         }
 
     }
-  }
 }
 
 

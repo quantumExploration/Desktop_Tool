@@ -28,6 +28,8 @@ class svLinearArrow : public svArrowGlyph {
     // void SetNumPower(svInt power){numPower = power;}
   
 //    virtual void Render();
+    virtual void SetColors(svColors *color);
+
     virtual void GenerateArrows();
     virtual void GenerateTubes();
    // virtual void GenerateLegend();

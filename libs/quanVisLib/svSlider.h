@@ -43,14 +43,14 @@ class svSlider
 
   virtual void Render(string bottomText, string topText,
                          string widgetText1, string widgetText2,
-                         string subject);
+                         string subject, float shiftleft, float shiftright);
 
   virtual void RenderDoubleSlider(string bottomText, string topText,
                     string widgetText1, string widgetText2,
-                    string subject);
+                    string subject, float shiftleft, float shiftright);
   virtual void RenderSingleSlider(string bottomText, string topText,
                     string widgetText,
-                    string subject);
+                    string subject, float shiftleft, float shiftright);
 
   //---------------------Interaction-----------------------------//
   bool widgetSelect[2];
@@ -63,7 +63,8 @@ class svSlider
   float scalex;
   float scaley;
   bool isDouble;
-
+  float barw;
+  float barh;
 protected:
   void ResetColor();
  private:

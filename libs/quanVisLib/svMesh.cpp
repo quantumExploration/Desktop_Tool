@@ -30,8 +30,8 @@ void svMesh::New(svMeshData *d){
 //  vector<int> region = myData->GetUniqueRegion();
   //nComponent = myData->myQDOT->regionSize;//region.size()-1;
 
-  glyph_list = 15;
-  display_list=10;
+  glyph_list = 400;
+  display_list=401;
 /*  mesh=new svVector3Array[nComponent];
   dir = new svVector3Array[nComponent];
   //colors = new svVector4Array[nComponent];
@@ -62,7 +62,7 @@ void svMesh::GenerateGlyph(ViewProperty &property){
     svVector3 v = svGetPerpendicularVector(-myData->glyphs[i][j].dir);
     svScalar radius = sqrt(myData->glyphs[i][j].denDiff/maxMag * quadSize * quadSize);
     svVector3 head = myData->glyphs[i][j].pos
-                    + v * radius-myData->glyphs[i][j].dir*radius/5.;
+                    + v * radius + myData->glyphs[i][j].dir*radius/5.;
     glColor3f(251./255.,184./255.,103./255.);//91./255.,168./255.,126./255.);
     glBegin(GL_QUADS);
     svVector3 glyphDir = myData->glyphs[i][j].dir;//-myData->glyphs[i][j].dir;
@@ -92,8 +92,35 @@ void svMesh::GenerateGlyph(ViewProperty &property){
  glLineWidth(1.);
 }
 
+
+
+void svMesh::GenerateSurface(svColors *color, int cluster){
+    if(glIsList(display_list))
+           glDeleteLists(display_list, 1);
+    glNewList(display_list, GL_COMPILE);
+    for(int i=0;i<myData->facets.size();i++){
+       if(myData->facets[i].size()==0)continue;
+       if(cluster!=myData->facets[i][0].label)continue;
+       for(int j=0;j<myData->facets[i].size();j++){
+           svVector4 c = color->GetColors(myData->facets[i][j].label);
+           glColor3f(c[0],c[1],c[2]);
+           glBegin(GL_TRIANGLES);
+           for(int v=0;v<3;v++){
+           glNormal3f(-myData->facets[i][j].norm[0],
+                      -myData->facets[i][j].norm[1],
+                      -myData->facets[i][j].norm[2]);
+             glVertex3f(myData->facets[i][j].pos[v][0],
+                        myData->facets[i][j].pos[v][1],
+                        myData->facets[i][j].pos[v][2]);
+           }
+           glEnd();
+       }
+    }
+    glEndList();
+}
+
+
 void svMesh::GenerateSurface(){
-    //cerr<<display_list<<endl;
     if(glIsList(display_list))
            glDeleteLists(display_list, 1);
     glNewList(display_list, GL_COMPILE);

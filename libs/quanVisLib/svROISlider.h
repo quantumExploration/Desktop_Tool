@@ -4,9 +4,9 @@
 #include "svSlider.h"
 #include "svQDOTData.h"
 
-#define ROI_SLIDER_SIZE 6
-#define ROI_SLIDER_RATIO 0.6
-#define SLIDER_MAG_DEGREE 0.5
+#define ROI_SLIDER_SIZE 4 
+#define ROI_SLIDER_RATIO 0.5
+#define SLIDER_MAG_DEGREE 0.1
 #define SLIDER_DIR_DEGREE 5
 
 namespace __svl_lib{
@@ -22,7 +22,7 @@ public:
   void setWidgetPos();
   void setWidgetMag();
 
-  void Reshape(int left, int bottom, int width);
+  void Reshape(int left, int top, int width);
 
   void Render();
   void UpdateState();//update visiblity
@@ -33,7 +33,7 @@ public:
 
   //define degree of movement in svROISliderMouse
 
-  State *myState;
+  State *state;
   svQDOTData *myData;
   svSlider * slider[7]; // pos_x, pos_y, pos_z, dir_x, dir_y, dir_z, mag
 
@@ -41,7 +41,7 @@ public:
   svVector3 recPos[2];
   svVector3 magRec[2];
   svVector3 dirRec[2];
-  svVector3 recPos[2];
+  svVector3 posRec[2];
   bool selectRec[3];//mag, vel and pos
 
 protected:
@@ -57,6 +57,7 @@ protected:
 private:
   vector<svVector3> roundPos;
 
+  
   svVector3 font_color;
 
   svVector3 mag_text;

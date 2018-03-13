@@ -5,7 +5,7 @@
 using namespace std;
 
 namespace __svl_lib {
-
+/*
 svVector3 sliceDirection[][]={
 {0,0,1},
 {0,1,0},
@@ -24,6 +24,56 @@ svSlice::svSlice(svRawQDOTData *d){
 svSlice::~svSlice(){
   cleanup();
 }
+
+*/
+void svSlice::RenderSlice(svScalar side, svVector3 origin,
+                          svVector3 dir, svVector3 x, svVector3 y)
+{
+   glDisable(GL_LIGHTING);
+   glDisable(GL_LIGHT0);
+   glDisable(GL_LIGHT1);
+   glColor3f(253./255., 174./255., 97./255.);
+   glPushMatrix();
+   glTranslatef(origin[0], origin[1], origin[2]);
+   double rotate_x, rotate_z;
+   GetRotateAngle(dir, rotate_x, rotate_z); 
+   glRotatef(rotate_z/PI*180.,0,0,1);
+   glRotatef(rotate_x/PI*180.,1,0,0);
+//   cout<<side<<" "<<rotate_z/PI*180.<<" "<<rotate_x/PI*180.<<" "<<origin[0]<<" "<<origin[1]<<" "<<origin[2]<<endl;
+   glBegin(GL_LINE_LOOP);
+   glVertex3f(0,0,0);
+   glVertex3f(side,0,0);
+   glVertex3f(side,side,0);
+   glVertex3f(0,side,0);
+   glEnd();
+   glPopMatrix();
+
+   glPushMatrix();
+   //glTranslatef(origin[0], origin[1], origin[2]);
+   glColor3f(1,0,0);
+   glLineWidth(4.);
+   glBegin(GL_LINES);
+   glVertex3f(0,0,0);
+   glVertex3f(x[0]*side, x[1]*side, x[2]*side);
+   glEnd();
+   glColor3f(0,1,0);
+   glBegin(GL_LINES);
+   glVertex3f(0,0,0);
+   glVertex3f(y[0]*side, y[1]*side, y[2]*side);
+   glEnd();
+   glColor3f(0,0,1);
+   glBegin(GL_LINES);
+   glVertex3f(0,0,0);
+   glVertex3f(dir[0]*side, dir[1]*side, dir[2]*side);
+   glEnd();
+   glLineWidth(1.);
+   glPopMatrix();
+   glEnable(GL_LIGHTING);
+   glEnable(GL_LIGHT0);
+   glEnable(GL_LIGHT1);
+}
+                           
+/*
 void svSlice::RenderSlice(){
   svVector3 c(0,0,0);
   for(int i=0;i<planePos.size();i++){
@@ -96,6 +146,6 @@ void svSlice::cleanup(){
    delete [] elementColors;
    planePos.free();
 }
-
+*/
 }
 

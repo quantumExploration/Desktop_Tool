@@ -26,14 +26,16 @@ class svImage
 
   virtual void New();
 
-  virtual void Render3D(int sliceIndex);
-  virtual void Render2D(int sliceIndex);
+  virtual void GenerateDisplay(int list2D, int list3D);
+  virtual void Render3D();
+  virtual void Render3DList();//int sliceIndex);
+  virtual void Render2D();//int sliceIndex);
 
   virtual void GenerateHybridImage(string ifname1, string ifname2,
-                                          float cutoff, string ofname,
-                                          int sliceIndex){}
-  virtual void ReadColors(string dir, string file, int sliceIndex);
-  virtual void SaveImage(string dir, string file, int sliceIndex);
+                                          float cutoff, string ofname){}
+                                         // int sliceIndex){}
+  virtual void ReadColors(string dir, string file);//, int sliceIndex);
+  virtual void SaveImage(string dir, string file);//, int sliceIndex);
 
   void cleanup();
 
@@ -46,8 +48,8 @@ class svImage
   svScalar scale;
   svVector3 iminD;
   bool isSelectable;
-  bool isSelected;
-  bool isHighlighted;
+  bool isSelected; //current selected layer
+  bool isHighlighted;//selected layer
   bool is3D;
   bool isRotatable;
 //  int selectpixel[2];
@@ -57,8 +59,10 @@ class svImage
   int sliceIndex;
   svRawSliceData *myData;
   svContourData *myContour;
+  int displaylist2D;
+  int displaylist3D;
 protected:
-  virtual void RenderPixel(int sliceIndex);
+  virtual void RenderPixel();//int sliceIndex);
   virtual void RenderBar(){}
 
   //vector<svSliceData> image;//the left bottom location
