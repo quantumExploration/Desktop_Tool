@@ -1,0 +1,32 @@
+*data_folder
+data/
+*folder_to_store_temporal_files
+tmp/
+*data_file
+spin_proj_scale_vs_pos_shift_2a_z3.5d3_6T_29
+*data_type
+1
+*slice_position
+0 0 0
+*slice_direction
+0 0 1
+*slice_distance
+0.25
+*if_generating_contours_using_ratio
+1
+*contour_value
+0.5
+*symmetry_position
+0 0 0
+*symmetry_x
+-1 -1 0 
+*symmetry_y
+0 0 1
+*symmetry_z(direction)
+-1 1 0
+*if_generating_clusters_for_each_slice
+0
+*num_of_clusters
+40
+*weights_of_position_direction_and_magnitude
+1 1 1  
