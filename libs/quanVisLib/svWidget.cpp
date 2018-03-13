@@ -274,7 +274,11 @@ void svWidget::Move(int x, int y)
 }
 */
 
+<<<<<<< HEAD
 void svWidget::  RenderWidgets()
+=======
+void svWidget::   RenderWidgets()
+>>>>>>> ea039c21ca0b32ea98b4e3b805c2ea44c57c3120
 {
   glLineWidth(1.);
   svScalar maglevel = myData->myQDOT->maxExp-NUM_TOP_MAG+1;
@@ -747,6 +751,7 @@ void svWidget::UpdateState()
         l.free();
     }
     SetValues();
+<<<<<<< HEAD
     for(int i=0;i<layer.size();i++)
     {
         //if(state->rP->splitVisible[i])
@@ -754,6 +759,9 @@ void svWidget::UpdateState()
     }
     state->updateVisible = true;
    // state->UpdateSplitVisible(layer);
+=======
+    state->UpdateSplitVisible(layer);
+>>>>>>> ea039c21ca0b32ea98b4e3b805c2ea44c57c3120
 }
 
 void svWidget::cleanup()
