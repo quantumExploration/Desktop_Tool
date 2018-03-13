@@ -8,7 +8,8 @@ Compile it
 
 Run it
 	./runtest1
-
+(if you vtk is not installed in a default path, please use
+LD_LIBRARY_PATH=${YOUR_VTK_LIB_DIRECTORY ./runtest1)
 
 Data structure:
 app: SplitTool/testapp.cpp
