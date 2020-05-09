@@ -14,7 +14,7 @@
 //--------------------------------------------------------------------------------------
 
 #include "dual_depth_peeling.h"
-#include <GL/glext.h>
+//#include <GL/glext.h>
 #define GL_RG32F                          0x8230
 using namespace std;
 

@@ -20,7 +20,7 @@
 //#include "nvModel.h"
 #include <GL/glew.h>
 #include <GL/glut.h>
-#include <GL/glext.h>
+//#include <GL/glext.h>
 #include "../dual_depth_peeling/common/include/nvShaderUtils.h"
 #include "../dual_depth_peeling/common/include/nvSDKPath.h"
 #include "GLSLProgramObject.h"
